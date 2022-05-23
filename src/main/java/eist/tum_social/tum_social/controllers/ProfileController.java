@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 
@@ -58,7 +60,11 @@ public class ProfileController {
         DatabaseFacade db = new SqliteFacade();
         db.removePerson(tumId);
         logout();
-        // TODO delete profile picture
+        try {
+            Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getProfilePage(Model model) {
