@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'hello.world'
+group = 'eist.tum_social'
 version = '1.0.0'
 sourceCompatibility = '17'
 compileJava.options.encoding = 'UTF-8'
@@ -15,6 +15,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.0'
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'commons-dbutils:commons-dbutils:1.7'
     implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'

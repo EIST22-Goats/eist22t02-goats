@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Anmelden - Tum Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body class="text-center">
+
+<main class="form-signin w-100 m-auto">
+    <form action="/anmelden" method="post" class="checkTumIdForm">
+        <img class="mb-4" src="/logo.svg" alt="logo" height="40">
+
+        <h1 class="h3 mb-3 fw-normal">Bitte anmelden</h1>
+
+        <div th:if="${wrongInput}" class="mb-3 text-danger">
+            <small>Tum ID und/oder Passwort sind falsch.</small>
+        </div>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" id="tumId" placeholder="z.B. go42tum" name="tumId" required
+                   data-bs-container="body" data-bs-placement="top" data-bs-content="Ungültige Tum ID!">
+            <label for="tumId">Tum ID</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Passwort" name="password"
+                   required>
+            <label for="floatingPassword">Passwort</label>
+        </div>
+
+        <div class="small">Noch kein Account? <a href="/registrieren">Hier registrieren</a></div>
+
+        <button class="w-100 btn btn-lg btn-primary mt-4" type="submit">Anmelden</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2022 Tum Social</p>
+    </form>
+</main>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/tumIdCheck.js"></script>
+
+</body>
+</html>

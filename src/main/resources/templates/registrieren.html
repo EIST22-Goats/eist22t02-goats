@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrieren - Tum Social</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <style>
+        .container {
+            max-width: 700px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <main class="w-100 m-auto">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="/logo.svg" alt="" height="40">
+
+            <h2>Registrieren</h2>
+
+            <div th:if="${registrationFailed}" class="mb-3 text-danger">
+                <small th:text="'Registrierung fehlgeschlagen: '+${errorMessage}"></small>
+            </div>
+        </div>
+
+        <div class="g-5">
+            <div class="">
+                <form class="checkTumIdForm checkSecondPasswordForm" action="/registrieren" method="post">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label for="firstname" class="form-label">Vorname</label>
+                            <input type="text" class="form-control" id="firstname" name="firstname"
+                                   placeholder="Max" value="" required>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label for="lastname" class="form-label">Nachname</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname"
+                                   placeholder="Mustermann" value="" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="tumId" class="form-label">Tum ID</label>
+                            <input type="text" class="form-control" id="tumId" name="tumId" placeholder="go42tum"
+                                   required data-bs-container="body" data-bs-placement="top"
+                                   data-bs-content="Ungültige Tum ID!">
+                        </div>
+
+                        <div class="col-12">
+                            <label for="email" class="form-label">E-Mail</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="password" class="form-label">Passwort</label>
+                            <input type="password" class="form-control" id="password" placeholder="Passwort"
+                                   name="password" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="password2" class="form-label">Passwort wiederholen</label>
+                            <input type="password" class="form-control" id="password2" placeholder="Passwort"
+                                   name="password2" required data-bs-container="body" data-bs-placement="top"
+                                   data-bs-content="Passwörter müssen übereinstimmen!">
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-3 small">Schon registriert? <a href="/anmelden">Hier</a> gehts zu
+                        Anmeldung
+                    </div>
+
+                    <button class="w-100 btn btn-primary btn-lg mt-4" type="submit">Registrieren</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2022 Tum Social</p>
+    </footer>
+</div>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/tumIdCheck.js"></script>
+<script src="/js/checkSecondPassword.js"></script>
+
+</body>
+</html>
