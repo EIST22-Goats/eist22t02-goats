@@ -1,9 +1,6 @@
 package eist.tum_social.tum_social.database;
 
-import eist.tum_social.tum_social.database.util.ColumnMapping;
-import eist.tum_social.tum_social.database.util.DatabaseEntity;
-import eist.tum_social.tum_social.database.util.IgnoreInDatabase;
-import eist.tum_social.tum_social.database.util.PrimaryKey;
+import eist.tum_social.tum_social.database.util.*;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
@@ -15,12 +12,9 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.ParseException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,22 +29,9 @@ public class SqliteFacade implements DatabaseFacade {
         dataSource.setUrl(URL);
     }
 
-    public static void main(String[] args) {
-        Person p = new Person();
-        p.setId(4);
-        p.setFirstname("Kilian");
-        p.setLastname("Northoff");
-        p.setTumId("ge95bit");
-        p.setEmail("some@mail.com");
-        p.setPassword("test");
-        try {
-            p.setBirthdate(DATE_FORMAT.parse("28-12-2002"));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
+    public static void main(String[] args) throws NoSuchFieldException {
         SqliteFacade db = new SqliteFacade();
-        db.insertOrUpdate(p);
+        var res = db.select(Person.class);
     }
 
     public Person getPerson(String tumId) {
@@ -112,50 +93,112 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    private void insertOrUpdate(Object bean) {
-        try {
-            DatabaseEntity databaseAnnotation = bean.getClass().getAnnotation(DatabaseEntity.class);
-            if (databaseAnnotation == null) {
-                throw new RuntimeException("Add @DatabaseEntity Annotation to your Bean, but lul u stupid");
-            }
-            String tableName = databaseAnnotation.tableName();
+    public <T> List<T> select(Class<T> clazz) {
+        return select(clazz, "1");
+    }
 
-            String whereCondition = null;
-            StringBuilder parameters = new StringBuilder();
-            StringBuilder values = new StringBuilder();
+    public <T> List<T> select(Class<T> clazz, String whereCondition) {
+        String sql = "SELECT * FROM " + getTableName(clazz) + " WHERE " + whereCondition;
 
-            for (Field field : bean.getClass().getDeclaredFields()) {
-                String name = field.getName();
+        List<T> ret = new ArrayList<>();
 
-                if (!name.equals("class")) {
+        try (Connection conn = dataSource.getConnection()) {
+            ResultSet res = conn.createStatement().executeQuery(sql);
+
+            while (res.next()) {
+                T obj = clazz.getDeclaredConstructor().newInstance();
+
+                for (Field field : clazz.getDeclaredFields()) {
                     if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                        Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
-                        String value = toSqlString(obj);
-
-                        ColumnMapping foreignKey;
-                        if (field.getAnnotation(PrimaryKey.class) != null) {
-                            whereCondition = name + "=" + value;
-                        } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
-                            name = foreignKey.columnName();
-                        }
-
-                        parameters.append(name).append(",");
-                        values.append(value).append(",");
+                        Object value = res.getObject(field.getName());
+                        setFieldValue(field, obj, value);
                     }
                 }
+
+                ret.add(obj);
+                System.out.println(res.getString("id"));
             }
-
-            parameters.deleteCharAt(parameters.length() - 1);
-            values.deleteCharAt(values.length() - 1);
-
-            if (whereCondition == null) {
-                throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
-            }
-
-            executeSql("INSERT OR REPLACE INTO " + tableName + " (" + parameters + ") VALUES (" + values + ")");
-        } catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
+        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+
+        return ret;
+    }
+
+    private Field getPrimaryKey(Class<?> clazz) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(PrimaryKey.class) != null) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    private void update(Object bean) {
+        String tableName = getTableName(bean);
+
+        String whereCondition = null;
+        StringBuilder parameters = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+
+        for (Field field : bean.getClass().getDeclaredFields()) {
+            String name = field.getName();
+
+            if (!name.equals("class") && field.getAnnotation(IgnoreInDatabase.class) == null) {
+                String value = getFieldValue(field, bean);
+
+                ColumnMapping foreignKey;
+                if (field.getAnnotation(PrimaryKey.class) != null) {
+                    whereCondition = name + "=" + value;
+                } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
+                    name = foreignKey.columnName();
+                }
+
+                parameters.append(name).append(",");
+                values.append(value).append(",");
+            }
+        }
+
+        parameters.deleteCharAt(parameters.length() - 1);
+        values.deleteCharAt(values.length() - 1);
+
+        if (whereCondition == null) {
+            throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
+        }
+
+        executeSql(String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values));
+    }
+
+    private String getFieldValue(Field field, Object bean) {
+        try {
+            Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
+            return toSqlString(obj);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    private void setFieldValue(Field field, Object bean, Object value) {
+        try {
+            if (value != null) {
+                new PropertyDescriptor(field.getName(), Person.class).getWriteMethod().invoke(bean, value);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    private String getTableName(Object bean) {
+        return getTableName(bean.getClass());
+    }
+
+    private String getTableName(Class<?> clazz) {
+        DatabaseEntity databaseAnnotation = clazz.getAnnotation(DatabaseEntity.class);
+        if (databaseAnnotation == null) {
+            throw new RuntimeException("Add @DatabaseEntity Annotation to your Bean, but lul u stupid");
+        }
+        return databaseAnnotation.tableName();
     }
 
     private void executeSql(String sql) {
