@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 
@@ -27,14 +29,32 @@ public class ProfileController {
             return "redirect:/anmelden";
         }
 
-        return getProfilePage(model);
+        DatabaseFacade db = new SqliteFacade();
+        Person person = db.getPerson(getCurrentUsersTumId());
+        model.addAttribute("person", person);
+        model.addAttribute("degreePrograms", db.getDegreePrograms());
+
+        return "profil";
     }
 
-    @PostMapping("/profil")
-    public String profilePage(Model model, @RequestParam("profilePicture") MultipartFile profilePicture) {
+    @PostMapping("/updateProfile")
+    public String updateProfile(Person updatedPerson) {
         if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
+
+        DatabaseFacade db = new SqliteFacade();
+        db.updatePerson(updatedPerson);
+
+        return "redirect:/profil";
+    }
+
+    @PostMapping("/setProfilePicture")
+    public String setProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture) {
+        if (!isLoggedIn()) {
+            return "redirect:/anmelden";
+        }
+
         try {
             profilePicture.transferTo(
                     new File(PROFILE_PICTURE_LOCATION + "/" + getCurrentUsersTumId() + ".png"));
@@ -42,7 +62,7 @@ public class ProfileController {
             throw new RuntimeException(e);
         }
 
-        return getProfilePage(model);
+        return "redirect:/profil";
     }
 
     @PostMapping("/deleteProfile")
@@ -58,16 +78,11 @@ public class ProfileController {
         DatabaseFacade db = new SqliteFacade();
         db.removePerson(tumId);
         logout();
-        // TODO delete profile picture
-    }
-
-    private String getProfilePage(Model model) {
-        DatabaseFacade db = new SqliteFacade();
-        Person person = db.getPerson(getCurrentUsersTumId());
-
-        model.addAttribute("person", person);
-
-        return "profil";
+        try {
+            Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

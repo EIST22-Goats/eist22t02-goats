@@ -15,15 +15,16 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(Model model) {
-        if (isLoggedIn()) {
-            DatabaseFacade db = new SqliteFacade();
-            Person person = db.getPerson(getCurrentUsersTumId());
-
-            model.addAttribute("person", person);
-            return "index";
-        } else {
+        if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
+
+        DatabaseFacade db = new SqliteFacade();
+        Person person = db.getPerson(getCurrentUsersTumId());
+        model.addAttribute("person", person);
+
+        return "index";
+
     }
 
 }
