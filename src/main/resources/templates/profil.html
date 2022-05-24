@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-md-4 mt-5">
             <div class="d-flex flex-column align-items-center text-center px-3 pt-5">
-                <img th:src="'/profile_pictures/'+${person.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                <img th:src="'/profile_pictures/'+${person.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ssSS')}"
                      class="rounded-circle mt-5 mb-3" width="150px" height="150px" alt="Profilbild"
                      style="object-fit: cover">
                 <span th:text="${person.getFirstname()}+' '+${person.getLastname()}" class="font-weight-bold"></span>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="align-items-center text-center mt-3">
-                <form id="profilePictureForm" action="/profil" method="post" enctype="multipart/form-data">
+                <form id="profilePictureForm" action="/setProfilePicture" method="post" enctype="multipart/form-data">
                     <button class="btn btn-sm btn-primary" type="button" id="profilePictureInputButton">
                         Profilbild ändern
                     </button>
@@ -35,7 +35,7 @@
         </div>
         <div class="col-md-8">
             <div class="p-3 py-3">
-                <form>
+                <form action="/updateProfile" method="post" class="checkTumIdForm">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="text-right display-4">Mein Profil</h4>
                     </div>
@@ -43,11 +43,13 @@
                     <div class="row mt-2">
                         <div class="col-md-6">
                             <label for="firstname" class="form-label">Vorname</label>
-                            <input type="text" class="form-control" id="firstname" th:value="${person.getFirstname()}">
+                            <input type="text" class="form-control" id="firstname" th:value="${person.getFirstname()}"
+                                   required>
                         </div>
                         <div class="col-md-6">
                             <label for="lastname" class="form-label">Nachname</label>
-                            <input type="text" class="form-control" id="lastname" th:value="${person.getLastname()}">
+                            <input type="text" class="form-control" id="lastname" th:value="${person.getLastname()}"
+                                   required>
                         </div>
                     </div>
 
@@ -55,12 +57,13 @@
                         <div class="col-md-6">
                             <label for="tumId" class="form-label">Tum ID</label>
                             <input type="text" class="form-control" id="tumId" th:value="${person.getTumId()}"
-                                   placeholder="ge42tum">
+                                   placeholder="ge42tum" required data-bs-container="body" data-bs-placement="top"
+                                   data-bs-content="Ungültige Tum ID!" name="tumId">
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">E-Mail</label>
-                            <input type="text" class="form-control" id="email" th:value="${person.getEmail()}"
-                                   placeholder="go42tum@mytum.de">
+                            <input type="email" class="form-control" id="email" th:value="${person.getEmail()}"
+                                   placeholder="go42tum@mytum.de" required>
                         </div>
                     </div>
 
@@ -71,12 +74,8 @@
                                    placeholder="Suchen..."
                                    th:value="${person.getDegreeProgram() != null}?${person.getDegreeProgram().getName()}">
                             <datalist id="datalistOptions">
-                                <!-- TODO studiengänge einfügen -->
-                                <option value="San Francisco">
-                                <option value="New York">
-                                <option value="Seattle">
-                                <option value="Los Angeles">
-                                <option value="Chicago">
+                                <option th:each="degreeProgram: ${degreePrograms}"
+                                        th:value="${degreeProgram.getName()}">
                             </datalist>
                         </div>
                         <div class="col-md-6">
@@ -93,7 +92,7 @@
                     </div>
 
                     <div class="mt-3 text-center">
-                        <button class="btn btn-primary w-100" type="button">Speichern</button>
+                        <button class="btn btn-primary w-100" type="submit">Speichern</button>
                     </div>
                 </form>
             </div>
@@ -162,6 +161,8 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/tumIdCheck.js"></script>
 
 <script>
     let profilePictureForm = $('#profilePictureForm');

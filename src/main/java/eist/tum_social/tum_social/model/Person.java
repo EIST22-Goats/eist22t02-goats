@@ -10,9 +10,11 @@ public class Person {
     private Date birthdate;
     private String tumId;
     private String email;
+    @IgnoreInDatabase
     private List<Person> friends;
+    @IgnoreInDatabase
     private Timetable timetable;
-    private int semester;
+    private int semesterNr;
     private DegreeProgram degreeProgram;
     private String password;
 
@@ -83,12 +85,12 @@ public class Person {
         this.password = password;
     }
 
-    public int getSemester() {
-        return semester;
+    public int getSemesterNr() {
+        return semesterNr;
     }
 
-    public void setSemester(int semester) {
-        this.semester = semester;
+    public void setSemesterNr(int semesterNr) {
+        this.semesterNr = semesterNr;
     }
 
     public DegreeProgram getDegreeProgram() {

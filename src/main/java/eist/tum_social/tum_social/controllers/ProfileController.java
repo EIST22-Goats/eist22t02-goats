@@ -29,14 +29,32 @@ public class ProfileController {
             return "redirect:/anmelden";
         }
 
-        return getProfilePage(model);
+        DatabaseFacade db = new SqliteFacade();
+        Person person = db.getPerson(getCurrentUsersTumId());
+        model.addAttribute("person", person);
+        model.addAttribute("degreePrograms", db.getDegreePrograms());
+
+        return "profil";
     }
 
-    @PostMapping("/profil")
-    public String profilePage(Model model, @RequestParam("profilePicture") MultipartFile profilePicture) {
+    @PostMapping("/updateProfile")
+    public String updateProfile(Person updatedPerson) {
         if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
+
+        DatabaseFacade db = new SqliteFacade();
+        db.updatePerson(updatedPerson);
+
+        return "redirect:/profil";
+    }
+
+    @PostMapping("/setProfilePicture")
+    public String setProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture) {
+        if (!isLoggedIn()) {
+            return "redirect:/anmelden";
+        }
+
         try {
             profilePicture.transferTo(
                     new File(PROFILE_PICTURE_LOCATION + "/" + getCurrentUsersTumId() + ".png"));
@@ -44,7 +62,7 @@ public class ProfileController {
             throw new RuntimeException(e);
         }
 
-        return getProfilePage(model);
+        return "redirect:/profil";
     }
 
     @PostMapping("/deleteProfile")
@@ -65,15 +83,6 @@ public class ProfileController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String getProfilePage(Model model) {
-        DatabaseFacade db = new SqliteFacade();
-        Person person = db.getPerson(getCurrentUsersTumId());
-
-        model.addAttribute("person", person);
-
-        return "profil";
     }
 
 }

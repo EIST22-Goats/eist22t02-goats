@@ -9,6 +9,7 @@ public interface DatabaseFacade {
 
     Person getPerson(String tumId);
     void addPerson(Person person);
+    void updatePerson(Person person);
     void removePerson(String tumId);
 
     List<DegreeProgram> getDegreePrograms();
