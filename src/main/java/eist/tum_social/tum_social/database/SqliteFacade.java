@@ -9,7 +9,6 @@ import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.springframework.validation.ValidationUtils;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -51,7 +50,7 @@ public class SqliteFacade implements DatabaseFacade {
         }
 
         SqliteFacade db = new SqliteFacade();
-        db.updateBean(p);
+        db.insertOrUpdate(p);
     }
 
     public Person getPerson(String tumId) {
@@ -113,16 +112,17 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    private void updateBean(Object bean) {
+    private void insertOrUpdate(Object bean) {
         try {
             DatabaseEntity databaseAnnotation = bean.getClass().getAnnotation(DatabaseEntity.class);
             if (databaseAnnotation == null) {
-                throw new RuntimeException("wtf this should never happen lul");
+                throw new RuntimeException("Add @DatabaseEntity Annotation to your Bean, but lul u stupid");
             }
             String tableName = databaseAnnotation.tableName();
 
             String whereCondition = null;
             StringBuilder parameters = new StringBuilder();
+            StringBuilder values = new StringBuilder();
 
             for (Field field : bean.getClass().getDeclaredFields()) {
                 String name = field.getName();
@@ -139,25 +139,30 @@ public class SqliteFacade implements DatabaseFacade {
                             name = foreignKey.columnName();
                         }
 
-                        parameters.append(name).append("=").append(value).append(",");
+                        parameters.append(name).append(",");
+                        values.append(value).append(",");
                     }
                 }
             }
 
             parameters.deleteCharAt(parameters.length() - 1);
+            values.deleteCharAt(values.length() - 1);
 
-            if (whereCondition != null) {
-                String sqlQuery = "UPDATE " + tableName + " SET " + parameters + " WHERE " + whereCondition;
-
-                System.out.println(sqlQuery);
-                try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-                    PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-                    stmt.executeUpdate();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+            if (whereCondition == null) {
+                throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
             }
+
+            executeSql("INSERT OR REPLACE INTO " + tableName + " (" + parameters + ") VALUES (" + values + ")");
         } catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void executeSql(String sql) {
+        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
