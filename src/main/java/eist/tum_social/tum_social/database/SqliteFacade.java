@@ -1,34 +1,33 @@
 package eist.tum_social.tum_social.database;
 
-import eist.tum_social.tum_social.model.DatabaseEntity;
+import eist.tum_social.tum_social.database.util.ColumnMapping;
+import eist.tum_social.tum_social.database.util.DatabaseEntity;
+import eist.tum_social.tum_social.database.util.IgnoreInDatabase;
+import eist.tum_social.tum_social.database.util.PrimaryKey;
 import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.IgnoreInDatabase;
 import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.springframework.validation.ValidationUtils;
 import org.sqlite.SQLiteDataSource;
 
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class SqliteFacade implements DatabaseFacade {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
     private static final String URL = "jdbc:sqlite:tum_social.db";
     private final SQLiteDataSource dataSource;
 
@@ -39,15 +38,20 @@ public class SqliteFacade implements DatabaseFacade {
 
     public static void main(String[] args) {
         Person p = new Person();
-        p.setFirstname("Peter");
-        p.setLastname("One");
+        p.setId(4);
+        p.setFirstname("Kilian");
+        p.setLastname("Northoff");
         p.setTumId("ge95bit");
         p.setEmail("some@mail.com");
         p.setPassword("test");
-        p.setBirthdate(new java.util.Date());
+        try {
+            p.setBirthdate(DATE_FORMAT.parse("28-12-2002"));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         SqliteFacade db = new SqliteFacade();
-        db.updateBean("Persons", p, "tumId='" + p.getTumId() + "'");
+        db.updateBean(p);
     }
 
     public Person getPerson(String tumId) {
@@ -109,53 +113,53 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    private void updateBean(String database, Object bean, String whereCondition) {
+    private void updateBean(Object bean) {
         try {
-            BeanInfo info = Introspector.getBeanInfo(bean.getClass());
-            PropertyDescriptor[] pds = info.getPropertyDescriptors();
+            DatabaseEntity databaseAnnotation = bean.getClass().getAnnotation(DatabaseEntity.class);
+            if (databaseAnnotation == null) {
+                throw new RuntimeException("wtf this should never happen lul");
+            }
+            String tableName = databaseAnnotation.tableName();
 
+            String whereCondition = null;
             StringBuilder parameters = new StringBuilder();
 
-            for (var it : pds) {
-                String name = it.getName();
-                if (!Objects.equals(name, "class")) {
-                    if (!hasAnnotation(bean, name, IgnoreInDatabase.class)) {
-                        Method readMethod = it.getReadMethod();
-                        Object value = readMethod.invoke(bean);
-                        if (DatabaseEntity.class.isAssignableFrom(readMethod.getReturnType())) {
-                            name += "Id";
+            for (Field field : bean.getClass().getDeclaredFields()) {
+                String name = field.getName();
+
+                if (!name.equals("class")) {
+                    if (field.getAnnotation(IgnoreInDatabase.class) == null) {
+                        Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
+                        String value = toSqlString(obj);
+
+                        ColumnMapping foreignKey;
+                        if (field.getAnnotation(PrimaryKey.class) != null) {
+                            whereCondition = name + "=" + value;
+                        } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
+                            name = foreignKey.columnName();
                         }
-                        parameters.append(name).append("=").append(toSqlString(value)).append(",");
+
+                        parameters.append(name).append("=").append(value).append(",");
                     }
                 }
             }
+
             parameters.deleteCharAt(parameters.length() - 1);
 
-            String sqlQuery = "UPDATE " + database + " SET " + parameters + " WHERE " + whereCondition;
+            if (whereCondition != null) {
+                String sqlQuery = "UPDATE " + tableName + " SET " + parameters + " WHERE " + whereCondition;
 
-            System.out.println(sqlQuery);
-            try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-                PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-                stmt.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println(sqlQuery);
+                try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
+                    PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+                    stmt.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static boolean hasAnnotation(Object bean, String attribute, Class<?> annotation) throws NoSuchFieldException {
-        Field classMemberField = bean.getClass().getDeclaredField(attribute);
-
-        Annotation[] annotations = classMemberField.getAnnotations();
-
-        for (Annotation ann : annotations) {
-            if (ann.annotationType() == annotation) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public String toSqlString(Object object) {
@@ -165,8 +169,6 @@ public class SqliteFacade implements DatabaseFacade {
             return "'" + DATE_FORMAT.format(object) + "'";
         } else if (object instanceof String) {
             return "'" + object + "'";
-        } else if (object instanceof DatabaseEntity) {
-            return ((DatabaseEntity) object).getId() + "";
         } else {
             return object.toString();
         }

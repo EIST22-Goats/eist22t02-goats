@@ -1,6 +1,6 @@
 package eist.tum_social.tum_social.model;
 
-public class DegreeProgram implements DatabaseEntity {
+public class DegreeProgram {
 
     private int id;
     private String name;

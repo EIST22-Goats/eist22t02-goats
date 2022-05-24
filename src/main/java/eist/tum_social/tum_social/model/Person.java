@@ -1,10 +1,18 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.database.util.DatabaseEntity;
+import eist.tum_social.tum_social.database.util.ColumnMapping;
+import eist.tum_social.tum_social.database.util.IgnoreInDatabase;
+import eist.tum_social.tum_social.database.util.PrimaryKey;
+
 import java.util.Date;
 import java.util.List;
 
+@DatabaseEntity(tableName = "Persons")
 public class Person {
 
+    @PrimaryKey
+    private int id;
     private String firstname;
     private String lastname;
     private Date birthdate;
@@ -15,6 +23,7 @@ public class Person {
     @IgnoreInDatabase
     private Timetable timetable;
     private int semesterNr;
+    @ColumnMapping(columnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
     private String password;
 
@@ -99,5 +108,13 @@ public class Person {
 
     public void setDegreeProgram(DegreeProgram degreeProgram) {
         this.degreeProgram = degreeProgram;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
