@@ -42,43 +42,53 @@
 
                     <div class="row mt-2">
                         <div class="col-md-6">
-                            <label class="labels">Vorname</label>
-                            <input type="text" class="form-control" th:value="${person.getFirstname()}">
+                            <label for="firstname" class="form-label">Vorname</label>
+                            <input type="text" class="form-control" id="firstname" th:value="${person.getFirstname()}">
                         </div>
                         <div class="col-md-6">
-                            <label class="labels">Nachname</label>
-                            <input type="text" class="form-control" th:value="${person.getLastname()}">
+                            <label for="lastname" class="form-label">Nachname</label>
+                            <input type="text" class="form-control" id="lastname" th:value="${person.getLastname()}">
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="labels">Tum ID</label>
-                            <input type="text" class="form-control" th:value="${person.getTumId()}"
+                            <label for="tumId" class="form-label">Tum ID</label>
+                            <input type="text" class="form-control" id="tumId" th:value="${person.getTumId()}"
                                    placeholder="ge42tum">
                         </div>
                         <div class="col-md-6">
-                            <label class="labels">E-Mail</label>
-                            <input type="text" class="form-control" th:value="${person.getEmail()}"
+                            <label for="email" class="form-label">E-Mail</label>
+                            <input type="text" class="form-control" id="email" th:value="${person.getEmail()}"
                                    placeholder="go42tum@mytum.de">
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="labels">Matrikelnummer</label>
-                            <input type="text" class="form-control" placeholder="123456">
+                            <label for="degreeProgram" class="form-label">Studiengang</label>
+                            <input class="form-control" list="datalistOptions" id="degreeProgram"
+                                   placeholder="Suchen..."
+                                   th:value="${person.getDegreeProgram() != null}?${person.getDegreeProgram().getName()}">
+                            <datalist id="datalistOptions">
+                                <!-- TODO studiengänge einfügen -->
+                                <option value="San Francisco">
+                                <option value="New York">
+                                <option value="Seattle">
+                                <option value="Los Angeles">
+                                <option value="Chicago">
+                            </datalist>
                         </div>
                         <div class="col-md-6">
-                            <label class="labels">Semester</label>
-                            <input type="number" class="form-control">
+                            <label for="semesterNr" class="form-label">Semester</label>
+                            <input type="number" id="semesterNr" class="form-control">
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <label for="date">Geburtsdatum</label>
-                            <input type="date" id="date" class="form-control">
+                            <label for="birthdate">Geburtsdatum</label>
+                            <input type="date" id="birthdate" class="form-control">
                         </div>
                     </div>
 

@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.database;
 
+import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 public class SqliteFacade implements DatabaseFacade {
@@ -71,6 +73,18 @@ public class SqliteFacade implements DatabaseFacade {
             Connection conn = DriverManager.getConnection(dataSource.getUrl());
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM Persons WHERE tumId='" + tumId + "'");
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<DegreeProgram> getDegreePrograms() {
+        QueryRunner run = new QueryRunner(dataSource);
+
+        ResultSetHandler<List<DegreeProgram>> h = new BeanListHandler<>(DegreeProgram.class);
+        try {
+            return run.query("SELECT * FROM DegreePrograms", h);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -12,6 +12,8 @@ public class Person {
     private String email;
     private List<Person> friends;
     private Timetable timetable;
+    private int semester;
+    private DegreeProgram degreeProgram;
     private String password;
 
     public Person() {
@@ -79,5 +81,21 @@ public class Person {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public void setSemester(int semester) {
+        this.semester = semester;
+    }
+
+    public DegreeProgram getDegreeProgram() {
+        return degreeProgram;
+    }
+
+    public void setDegreeProgram(DegreeProgram degreeProgram) {
+        this.degreeProgram = degreeProgram;
     }
 }
