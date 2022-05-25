@@ -89,6 +89,10 @@ public class AuthenticationController {
         }
     }
 
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
     public Status registerPerson(Person person) {
         if (isTumIDInvalid(person.getTumId())) {
             return ERROR("Tum ID ist ungültig");
@@ -99,7 +103,7 @@ public class AuthenticationController {
             return ERROR("Account für " + person.getTumId() + " existiert bereits");
         }
 
-        String hashedPassword = BCrypt.hashpw(person.getPassword(), BCrypt.gensalt());
+        String hashedPassword = hashPassword(person.getPassword());
         person.setPassword(hashedPassword);
 
         db.update(person);
@@ -126,11 +130,7 @@ public class AuthenticationController {
 
         DatabaseFacade db = new SqliteFacade();
         Optional<Person> person = db.select(Person.class, "tumId='" + tumId + "'", false).stream().findFirst();
-        if (person.isPresent()) {
-            return BCrypt.checkpw(password, person.get().getPassword());
-        } else {
-            return false;
-        }
+        return person.filter(value -> BCrypt.checkpw(password, value.getPassword())).isPresent();
     }
 
     public static boolean isTumIDInvalid(String tumId) {

@@ -1,12 +1,7 @@
 package eist.tum_social.tum_social.database;
 
 import eist.tum_social.tum_social.database.util.*;
-import eist.tum_social.tum_social.model.DegreeLevel;
-import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -17,12 +12,13 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 public class SqliteFacade implements DatabaseFacade {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String URL = "jdbc:sqlite:tum_social.db";
     private final SQLiteDataSource dataSource;
 
@@ -65,7 +61,7 @@ public class SqliteFacade implements DatabaseFacade {
                 ret.add(createObject(clazz, res, recursive));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e + " SQL: " + sql);
         }
 
         return ret;
@@ -82,17 +78,27 @@ public class SqliteFacade implements DatabaseFacade {
             String name = field.getName();
 
             if (!name.equals("class") && field.getAnnotation(IgnoreInDatabase.class) == null) {
-                String value = getFieldValue(field, bean);
+                Object value = getFieldValue(field, bean);
 
-                ColumnMapping foreignKey;
-                if (field.getAnnotation(PrimaryKey.class) != null) {
-                    whereCondition = name + "=" + value;
-                } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
-                    name = foreignKey.columnName();
+                if (value != null) {
+                    ColumnMapping foreignKey;
+                    if (field.getAnnotation(PrimaryKey.class) != null) {
+                        whereCondition = name + "=" + toSqlString(value);
+                    } else {
+                        if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
+                            name = foreignKey.columnName();
+                            try {
+                                value = getFieldValue(field.getType().getDeclaredField(foreignKey.foreignKey()), value);
+                            } catch (NoSuchFieldException e) {
+                                throw new RuntimeException("Foreign key " + foreignKey.foreignKey() + " in object " + value
+                                        + " not found");
+                            }
+                        }
+
+                        parameters.append(name).append(",");
+                        values.append(toSqlString(value)).append(",");
+                    }
                 }
-
-                parameters.append(name).append(",");
-                values.append(value).append(",");
             }
         }
 
@@ -118,7 +124,8 @@ public class SqliteFacade implements DatabaseFacade {
             }
 
             return obj;
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
@@ -153,10 +160,9 @@ public class SqliteFacade implements DatabaseFacade {
         return value;
     }
 
-    private String getFieldValue(Field field, Object bean) {
+    private Object getFieldValue(Field field, Object bean) {
         try {
-            Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
-            return toSqlString(obj);
+            return new PropertyDescriptor(field.getName(), bean.getClass()).getReadMethod().invoke(bean);
         } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
             throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
         }
@@ -189,7 +195,7 @@ public class SqliteFacade implements DatabaseFacade {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e + " SQL: " + sql);
         }
     }
 

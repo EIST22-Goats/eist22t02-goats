@@ -1,5 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
+import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.database.DatabaseFacade;
 import eist.tum_social.tum_social.database.SqliteFacade;
 import eist.tum_social.tum_social.model.DegreeProgram;
@@ -31,7 +33,7 @@ public class ProfileController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", false).get(0);
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
         model.addAttribute("person", person);
         model.addAttribute("degreePrograms", db.select(DegreeProgram.class));
 
@@ -39,13 +41,15 @@ public class ProfileController {
     }
 
     @PostMapping("/updateProfile")
-    public String updateProfile(Person updatedPerson) {
+    public String updateProfile(UpdateProfileForm form) {
         if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
 
-        DatabaseFacade db = new SqliteFacade();
-        db.update(updatedPerson);
+        SqliteFacade db = new SqliteFacade();
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        form.apply(person);
+        db.update(person);
 
         return "redirect:/profil";
     }
@@ -73,6 +77,18 @@ public class ProfileController {
         }
         deleteProfile(tumId);
         return "redirect:/anmelden";
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(ChangePasswordForm form) {
+        if (!isLoggedIn()) {
+            return "redirect:/anmelden";
+        }
+        SqliteFacade db = new SqliteFacade();
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        form.apply(person);
+        db.update(person);
+        return "redirect:/profil";
     }
 
     private void deleteProfile(String tumId) {
