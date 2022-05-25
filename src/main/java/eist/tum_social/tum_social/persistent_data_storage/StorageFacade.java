@@ -17,6 +17,7 @@ public interface StorageFacade {
     DegreeProgram getDegreeProgram(String degreeProgramName);
     List<DegreeProgram> getDegreePrograms();
 
+    void updateCourse(Course course);
     Course getCourse(int courseId);
     List<Course> getCourses();
 

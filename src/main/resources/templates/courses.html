@@ -16,16 +16,54 @@
 <div class="container">
     <h4 class="text-right display-4 mb-0">Kurse</h4>
 
-    <form class="row row-cols-lg-auto mb-3 justify-content-between">
+    <div class="row row-cols-lg-auto mb-3 justify-content-between">
         <div class="col-lg-3 mt-3">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Kurse suchen" name="searchText">
             </div>
         </div>
         <div class="col-lg-3 mt-3">
-            <button type="button" class="btn btn-primary float-end">Neuen Kurs erstellen</button>
+            <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal"
+                    data-bs-target="#addCourseModal">
+                Neuen Kurs erstellen
+            </button>
         </div>
-    </form>
+
+        <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/createCourse" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCourseModalLabel">Kurs erstellen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nameLabel" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="nameLabel" name="name"
+                                       placeholder="z.B. Einführung in die Softwaretechnik" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="acronymLabel" class="form-label">Acronym</label>
+                                <input type="text" class="form-control" id="acronymLabel" name="acronym"
+                                       placeholder="z.B. EIST" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descriptionLabel" class="form-label">Beschreibung</label>
+                                <textarea class="form-control" id="descriptionLabel" rows="3"
+                                          name="description" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <h4 class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
 

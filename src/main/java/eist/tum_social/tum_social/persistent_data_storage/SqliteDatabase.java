@@ -150,9 +150,8 @@ public class SqliteDatabase implements Database {
                         bridgingTable.ownForeignColumnName(),
                         row.getInt(bridgingTable.ownColumnName())
                 );
-                System.out.println(">>>>>"+sql);
                 ResultSet res = conn.createStatement().executeQuery(sql);
-                ArrayList<Object> ret = new ArrayList();
+                ArrayList<Object> ret = new ArrayList<>();
                 while (res.next()) {
                     ret.add(createObject(listClass, res, false, conn));
                 }

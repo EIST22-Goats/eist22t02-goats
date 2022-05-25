@@ -1,14 +1,14 @@
 package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.model.Course;
-import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.persistent_data_storage.Database;
+import eist.tum_social.tum_social.persistent_data_storage.SqliteDatabase;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -36,5 +36,12 @@ public class CourseController {
     public String coursePage(Model model, @PathVariable int courseId) {
         addPersonToModel(model);
         return "redirect:/";
+    }
+
+    @PostMapping("/createCourse")
+    public String createPost(Course course) {
+        new Storage().updateCourse(course);
+
+        return "redirect:/courses";
     }
 }
