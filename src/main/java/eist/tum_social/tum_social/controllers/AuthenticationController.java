@@ -1,7 +1,8 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.data_storage.StorageFacade;
-import eist.tum_social.tum_social.data_storage.Storage;
+import eist.tum_social.tum_social.controllers.util.Status;
+import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
+import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
@@ -17,31 +18,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static eist.tum_social.tum_social.controllers.ProfileController.PROFILE_PICTURE_LOCATION;
-import static eist.tum_social.tum_social.controllers.Status.ERROR;
-import static eist.tum_social.tum_social.controllers.Status.SUCCESS;
+import static eist.tum_social.tum_social.controllers.util.Status.ERROR;
+import static eist.tum_social.tum_social.controllers.util.Status.SUCCESS;
 
 @Controller
 public class AuthenticationController {
+
     public static final String TUM_ID_REGEX =
             "^[^aeiouAEIOU\\d\\W][aeiou]\\d\\d[^aeiouAEIOU\\d\\W][aeiou][^aeiouAEIOU\\d\\W]$";
 
     private static final String LOGGED_IN_TOKEN = "loggedIn";
 
-    @GetMapping("/anmelden")
+    @GetMapping("/login")
     public String loginPage() {
         if (isLoggedIn()) {
             return "redirect:/";
         } else {
-            return "anmelden";
+            return "login";
         }
     }
 
-    @PostMapping("/anmelden")
+    @PostMapping("/login")
     public String loginPage(Model model, Person person) {
         if (isLoggedIn()) {
             return "redirect:/";
@@ -52,26 +53,25 @@ public class AuthenticationController {
             return "redirect:/";
         } else {
             model.addAttribute("wrongInput", true);
-            return "anmelden";
+            return "login";
         }
     }
 
-    @GetMapping("/abmelden")
+    @GetMapping("/logout")
     public String logoutPage() {
         logout();
-        return "redirect:/anmelden";
+        return "redirect:/login";
     }
 
-    @GetMapping("/registrieren")
+    @GetMapping("/register")
     public String registrationPage() {
         if (isLoggedIn()) {
             return "redirect:/";
-        } else {
-            return "registrieren";
         }
+        return "register";
     }
 
-    @PostMapping("/registrieren")
+    @PostMapping("/register")
     public String registrationPage(Model model, Person person) {
         if (isLoggedIn()) {
             return "redirect:/";
@@ -84,7 +84,7 @@ public class AuthenticationController {
         } else {
             model.addAttribute("registrationFailed", true);
             model.addAttribute("errorMessage", status.getErrorMessage());
-            return "registrieren";
+            return "register";
         }
     }
 
@@ -92,7 +92,7 @@ public class AuthenticationController {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    public Status registerPerson(Person person) {
+    private Status registerPerson(Person person) {
         if (isTumIDInvalid(person.getTumId())) {
             return ERROR("Tum ID ist ungültig");
         }

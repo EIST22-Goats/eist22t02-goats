@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.data_storage;
+package eist.tum_social.tum_social.persistent_data_storage;
 
 import java.util.List;
 

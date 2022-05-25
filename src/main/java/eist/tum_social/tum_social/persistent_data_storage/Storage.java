@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.data_storage;
+package eist.tum_social.tum_social.persistent_data_storage;
 
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;

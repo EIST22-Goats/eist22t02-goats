@@ -1,8 +1,8 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.data_storage.util.ColumnMapping;
-import eist.tum_social.tum_social.data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.data_storage.util.PrimaryKey;
+import eist.tum_social.tum_social.persistent_data_storage.util.ColumnMapping;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
 
 @DatabaseEntity(tableName = "DegreePrograms")
 public class DegreeProgram {

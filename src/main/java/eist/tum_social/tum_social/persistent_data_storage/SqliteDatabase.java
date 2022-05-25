@@ -1,6 +1,6 @@
-package eist.tum_social.tum_social.data_storage;
+package eist.tum_social.tum_social.persistent_data_storage;
 
-import eist.tum_social.tum_social.data_storage.util.*;
+import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static eist.tum_social.tum_social.data_storage.Storage.DATE_FORMAT;
+import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
 
 public class SqliteDatabase implements Database {
 
