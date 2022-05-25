@@ -1,10 +1,10 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
 import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
 
-import java.util.Date;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Courses")
@@ -15,6 +15,13 @@ public class Course {
     private String name;
     private String acronym;
     private String description;
+    @BridgingTable(
+            tableName = "CourseParticipants",
+            ownColumnName = "id",
+            ownForeignColumnName = "courseId",
+            otherColumnName = "id",
+            otherForeignColumnName = "personId")
+    private List<Person> participants;
     @IgnoreInDatabase
     private List<Appointment> appointments;
     @IgnoreInDatabase
@@ -50,6 +57,14 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Person> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<Person> participants) {
+        this.participants = participants;
     }
 
     public List<Appointment> getAppointments() {

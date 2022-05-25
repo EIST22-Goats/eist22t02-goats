@@ -1,9 +1,6 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.ColumnMapping;
-import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
-import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
+import eist.tum_social.tum_social.persistent_data_storage.util.*;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +15,13 @@ public class Person {
     private Date birthdate;
     private String tumId;
     private String email;
+    @BridgingTable(
+            tableName = "CourseParticipants",
+            ownColumnName = "id",
+            ownForeignColumnName = "personId",
+            otherColumnName = "id",
+            otherForeignColumnName = "courseId")
+    private List<Course> courses;
     @IgnoreInDatabase
     private List<Person> friends;
     @IgnoreInDatabase
@@ -70,6 +74,14 @@ public class Person {
         this.email = email;
     }
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
     public List<Person> getFriends() {
         return friends;
     }
@@ -117,4 +129,5 @@ public class Person {
     public void setId(int id) {
         this.id = id;
     }
+
 }

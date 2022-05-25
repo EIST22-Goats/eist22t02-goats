@@ -1,6 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.model.Course;
+import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.Database;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
@@ -25,10 +26,8 @@ public class CourseController {
         addPersonToModel(model);
 
         StorageFacade db = new Storage();
-
         List<Course> courses = db.getCourses();
-
-        model.addAttribute(courses);
+        model.addAttribute("coursesList", courses);
 
         return "courses";
     }
