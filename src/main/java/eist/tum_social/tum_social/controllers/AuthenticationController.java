@@ -126,11 +126,7 @@ public class AuthenticationController {
 
         DatabaseFacade db = new SqliteFacade();
         Optional<Person> person = db.select(Person.class, "tumId='" + tumId + "'", false).stream().findFirst();
-        if (person.isPresent()) {
-            return BCrypt.checkpw(password, person.get().getPassword());
-        } else {
-            return false;
-        }
+        return person.filter(value -> BCrypt.checkpw(password, value.getPassword())).isPresent();
     }
 
     public static boolean isTumIDInvalid(String tumId) {

@@ -44,8 +44,9 @@ public class ProfileController {
             return "redirect:/anmelden";
         }
 
+        System.out.println(updatedPerson);
         DatabaseFacade db = new SqliteFacade();
-        db.update(updatedPerson);
+        // db.update(updatedPerson);
 
         return "redirect:/profil";
     }
