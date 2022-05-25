@@ -94,7 +94,7 @@
 
             <div class="p-3 py-3">
                 <p class="display-6">Passwort ändern</p>
-                <form action="/changePassword" method="post">
+                <form action="/changePassword" method="post" class="checkSecondPasswordForm">
                     <div class="row align-items-center">
                         <div class="col-6">
                             <label for="password" class="form-label">Passwort</label>
@@ -156,6 +156,8 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/checkSecondPassword.js"></script>
 
 <script>
     let profilePictureForm = $('#profilePictureForm');

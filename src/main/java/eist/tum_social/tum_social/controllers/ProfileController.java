@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.database.DatabaseFacade;
 import eist.tum_social.tum_social.database.SqliteFacade;
@@ -18,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
-import static eist.tum_social.tum_social.controllers.Status.SUCCESS;
 
 @Controller
 public class ProfileController {
@@ -48,7 +48,7 @@ public class ProfileController {
 
         SqliteFacade db = new SqliteFacade();
         Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
-        form.createPerson(person);
+        form.apply(person);
         db.update(person);
 
         return "redirect:/profil";
@@ -77,6 +77,18 @@ public class ProfileController {
         }
         deleteProfile(tumId);
         return "redirect:/anmelden";
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(ChangePasswordForm form) {
+        if (!isLoggedIn()) {
+            return "redirect:/anmelden";
+        }
+        SqliteFacade db = new SqliteFacade();
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        form.apply(person);
+        db.update(person);
+        return "redirect:/profil";
     }
 
     private void deleteProfile(String tumId) {

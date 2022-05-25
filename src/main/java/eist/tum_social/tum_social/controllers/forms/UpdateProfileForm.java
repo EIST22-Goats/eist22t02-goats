@@ -1,17 +1,13 @@
 package eist.tum_social.tum_social.controllers.forms;
 
-import eist.tum_social.tum_social.controllers.Status;
 import eist.tum_social.tum_social.database.DatabaseFacade;
 import eist.tum_social.tum_social.database.SqliteFacade;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
-import static eist.tum_social.tum_social.controllers.Status.ERROR;
-import static eist.tum_social.tum_social.controllers.Status.SUCCESS;
 import static eist.tum_social.tum_social.database.SqliteFacade.DATE_FORMAT;
 
 public class UpdateProfileForm {
@@ -70,7 +66,7 @@ public class UpdateProfileForm {
         this.degreeProgramName = degreeProgramName;
     }
 
-    public void createPerson(Person person) {
+    public void apply(Person person) {
         System.out.println(birthdate);
         person.setFirstname(firstname);
         person.setLastname(lastname);
