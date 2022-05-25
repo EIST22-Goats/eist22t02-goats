@@ -1,6 +1,7 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
 
+import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 
@@ -15,5 +16,8 @@ public interface StorageFacade {
 
     DegreeProgram getDegreeProgram(String degreeProgramName);
     List<DegreeProgram> getDegreePrograms();
+
+    Course getCourse(int courseId);
+    List<Course> getCourses();
 
 }
