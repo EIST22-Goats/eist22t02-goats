@@ -35,7 +35,7 @@
         </div>
         <div class="col-md-8">
             <div class="p-3 py-3">
-                <form action="/updateProfile" method="post" class="checkTumIdForm">
+                <form action="/updateProfile" method="post">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="text-right display-4">Mein Profil</h4>
                     </div>
@@ -43,26 +43,20 @@
                     <div class="row mt-2">
                         <div class="col-md-6">
                             <label for="firstname" class="form-label">Vorname</label>
-                            <input type="text" class="form-control" id="firstname" th:value="${person.getFirstname()}"
+                            <input name="firstname" type="text" class="form-control" id="firstname" th:value="${person.getFirstname()}"
                                    required>
                         </div>
                         <div class="col-md-6">
                             <label for="lastname" class="form-label">Nachname</label>
-                            <input type="text" class="form-control" id="lastname" th:value="${person.getLastname()}"
+                            <input name="lastname" type="text" class="form-control" id="lastname" th:value="${person.getLastname()}"
                                    required>
                         </div>
                     </div>
 
                     <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label for="tumId" class="form-label">Tum ID</label>
-                            <input type="text" class="form-control" id="tumId" th:value="${person.getTumId()}"
-                                   placeholder="ge42tum" required data-bs-container="body" data-bs-placement="top"
-                                   data-bs-content="Ungültige Tum ID!" name="tumId">
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="email" class="form-label">E-Mail</label>
-                            <input type="email" class="form-control" id="email" th:value="${person.getEmail()}"
+                            <input name="email" type="email" class="form-control" id="email" th:value="${person.getEmail()}"
                                    placeholder="go42tum@mytum.de" required>
                         </div>
                     </div>
@@ -70,24 +64,25 @@
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label for="degreeProgram" class="form-label">Studiengang</label>
-                            <input class="form-control" list="datalistOptions" id="degreeProgram"
+                            <input name="degreeProgramName" class="form-control" list="datalistOptions" id="degreeProgram"
                                    placeholder="Suchen..."
                                    th:value="${person.getDegreeProgram() != null}?${person.getDegreeProgram().getName()}">
                             <datalist id="datalistOptions">
-                                <option th:each="degreeProgram: ${degreePrograms}"
-                                        th:value="${degreeProgram.getName()}">
+                                <option th:each="degreeProgram: ${degreePrograms}" th:value="${degreeProgram.getName()}">
                             </datalist>
                         </div>
                         <div class="col-md-6">
                             <label for="semesterNr" class="form-label">Semester</label>
-                            <input type="number" id="semesterNr" class="form-control">
+                            <input name="semesterNr" type="number" id="semesterNr" class="form-control"
+                                   th:value="${person.getSemesterNr()}" required min="1" max="20">
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <label for="birthdate">Geburtsdatum</label>
-                            <input type="date" id="birthdate" class="form-control">
+                            <label for="birthdate" class="form-label">Geburtsdatum</label>
+                            <input name="birthdate" type="date" id="birthdate" class="form-control"
+                                   th:value="${person.getBirthdate() != null}?${#dates.format(person.getBirthdate(), 'yyyy-MM-dd')}">
                         </div>
                     </div>
 
@@ -161,8 +156,6 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
-
-<script src="/js/tumIdCheck.js"></script>
 
 <script>
     let profilePictureForm = $('#profilePictureForm');

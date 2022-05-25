@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.database.DatabaseFacade;
 import eist.tum_social.tum_social.database.SqliteFacade;
 import eist.tum_social.tum_social.model.DegreeProgram;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
+import static eist.tum_social.tum_social.controllers.Status.SUCCESS;
 
 @Controller
 public class ProfileController {
@@ -31,7 +33,7 @@ public class ProfileController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", false).get(0);
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
         model.addAttribute("person", person);
         model.addAttribute("degreePrograms", db.select(DegreeProgram.class));
 
@@ -39,14 +41,15 @@ public class ProfileController {
     }
 
     @PostMapping("/updateProfile")
-    public String updateProfile(Person updatedPerson) {
+    public String updateProfile(UpdateProfileForm form) {
         if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
 
-        System.out.println(updatedPerson);
-        DatabaseFacade db = new SqliteFacade();
-        // db.update(updatedPerson);
+        SqliteFacade db = new SqliteFacade();
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        form.createPerson(person);
+        db.update(person);
 
         return "redirect:/profil";
     }
