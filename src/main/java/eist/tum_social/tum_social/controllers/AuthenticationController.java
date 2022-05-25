@@ -6,6 +6,7 @@ import eist.tum_social.tum_social.model.Person;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,14 +95,14 @@ public class AuthenticationController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        if (db.getPerson(person.getTumId()) != null) {
+        if (!db.select(Person.class, "tumId='" + person.getTumId() + "'", false).isEmpty()) {
             return ERROR("Account für " + person.getTumId() + " existiert bereits");
         }
 
         String hashedPassword = BCrypt.hashpw(person.getPassword(), BCrypt.gensalt());
         person.setPassword(hashedPassword);
 
-        db.addPerson(person);
+        db.update(person);
 
         createDefaultProfilePicture(person.getTumId());
 
@@ -123,9 +125,9 @@ public class AuthenticationController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        Person person = db.getPerson(tumId);
-        if (person != null) {
-            return BCrypt.checkpw(password, person.getPassword());
+        Optional<Person> person = db.select(Person.class, "tumId='" + tumId + "'", false).stream().findFirst();
+        if (person.isPresent()) {
+            return BCrypt.checkpw(password, person.get().getPassword());
         } else {
             return false;
         }

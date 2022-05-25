@@ -39,60 +39,11 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    public Person getPerson(String tumId) {
-        QueryRunner run = new QueryRunner(dataSource);
-
-        ResultSetHandler<List<Person>> h = new BeanListHandler<>(Person.class);
-        try {
-            List<Person> persons = run.query("SELECT * FROM Persons WHERE tumId='" + tumId + "'", h);
-            if (!persons.isEmpty()) {
-                return persons.get(0);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
-    }
-
-    @Override
-    public void addPerson(Person person) {
-        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE Persons (firstname, lastname, birthdate, tumId, email, password) VALUES (" + toSqlString(person.getFirstname()) + ", " + toSqlString(person.getLastname()) + ", " + toSqlString(person.getBirthdate()) + ", " + toSqlString(person.getTumId()) + ", " + toSqlString(person.getEmail()) + ", " + toSqlString(person.getPassword()) + ")");
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void removePerson(String tumId) {
         try {
             Connection conn = DriverManager.getConnection(dataSource.getUrl());
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM Persons WHERE tumId='" + tumId + "'");
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void updatePerson(Person person) {
-        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO Persons (firstname, lastname, birthdate, tumId, email, password) VALUES (" + toSqlString(person.getFirstname()) + ", " + toSqlString(person.getLastname()) + ", " + toSqlString(person.getBirthdate()) + ", " + toSqlString(person.getTumId()) + ", " + toSqlString(person.getEmail()) + ", " + toSqlString(person.getPassword()) + ")");
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<DegreeProgram> getDegreePrograms() {
-        QueryRunner run = new QueryRunner(dataSource);
-
-        ResultSetHandler<List<DegreeProgram>> h = new BeanListHandler<>(DegreeProgram.class);
-        try {
-            return run.query("SELECT * FROM DegreePrograms", h);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -120,7 +71,7 @@ public class SqliteFacade implements DatabaseFacade {
         return ret;
     }
 
-    private void update(Object bean) {
+    public void update(Object bean) {
         String tableName = getTableName(bean);
 
         String whereCondition = null;

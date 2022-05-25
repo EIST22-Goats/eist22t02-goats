@@ -7,11 +7,9 @@ import java.util.List;
 
 public interface DatabaseFacade {
 
-    Person getPerson(String tumId);
-    void addPerson(Person person);
-    void updatePerson(Person person);
-    void removePerson(String tumId);
+    void update(Object bean);
 
-    List<DegreeProgram> getDegreePrograms();
+    <T> List<T> select(Class<T> clazz);
+    <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive);
 
 }
