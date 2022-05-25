@@ -23,7 +23,7 @@ public class Person {
     @IgnoreInDatabase
     private Timetable timetable;
     private int semesterNr;
-    @ColumnMapping(columnName = "degreeProgramId", isForeignKey = true)
+    @ColumnMapping(columnName = "degreeProgramId", isForeignKey = true, foreignKey = "id")
     private DegreeProgram degreeProgram;
     private String password;
 

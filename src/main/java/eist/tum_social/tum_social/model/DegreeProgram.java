@@ -11,7 +11,7 @@ public class DegreeProgram {
     private int id;
     private String name;
     private String description;
-    @ColumnMapping(columnName = "degreeLevelId", isForeignKey = true)
+    @ColumnMapping(columnName = "degreeLevelId", isForeignKey = true, foreignKey = "id")
     private DegreeLevel degreeLevel;
 
     public int getId() {

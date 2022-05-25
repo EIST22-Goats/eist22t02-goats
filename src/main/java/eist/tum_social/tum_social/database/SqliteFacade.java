@@ -33,10 +33,9 @@ public class SqliteFacade implements DatabaseFacade {
 
     public static void main(String[] args) {
         SqliteFacade db = new SqliteFacade();
-        var res = db.select(DegreeProgram.class);
+        var res = db.select(Person.class);
         for (var it : res) {
-            // System.out.println(it.getFirstname() + " " + it.getLastname());
-            System.out.println(it.getName());
+            System.out.println(it.getFirstname() + " " + it.getLastname() + " " + it.getDegreeProgram().getDegreeLevel().getName());
         }
     }
 
@@ -111,54 +110,14 @@ public class SqliteFacade implements DatabaseFacade {
 
         try (Connection conn = dataSource.getConnection()) {
             ResultSet res = conn.createStatement().executeQuery(sql);
-
             while (res.next()) {
-                T obj = clazz.getDeclaredConstructor().newInstance();
-
-                for (Field field : clazz.getDeclaredFields()) {
-                    if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                        Object value = null;
-
-                        ColumnMapping columnMapping;
-                        if ((columnMapping = field.getAnnotation(ColumnMapping.class)) != null) {
-                            if (columnMapping.isForeignKey()) {
-                                String name = columnMapping.columnName();
-                                if (res.getObject(name) != null) {
-                                    int key = res.getInt(name);
-                                    value = select(field.getType(), name + "=" + key).get(0);
-                                }
-                            } else {
-                                value = res.getObject(columnMapping.columnName());
-                            }
-                        } else {
-                            value = res.getObject(field.getName());
-                        }
-
-                        if (value != null && field.getType() == Date.class) {
-                            value = DATE_FORMAT.parse(value.toString());
-                        }
-
-                        setFieldValue(field, obj, value);
-                    }
-                }
-
-                ret.add(obj);
+                ret.add(createObject(clazz, res));
             }
-        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
-                 NoSuchMethodException | ParseException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return ret;
-    }
-
-    private Field getPrimaryKey(Class<?> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getAnnotation(PrimaryKey.class) != null) {
-                return field;
-            }
-        }
-        return null;
     }
 
     private void update(Object bean) {
@@ -194,6 +153,53 @@ public class SqliteFacade implements DatabaseFacade {
         }
 
         executeSql(String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values));
+    }
+
+    private <T> T createObject(Class<T> clazz, ResultSet row) {
+        try {
+            T obj = clazz.getDeclaredConstructor().newInstance();
+
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.getAnnotation(IgnoreInDatabase.class) == null) {
+                    Object value = sqlToObject(field, row);
+                    setFieldValue(field, obj, value);
+                }
+            }
+
+            return obj;
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object sqlToObject(Field field, ResultSet row) {
+        Object value = null;
+
+        try {
+            ColumnMapping columnMapping;
+            if ((columnMapping = field.getAnnotation(ColumnMapping.class)) != null) {
+                if (columnMapping.isForeignKey()) {
+                    String name = columnMapping.columnName();
+                    if (row.getObject(name) != null) {
+                        int key = row.getInt(name);
+                        value = select(field.getType(), columnMapping.foreignKey() + "=" + key).get(0);
+                    }
+                } else {
+                    value = row.getObject(columnMapping.columnName());
+                }
+            } else {
+                value = row.getObject(field.getName());
+            }
+
+            if (value != null && field.getType() == Date.class) {
+                value = DATE_FORMAT.parse(value.toString());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException("Date was not stored correctly in database");
+        }
+        return value;
     }
 
     private String getFieldValue(Field field, Object bean) {
