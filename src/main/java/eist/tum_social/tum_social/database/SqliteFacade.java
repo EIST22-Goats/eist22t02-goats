@@ -1,9 +1,7 @@
 package eist.tum_social.tum_social.database;
 
-import eist.tum_social.tum_social.database.util.ColumnMapping;
-import eist.tum_social.tum_social.database.util.DatabaseEntity;
-import eist.tum_social.tum_social.database.util.IgnoreInDatabase;
-import eist.tum_social.tum_social.database.util.PrimaryKey;
+import eist.tum_social.tum_social.database.util.*;
+import eist.tum_social.tum_social.model.DegreeLevel;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
@@ -15,12 +13,10 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,50 +32,13 @@ public class SqliteFacade implements DatabaseFacade {
     }
 
     public static void main(String[] args) {
-        Person p = new Person();
-        p.setId(4);
-        p.setFirstname("Kilian");
-        p.setLastname("Northoff");
-        p.setTumId("ge95bit");
-        p.setEmail("some@mail.com");
-        p.setPassword("test");
-        try {
-            p.setBirthdate(DATE_FORMAT.parse("28-12-2002"));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
         SqliteFacade db = new SqliteFacade();
-        db.insertOrUpdate(p);
-    }
-
-    public Person getPerson(String tumId) {
-        QueryRunner run = new QueryRunner(dataSource);
-
-        ResultSetHandler<List<Person>> h = new BeanListHandler<>(Person.class);
-        try {
-            List<Person> persons = run.query("SELECT * FROM Persons WHERE tumId='" + tumId + "'", h);
-            if (!persons.isEmpty()) {
-                return persons.get(0);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
-    }
-
-    @Override
-    public void addPerson(Person person) {
-        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE Persons (firstname, lastname, birthdate, tumId, email, password) VALUES (" + toSqlString(person.getFirstname()) + ", " + toSqlString(person.getLastname()) + ", " + toSqlString(person.getBirthdate()) + ", " + toSqlString(person.getTumId()) + ", " + toSqlString(person.getEmail()) + ", " + toSqlString(person.getPassword()) + ")");
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        var res = db.select(Person.class, "1", false);
+        for (var it : res) {
+            System.out.println(it.getFirstname() + " " + it.getLastname() + " " + it.getDegreeProgram());
         }
     }
 
-    @Override
     public void removePerson(String tumId) {
         try {
             Connection conn = DriverManager.getConnection(dataSource.getUrl());
@@ -90,72 +49,139 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    @Override
-    public void updatePerson(Person person) {
-        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO Persons (firstname, lastname, birthdate, tumId, email, password) VALUES (" + toSqlString(person.getFirstname()) + ", " + toSqlString(person.getLastname()) + ", " + toSqlString(person.getBirthdate()) + ", " + toSqlString(person.getTumId()) + ", " + toSqlString(person.getEmail()) + ", " + toSqlString(person.getPassword()) + ")");
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public <T> List<T> select(Class<T> clazz) {
+        return select(clazz, "1", false);
     }
 
-    @Override
-    public List<DegreeProgram> getDegreePrograms() {
-        QueryRunner run = new QueryRunner(dataSource);
+    public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
+        String tableName = getTableName(clazz);
+        String sql = "SELECT * FROM " + tableName + " WHERE " + whereCondition;
 
-        ResultSetHandler<List<DegreeProgram>> h = new BeanListHandler<>(DegreeProgram.class);
-        try {
-            return run.query("SELECT * FROM DegreePrograms", h);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+        List<T> ret = new ArrayList<>();
 
-    private void insertOrUpdate(Object bean) {
-        try {
-            DatabaseEntity databaseAnnotation = bean.getClass().getAnnotation(DatabaseEntity.class);
-            if (databaseAnnotation == null) {
-                throw new RuntimeException("Add @DatabaseEntity Annotation to your Bean, but lul u stupid");
+        try (Connection conn = dataSource.getConnection()) {
+            ResultSet res = conn.createStatement().executeQuery(sql);
+            while (res.next()) {
+                ret.add(createObject(clazz, res, recursive));
             }
-            String tableName = databaseAnnotation.tableName();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-            String whereCondition = null;
-            StringBuilder parameters = new StringBuilder();
-            StringBuilder values = new StringBuilder();
+        return ret;
+    }
 
-            for (Field field : bean.getClass().getDeclaredFields()) {
-                String name = field.getName();
+    public void update(Object bean) {
+        String tableName = getTableName(bean);
 
-                if (!name.equals("class")) {
-                    if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                        Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
-                        String value = toSqlString(obj);
+        String whereCondition = null;
+        StringBuilder parameters = new StringBuilder();
+        StringBuilder values = new StringBuilder();
 
-                        ColumnMapping foreignKey;
-                        if (field.getAnnotation(PrimaryKey.class) != null) {
-                            whereCondition = name + "=" + value;
-                        } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
-                            name = foreignKey.columnName();
-                        }
+        for (Field field : bean.getClass().getDeclaredFields()) {
+            String name = field.getName();
 
-                        parameters.append(name).append(",");
-                        values.append(value).append(",");
-                    }
+            if (!name.equals("class") && field.getAnnotation(IgnoreInDatabase.class) == null) {
+                String value = getFieldValue(field, bean);
+
+                ColumnMapping foreignKey;
+                if (field.getAnnotation(PrimaryKey.class) != null) {
+                    whereCondition = name + "=" + value;
+                } else if ((foreignKey = field.getAnnotation(ColumnMapping.class)) != null) {
+                    name = foreignKey.columnName();
+                }
+
+                parameters.append(name).append(",");
+                values.append(value).append(",");
+            }
+        }
+
+        parameters.deleteCharAt(parameters.length() - 1);
+        values.deleteCharAt(values.length() - 1);
+
+        if (whereCondition == null) {
+            throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
+        }
+
+        executeSql(String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values));
+    }
+
+    private <T> T createObject(Class<T> clazz, ResultSet row, boolean recursive) {
+        try {
+            T obj = clazz.getDeclaredConstructor().newInstance();
+
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.getAnnotation(IgnoreInDatabase.class) == null) {
+                    Object value = sqlToObject(field, row, recursive);
+                    setFieldValue(field, obj, value);
                 }
             }
 
-            parameters.deleteCharAt(parameters.length() - 1);
-            values.deleteCharAt(values.length() - 1);
-
-            if (whereCondition == null) {
-                throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
-            }
-
-            executeSql("INSERT OR REPLACE INTO " + tableName + " (" + parameters + ") VALUES (" + values + ")");
-        } catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
+            return obj;
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Object sqlToObject(Field field, ResultSet row, boolean recursive) {
+        Object value = null;
+
+        try {
+            ColumnMapping columnMapping;
+            if ((columnMapping = field.getAnnotation(ColumnMapping.class)) != null) {
+                if (columnMapping.isForeignKey()) {
+                    String name = columnMapping.columnName();
+                    if (recursive && row.getObject(name) != null) {
+                        int key = row.getInt(name);
+                        value = select(field.getType(), columnMapping.foreignKey() + "=" + key, recursive).get(0);
+                    }
+                } else {
+                    value = row.getObject(columnMapping.columnName());
+                }
+            } else {
+                value = row.getObject(field.getName());
+            }
+
+            if (value != null && field.getType() == Date.class) {
+                value = DATE_FORMAT.parse(value.toString());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException("Date was not stored correctly in database");
+        }
+        return value;
+    }
+
+    private String getFieldValue(Field field, Object bean) {
+        try {
+            Object obj = new PropertyDescriptor(field.getName(), Person.class).getReadMethod().invoke(bean);
+            return toSqlString(obj);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    private void setFieldValue(Field field, Object bean, Object value) {
+        try {
+            if (value != null) {
+                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    private String getTableName(Object bean) {
+        return getTableName(bean.getClass());
+    }
+
+    private String getTableName(Class<?> clazz) {
+        DatabaseEntity databaseAnnotation = clazz.getAnnotation(DatabaseEntity.class);
+        if (databaseAnnotation == null) {
+            throw new RuntimeException("Add @DatabaseEntity Annotation to your Bean, but lul u stupid");
+        }
+        return databaseAnnotation.tableName();
     }
 
     private void executeSql(String sql) {

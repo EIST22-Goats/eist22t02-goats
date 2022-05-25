@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.database.DatabaseFacade;
 import eist.tum_social.tum_social.database.SqliteFacade;
+import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +31,9 @@ public class ProfileController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        Person person = db.getPerson(getCurrentUsersTumId());
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", false).get(0);
         model.addAttribute("person", person);
-        model.addAttribute("degreePrograms", db.getDegreePrograms());
+        model.addAttribute("degreePrograms", db.select(DegreeProgram.class));
 
         return "profil";
     }
@@ -44,7 +45,7 @@ public class ProfileController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        db.updatePerson(updatedPerson);
+        db.update(updatedPerson);
 
         return "redirect:/profil";
     }
@@ -75,7 +76,7 @@ public class ProfileController {
     }
 
     private void deleteProfile(String tumId) {
-        DatabaseFacade db = new SqliteFacade();
+        SqliteFacade db = new SqliteFacade();
         db.removePerson(tumId);
         logout();
         try {

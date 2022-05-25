@@ -20,7 +20,7 @@ public class IndexController {
         }
 
         DatabaseFacade db = new SqliteFacade();
-        Person person = db.getPerson(getCurrentUsersTumId());
+        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", false).get(0);
         model.addAttribute("person", person);
 
         return "index";
