@@ -33,9 +33,9 @@ public class SqliteFacade implements DatabaseFacade {
 
     public static void main(String[] args) {
         SqliteFacade db = new SqliteFacade();
-        var res = db.select(Person.class);
+        var res = db.select(Person.class, "1", false);
         for (var it : res) {
-            System.out.println(it.getFirstname() + " " + it.getLastname() + " " + it.getDegreeProgram().getDegreeLevel().getName());
+            System.out.println(it.getFirstname() + " " + it.getLastname() + " " + it.getDegreeProgram());
         }
     }
 
@@ -99,10 +99,10 @@ public class SqliteFacade implements DatabaseFacade {
     }
 
     public <T> List<T> select(Class<T> clazz) {
-        return select(clazz, "1");
+        return select(clazz, "1", false);
     }
 
-    public <T> List<T> select(Class<T> clazz, String whereCondition) {
+    public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
         String tableName = getTableName(clazz);
         String sql = "SELECT * FROM " + tableName + " WHERE " + whereCondition;
 
@@ -111,7 +111,7 @@ public class SqliteFacade implements DatabaseFacade {
         try (Connection conn = dataSource.getConnection()) {
             ResultSet res = conn.createStatement().executeQuery(sql);
             while (res.next()) {
-                ret.add(createObject(clazz, res));
+                ret.add(createObject(clazz, res, recursive));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -155,13 +155,13 @@ public class SqliteFacade implements DatabaseFacade {
         executeSql(String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values));
     }
 
-    private <T> T createObject(Class<T> clazz, ResultSet row) {
+    private <T> T createObject(Class<T> clazz, ResultSet row, boolean recursive) {
         try {
             T obj = clazz.getDeclaredConstructor().newInstance();
 
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                    Object value = sqlToObject(field, row);
+                    Object value = sqlToObject(field, row, recursive);
                     setFieldValue(field, obj, value);
                 }
             }
@@ -172,7 +172,7 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    private Object sqlToObject(Field field, ResultSet row) {
+    private Object sqlToObject(Field field, ResultSet row, boolean recursive) {
         Object value = null;
 
         try {
@@ -180,9 +180,9 @@ public class SqliteFacade implements DatabaseFacade {
             if ((columnMapping = field.getAnnotation(ColumnMapping.class)) != null) {
                 if (columnMapping.isForeignKey()) {
                     String name = columnMapping.columnName();
-                    if (row.getObject(name) != null) {
+                    if (recursive && row.getObject(name) != null) {
                         int key = row.getInt(name);
-                        value = select(field.getType(), columnMapping.foreignKey() + "=" + key).get(0);
+                        value = select(field.getType(), columnMapping.foreignKey() + "=" + key, recursive).get(0);
                     }
                 } else {
                     value = row.getObject(columnMapping.columnName());
