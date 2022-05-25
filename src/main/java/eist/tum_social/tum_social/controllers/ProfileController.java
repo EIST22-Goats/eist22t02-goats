@@ -1,6 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
+import eist.tum_social.tum_social.controllers.forms.ProfileForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
+import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
 
 @Controller
 public class ProfileController {
@@ -30,11 +32,7 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
-
-        StorageFacade db = new Storage();
-        Person person = db.getPerson(getCurrentUsersTumId());
-        model.addAttribute(person);
-
+        addPersonToModel(model);
         return "profile";
     }
 
@@ -43,12 +41,7 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
-
-        StorageFacade db = new Storage();
-        Person person = db.getPerson(getCurrentUsersTumId());
-        form.apply(person);
-        db.updatePerson(person);
-
+        updatePerson(form);
         return "redirect:/profile";
     }
 
@@ -82,11 +75,15 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+        updatePerson(form);
+        return "redirect:/profile";
+    }
+
+    private void updatePerson(ProfileForm form) {
         Storage db = new Storage();
         Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
         db.updatePerson(person);
-        return "redirect:/profile";
     }
 
     private void deleteProfile(String tumId) {

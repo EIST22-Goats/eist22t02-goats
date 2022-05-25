@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.getCurrentUsersTumId;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
+import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
 
 @Controller
 public class IndexController {
@@ -18,11 +19,7 @@ public class IndexController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
-
-        StorageFacade db = new Storage();
-        Person person = db.getPerson(getCurrentUsersTumId());
-        model.addAttribute(person);
-
+        addPersonToModel(model);
         return "index";
     }
 

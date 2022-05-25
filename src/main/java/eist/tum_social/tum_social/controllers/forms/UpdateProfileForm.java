@@ -9,7 +9,7 @@ import java.text.ParseException;
 
 import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
 
-public class UpdateProfileForm {
+public class UpdateProfileForm implements ProfileForm {
     private String firstname;
     private String lastname;
     private String birthdate;
