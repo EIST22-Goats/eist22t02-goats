@@ -2,9 +2,8 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
-import eist.tum_social.tum_social.database.DatabaseFacade;
-import eist.tum_social.tum_social.database.SqliteFacade;
-import eist.tum_social.tum_social.model.DegreeProgram;
+import eist.tum_social.tum_social.data_storage.Storage;
+import eist.tum_social.tum_social.data_storage.StorageFacade;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,10 +31,9 @@ public class ProfileController {
             return "redirect:/anmelden";
         }
 
-        DatabaseFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
-        model.addAttribute("person", person);
-        model.addAttribute("degreePrograms", db.select(DegreeProgram.class));
+        StorageFacade db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
+        model.addAttribute(person);
 
         return "profil";
     }
@@ -46,10 +44,10 @@ public class ProfileController {
             return "redirect:/anmelden";
         }
 
-        SqliteFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        StorageFacade db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
-        db.update(person);
+        db.updatePerson(person);
 
         return "redirect:/profil";
     }
@@ -84,16 +82,16 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/anmelden";
         }
-        SqliteFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        Storage db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
-        db.update(person);
+        db.updatePerson(person);
         return "redirect:/profil";
     }
 
     private void deleteProfile(String tumId) {
-        SqliteFacade db = new SqliteFacade();
-        db.removePerson(tumId);
+        Storage db = new Storage();
+        db.deletePerson(tumId);
         logout();
         try {
             Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));

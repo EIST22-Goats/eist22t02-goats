@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.database.DatabaseFacade;
-import eist.tum_social.tum_social.database.SqliteFacade;
+import eist.tum_social.tum_social.data_storage.StorageFacade;
+import eist.tum_social.tum_social.data_storage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,8 +19,8 @@ public class IndexController {
             return "redirect:/anmelden";
         }
 
-        DatabaseFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", false).get(0);
+        StorageFacade db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
         model.addAttribute("person", person);
 
         return "index";

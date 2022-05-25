@@ -1,14 +1,14 @@
 package eist.tum_social.tum_social.controllers.forms;
 
-import eist.tum_social.tum_social.database.DatabaseFacade;
-import eist.tum_social.tum_social.database.SqliteFacade;
+import eist.tum_social.tum_social.data_storage.StorageFacade;
+import eist.tum_social.tum_social.data_storage.Storage;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 
 import java.text.ParseException;
 import java.util.List;
 
-import static eist.tum_social.tum_social.database.SqliteFacade.DATE_FORMAT;
+import static eist.tum_social.tum_social.data_storage.Storage.DATE_FORMAT;
 
 public class UpdateProfileForm {
     private String firstname;
@@ -82,11 +82,12 @@ public class UpdateProfileForm {
         person.setEmail(email);
         person.setSemesterNr(semesterNr);
 
-        DatabaseFacade db = new SqliteFacade();
+        StorageFacade db = new Storage();
         if (!degreeProgramName.isBlank()) {
-            List<DegreeProgram> degreeProgram = db.select(DegreeProgram.class, "name='" + degreeProgramName + "'", false);
-            if (!degreeProgram.isEmpty()) {
-                person.setDegreeProgram(degreeProgram.get(0));
+
+            DegreeProgram degreeProgram = db.getDegreeProgram(degreeProgramName);
+            if (degreeProgram != null) {
+                person.setDegreeProgram(degreeProgram);
             }
         }
     }

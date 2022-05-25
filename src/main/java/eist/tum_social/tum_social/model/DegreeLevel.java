@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.database.util.DatabaseEntity;
-import eist.tum_social.tum_social.database.util.PrimaryKey;
+import eist.tum_social.tum_social.data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.data_storage.util.PrimaryKey;
 
 @DatabaseEntity(tableName = "DegreeLevel")
 public class DegreeLevel {

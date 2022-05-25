@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.database.util;
+package eist.tum_social.tum_social.data_storage.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
