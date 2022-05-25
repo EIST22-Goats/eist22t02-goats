@@ -1,7 +1,6 @@
-package eist.tum_social.tum_social.database;
+package eist.tum_social.tum_social.persistent_data_storage;
 
-import eist.tum_social.tum_social.database.util.*;
-import eist.tum_social.tum_social.model.Person;
+import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -10,43 +9,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class SqliteFacade implements DatabaseFacade {
+import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+public class SqliteDatabase implements Database {
+
     private static final String URL = "jdbc:sqlite:tum_social.db";
     private final SQLiteDataSource dataSource;
 
-    public SqliteFacade() {
+    public SqliteDatabase() {
         dataSource = new SQLiteDataSource();
         dataSource.setUrl(URL);
     }
 
-    public static void main(String[] args) {
-        SqliteFacade db = new SqliteFacade();
-        var res = db.select(Person.class, "1", false);
-        for (var it : res) {
-            System.out.println(it.getFirstname() + " " + it.getLastname() + " " + it.getDegreeProgram());
-        }
-    }
-
-    public void removePerson(String tumId) {
-        try {
-            Connection conn = DriverManager.getConnection(dataSource.getUrl());
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM Persons WHERE tumId='" + tumId + "'");
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public <T> List<T> select(Class<T> clazz) {
-        return select(clazz, "1", false);
+    public void delete(String tableName, String whereCondition) {
+        executeSql(String.format("DELETE FROM %s WHERE %s", tableName, whereCondition));
     }
 
     public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
@@ -118,7 +98,7 @@ public class SqliteFacade implements DatabaseFacade {
 
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                    Object value = sqlToObject(field, row, recursive);
+                    Object value = rowToObject(field, row, recursive);
                     setFieldValue(field, obj, value);
                 }
             }
@@ -130,7 +110,7 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    private Object sqlToObject(Field field, ResultSet row, boolean recursive) {
+    private Object rowToObject(Field field, ResultSet row, boolean recursive) {
         Object value = null;
 
         try {
@@ -190,7 +170,7 @@ public class SqliteFacade implements DatabaseFacade {
         return databaseAnnotation.tableName();
     }
 
-    private void executeSql(String sql) {
+    public void executeSql(String sql) {
         try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
@@ -199,7 +179,7 @@ public class SqliteFacade implements DatabaseFacade {
         }
     }
 
-    public String toSqlString(Object object) {
+    private String toSqlString(Object object) {
         if (object == null) {
             return "NULL";
         } else if (object instanceof Date) {

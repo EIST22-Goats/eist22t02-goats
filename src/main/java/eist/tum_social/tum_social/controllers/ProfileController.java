@@ -2,9 +2,8 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
-import eist.tum_social.tum_social.database.DatabaseFacade;
-import eist.tum_social.tum_social.database.SqliteFacade;
-import eist.tum_social.tum_social.model.DegreeProgram;
+import eist.tum_social.tum_social.persistent_data_storage.Storage;
+import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,38 +25,37 @@ public class ProfileController {
     public final static String PROFILE_PICTURE_LOCATION =
             new File("src/main/resources/static/profile_pictures/").getAbsolutePath();
 
-    @GetMapping("/profil")
+    @GetMapping("/profile")
     public String profilePage(Model model) {
         if (!isLoggedIn()) {
-            return "redirect:/anmelden";
+            return "redirect:/login";
         }
 
-        DatabaseFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
-        model.addAttribute("person", person);
-        model.addAttribute("degreePrograms", db.select(DegreeProgram.class));
+        StorageFacade db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
+        model.addAttribute(person);
 
-        return "profil";
+        return "profile";
     }
 
     @PostMapping("/updateProfile")
     public String updateProfile(UpdateProfileForm form) {
         if (!isLoggedIn()) {
-            return "redirect:/anmelden";
+            return "redirect:/login";
         }
 
-        SqliteFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        StorageFacade db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
-        db.update(person);
+        db.updatePerson(person);
 
-        return "redirect:/profil";
+        return "redirect:/profile";
     }
 
     @PostMapping("/setProfilePicture")
     public String setProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture) {
         if (!isLoggedIn()) {
-            return "redirect:/anmelden";
+            return "redirect:/login";
         }
 
         try {
@@ -67,33 +65,33 @@ public class ProfileController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/profil";
+        return "redirect:/profile";
     }
 
     @PostMapping("/deleteProfile")
     public String deleteProfilePage(@RequestParam("deleteProfile") String tumId) {
         if (!isLoggedIn()) {
-            return "redirect:/anmelden";
+            return "redirect:/login";
         }
         deleteProfile(tumId);
-        return "redirect:/anmelden";
+        return "redirect:/login";
     }
 
     @PostMapping("/changePassword")
     public String changePassword(ChangePasswordForm form) {
         if (!isLoggedIn()) {
-            return "redirect:/anmelden";
+            return "redirect:/login";
         }
-        SqliteFacade db = new SqliteFacade();
-        Person person = db.select(Person.class, "tumId='" + getCurrentUsersTumId() + "'", true).get(0);
+        Storage db = new Storage();
+        Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
-        db.update(person);
-        return "redirect:/profil";
+        db.updatePerson(person);
+        return "redirect:/profile";
     }
 
     private void deleteProfile(String tumId) {
-        SqliteFacade db = new SqliteFacade();
-        db.removePerson(tumId);
+        Storage db = new Storage();
+        db.deletePerson(tumId);
         logout();
         try {
             Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));

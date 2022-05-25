@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.controllers;
+package eist.tum_social.tum_social.controllers.util;
 
 public class Status {
     public static final Status SUCCESS = new Status();
