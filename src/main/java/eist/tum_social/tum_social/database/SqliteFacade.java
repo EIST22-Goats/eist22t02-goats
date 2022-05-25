@@ -1,6 +1,7 @@
 package eist.tum_social.tum_social.database;
 
 import eist.tum_social.tum_social.database.util.*;
+import eist.tum_social.tum_social.model.DegreeLevel;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 import org.apache.commons.dbutils.QueryRunner;
@@ -13,6 +14,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,9 +31,13 @@ public class SqliteFacade implements DatabaseFacade {
         dataSource.setUrl(URL);
     }
 
-    public static void main(String[] args) throws NoSuchFieldException {
+    public static void main(String[] args) {
         SqliteFacade db = new SqliteFacade();
-        var res = db.select(Person.class);
+        var res = db.select(DegreeProgram.class);
+        for (var it : res) {
+            // System.out.println(it.getFirstname() + " " + it.getLastname());
+            System.out.println(it.getName());
+        }
     }
 
     public Person getPerson(String tumId) {
@@ -98,7 +104,8 @@ public class SqliteFacade implements DatabaseFacade {
     }
 
     public <T> List<T> select(Class<T> clazz, String whereCondition) {
-        String sql = "SELECT * FROM " + getTableName(clazz) + " WHERE " + whereCondition;
+        String tableName = getTableName(clazz);
+        String sql = "SELECT * FROM " + tableName + " WHERE " + whereCondition;
 
         List<T> ret = new ArrayList<>();
 
@@ -110,16 +117,35 @@ public class SqliteFacade implements DatabaseFacade {
 
                 for (Field field : clazz.getDeclaredFields()) {
                     if (field.getAnnotation(IgnoreInDatabase.class) == null) {
-                        Object value = res.getObject(field.getName());
+                        Object value = null;
+
+                        ColumnMapping columnMapping;
+                        if ((columnMapping = field.getAnnotation(ColumnMapping.class)) != null) {
+                            if (columnMapping.isForeignKey()) {
+                                String name = columnMapping.columnName();
+                                if (res.getObject(name) != null) {
+                                    int key = res.getInt(name);
+                                    value = select(field.getType(), name + "=" + key).get(0);
+                                }
+                            } else {
+                                value = res.getObject(columnMapping.columnName());
+                            }
+                        } else {
+                            value = res.getObject(field.getName());
+                        }
+
+                        if (value != null && field.getType() == Date.class) {
+                            value = DATE_FORMAT.parse(value.toString());
+                        }
+
                         setFieldValue(field, obj, value);
                     }
                 }
 
                 ret.add(obj);
-                System.out.println(res.getString("id"));
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
-                 NoSuchMethodException e) {
+                 NoSuchMethodException | ParseException e) {
             throw new RuntimeException(e);
         }
 
@@ -182,10 +208,10 @@ public class SqliteFacade implements DatabaseFacade {
     private void setFieldValue(Field field, Object bean, Object value) {
         try {
             if (value != null) {
-                new PropertyDescriptor(field.getName(), Person.class).getWriteMethod().invoke(bean, value);
+                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
             }
         } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
         }
     }
 
