@@ -20,6 +20,9 @@ permissions:
 jobs:
   build:
 
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
+
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -40,3 +43,7 @@ jobs:
       run: ./gradlew bootBuildImage --imageName=springio/gs-spring-boot-docker
     - name: Docker ls
       run: docker images
+    - name: Docker tag
+      run: docker tag springio/gs-spring-boot-docker $IMAGE_NAME
+    - name: Push image to registry
+      run: docker push $IMAGE_NAME
