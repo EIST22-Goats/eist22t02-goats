@@ -38,7 +38,7 @@ jobs:
       with:
         registry: ghcr.io
         username: babyygemperor
-        password: PAT
+        password: ${{ secrets.PAT }}
     - name: Build the Docker image
       run: ./gradlew bootBuildImage --imageName=springio/gs-spring-boot-docker
     - name: Convert IMAGE_NAME to lower_case
