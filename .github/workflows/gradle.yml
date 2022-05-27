@@ -41,9 +41,12 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build the Docker image
       run: ./gradlew bootBuildImage --imageName=springio/gs-spring-boot-docker
+    - name: Convert IMAGE_NAME to lower_case
+      run: |
+        echo "REPO=${IMAGE_NAME,,}" >>${GITHUB_ENV}
+    - name: Docker tag
+      run: docker tag springio/gs-spring-boot-docker $REPO
+    - name: Push image to registry
+      run: docker push $REPO
     - name: Docker ls
       run: docker images
-    - name: Docker tag
-      run: docker tag springio/gs-spring-boot-docker $IMAGE_NAME
-    - name: Push image to registry
-      run: docker push $IMAGE_NAME
