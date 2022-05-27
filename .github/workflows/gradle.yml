@@ -20,8 +20,10 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
 
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -30,3 +32,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - run: ./gradlew clean test
+    - uses: actions/checkout@v3
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: babyygemperor
+        password: ${{ secrets.PAT }}
+    - name: Build the Docker image
+      run: ./gradlew bootBuildImage --imageName=springio/gs-spring-boot-docker
+    - name: Convert IMAGE_NAME to lower_case
+      run: |
+        echo "REPO=${IMAGE_NAME,,}" >>${GITHUB_ENV}
+    - name: Docker tag
+      run: docker tag springio/gs-spring-boot-docker $REPO
+    - name: Push image to registry
+      run: docker push $REPO
+    - name: Docker ls
+      run: docker images
