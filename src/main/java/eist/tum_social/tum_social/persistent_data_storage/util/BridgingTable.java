@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BridgingTable {
 
-    String tableName();
-    String ownColumnName();
+    String bridgingTableName();
+    String ownColumnName() default "id";
     String ownForeignColumnName();
-    String otherColumnName();
+    String otherColumnName() default "id";
     String otherForeignColumnName();
 
 }

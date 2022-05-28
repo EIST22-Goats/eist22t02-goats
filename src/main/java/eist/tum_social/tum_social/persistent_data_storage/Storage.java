@@ -50,7 +50,7 @@ public class Storage implements StorageFacade {
     public void updateCourse(Course course) {
         db.update(course);
     }
-2
+
     @Override
     public Course getCourse(int courseId) {
         return firstOrNull(db.select(Course.class, "id=" + courseId, true));

@@ -16,10 +16,8 @@ public class Person {
     private String tumId;
     private String email;
     @BridgingTable(
-            tableName = "CourseParticipants",
-            ownColumnName = "id",
+            bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "personId",
-            otherColumnName = "id",
             otherForeignColumnName = "courseId")
     private List<Course> courses;
     @IgnoreInDatabase
@@ -27,7 +25,7 @@ public class Person {
     @IgnoreInDatabase
     private Timetable timetable;
     private int semesterNr;
-    @ColumnMapping(columnName = "degreeProgramId", isForeignKey = true, foreignKey = "id")
+    @ForeignTable(ownColumnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
     private String password;
 

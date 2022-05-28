@@ -7,8 +7,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ColumnMapping {
-    String columnName();
-    boolean isForeignKey() default false;
-    String foreignKey() default "";
+public @interface ForeignTable {
+
+    String ownColumnName();
+    String foreignColumnName() default "id";
+
 }

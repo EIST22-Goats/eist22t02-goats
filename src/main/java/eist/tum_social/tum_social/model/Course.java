@@ -16,10 +16,8 @@ public class Course {
     private String acronym;
     private String description;
     @BridgingTable(
-            tableName = "CourseParticipants",
-            ownColumnName = "id",
+            bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "courseId",
-            otherColumnName = "id",
             otherForeignColumnName = "personId")
     private List<Person> participants;
     @IgnoreInDatabase
