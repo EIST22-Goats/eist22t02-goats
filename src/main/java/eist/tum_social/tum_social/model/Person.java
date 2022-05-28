@@ -8,8 +8,7 @@ import java.util.List;
 @DatabaseEntity(tableName = "Persons")
 public class Person {
 
-    @PrimaryKey
-    private int id;
+    private int id = -1;
     private String firstname;
     private String lastname;
     private Date birthdate;

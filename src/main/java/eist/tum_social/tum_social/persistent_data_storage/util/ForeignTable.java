@@ -10,6 +10,5 @@ import java.lang.annotation.Target;
 public @interface ForeignTable {
 
     String ownColumnName();
-    String foreignColumnName() default "id";
 
 }

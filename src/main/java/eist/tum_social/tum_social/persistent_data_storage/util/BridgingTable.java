@@ -7,9 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface BridgingTable {
 
     String bridgingTableName();
-    String ownColumnName() default "id";
     String ownForeignColumnName();
-    String otherColumnName() default "id";
     String otherForeignColumnName();
 
 }

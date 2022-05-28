@@ -3,14 +3,12 @@ package eist.tum_social.tum_social.model;
 import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
-import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
 
 import java.util.List;
 
 @DatabaseEntity(tableName = "Courses")
 public class Course {
 
-    @PrimaryKey
     private int id;
     private String name;
     private String acronym;

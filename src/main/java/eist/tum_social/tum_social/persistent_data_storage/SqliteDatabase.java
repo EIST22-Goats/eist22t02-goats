@@ -14,19 +14,40 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.*;
 import java.util.Date;
+import java.util.*;
 
 import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
 
 public class SqliteDatabase implements Database {
 
+    private static final String ID_COLUMN_NAME = "id";
     private static final String URL = "jdbc:sqlite:tum_social.db";
     private final SQLiteDataSource dataSource;
 
     public SqliteDatabase() {
         dataSource = new SQLiteDataSource();
         dataSource.setUrl(URL);
+    }
+
+    public static void main(String[] args) {
+        SqliteDatabase db = new SqliteDatabase();
+        Person p = new Person();
+        p.setId(25);
+        p.setFirstname("Peter");
+        p.setLastname("Lustig");
+        p.setTumId("abc");
+        DegreeProgram degreeProgram = new DegreeProgram();
+        degreeProgram.setId(1);
+        p.setDegreeProgram(degreeProgram);
+        Course c = new Course();
+        c.setId(2);
+        p.setCourses(new ArrayList<>());
+        Course c2 = new Course();
+        c2.setId(3);
+        p.getCourses().add(c);
+        p.getCourses().add(c2);
+        db.update(p);
     }
 
     public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
@@ -45,46 +66,80 @@ public class SqliteDatabase implements Database {
     public void update(Object bean) {
         String tableName = getTableName(bean);
 
-        String whereCondition = null;
         StringBuilder parameters = new StringBuilder();
         StringBuilder values = new StringBuilder();
 
         for (Field field : bean.getClass().getDeclaredFields()) {
             String name = field.getName();
 
-            if (!name.equals("class") && field.getAnnotation(IgnoreInDatabase.class) == null) {
-                Object value = getFieldValue(field, bean);
+            if (hasAnnotation(field, IgnoreInDatabase.class) || name.equals("class")) {
+                continue;
+            }
 
-                if (value != null) {
-                    ForeignTable foreignKey;
-                    if (field.getAnnotation(PrimaryKey.class) != null) {
-                        whereCondition = name + "=" + toSqlString(value);
-                    } else {
-                        if ((foreignKey = field.getAnnotation(ForeignTable.class)) != null) {
-                            name = foreignKey.ownColumnName();
-                            try {
-                                value = getFieldValue(field.getType().getDeclaredField(foreignKey.foreignColumnName()), value);
-                            } catch (NoSuchFieldException e) {
-                                throw new RuntimeException("Foreign key " + foreignKey.foreignColumnName() + " in object " + value
-                                        + " not found");
-                            }
-                        }
+            if (hasAnnotation(field, BridgingTable.class)) {
+                updateBridgingTable(field, bean);
+                continue;
+            }
 
-                        parameters.append(name).append(",");
-                        values.append(toSqlString(value)).append(",");
-                    }
-                }
+            Pair<String, String> assignment = createFieldSqlAssignment(field, bean);
+
+            if (assignment != null) {
+                String sqlName = assignment.first();
+                String sqlValue = assignment.second();
+
+                parameters.append(sqlName).append(",");
+                values.append(sqlValue).append(",");
             }
         }
 
         parameters.deleteCharAt(parameters.length() - 1);
         values.deleteCharAt(values.length() - 1);
 
-        if (whereCondition == null) {
-            throw new RuntimeException("You specified no Primary key in you bean, lul still dumb?");
+        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values);
+        System.out.println(sql);
+        executeStatement(sql);
+    }
+
+    private void updateBridgingTable(Field field, Object bean) {
+        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
+        String bridgingTableName = bridgingTable.bridgingTableName();
+
+        Object others = getFieldValue(field, bean);
+
+        if (others instanceof List othersList) {
+            for (Object other: othersList) {
+                System.out.println("getting ids " + other);
+                String sql = String.format(
+                        "INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)",
+                        bridgingTableName,
+                        bridgingTable.ownForeignColumnName(),
+                        bridgingTable.otherForeignColumnName(),
+                        getFieldValue(ID_COLUMN_NAME, bean),
+                        getFieldValue(ID_COLUMN_NAME, other)
+                );
+                executeStatement(sql);
+            }
         }
 
-        executeStatement(String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values));
+    }
+
+    private Pair<String, String> createFieldSqlAssignment(Field field, Object bean) {
+        String name = field.getName();
+
+        Object value = getFieldValue(field, bean);
+        if (value != null && !(name.equals(ID_COLUMN_NAME) && (int) value == -1)) {
+            if (hasAnnotation(field, ForeignTable.class)) {
+                name = field.getAnnotation(ForeignTable.class).ownColumnName();
+                try {
+                    value = getFieldValue(field.getType().getDeclaredField(ID_COLUMN_NAME), value);
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException("Foreign key " + ID_COLUMN_NAME + " in object " + value + " not found");
+                }
+            }
+
+            return new Pair<>(name, toSqlString(value));
+        }
+        return null;
     }
 
     public void delete(String tableName, String whereCondition) {
@@ -109,28 +164,13 @@ public class SqliteDatabase implements Database {
         }
     }
 
-    public static void main(String[] args) {
-        SqliteDatabase db = new SqliteDatabase();
-        var res = db.select(Person.class, "tumId='ge95bit'", true);
-        for (var it : res) {
-            System.out.println("Person: "+it.getFirstname());
-            List<Course> courses = it.getCourses();
-            System.out.println("   Kurse:");
-            for (var course: courses) {
-                System.out.println("       "+course.getName());
-            }
-            DegreeProgram degreeProgram = it.getDegreeProgram();
-            System.out.println("    DegreeProgram:"+degreeProgram.getName());
-        }
-    }
-
     private Object readFieldValueFromRow(Field field, Map<String, Object> row, boolean recursive) {
         Object value;
 
         if (hasAnnotation(field, ForeignTable.class)) {
-            value = readForeignTable(field.getAnnotation(ForeignTable.class), field, row, recursive);
+            value = readForeignTable(field, row, recursive);
         } else if (hasAnnotation(field, BridgingTable.class)) {
-            value = readBridgingTable(field.getAnnotation(BridgingTable.class), field, row, recursive);
+            value = readBridgingTable(field, row, recursive);
         } else {
             value = row.get(field.getName());
         }
@@ -146,20 +186,23 @@ public class SqliteDatabase implements Database {
         return value;
     }
 
-    private Object readForeignTable(ForeignTable foreignTable, Field field, Map<String, Object> row, boolean recursive) {
+    private Object readForeignTable(Field field, Map<String, Object> row, boolean recursive) {
+        ForeignTable foreignTable = field.getAnnotation(ForeignTable.class);
         String name = foreignTable.ownColumnName();
 
         if (recursive && row.get(name) != null) {
             int key = (int) row.get(name);
-            String whereCondition = foreignTable.foreignColumnName() + "=" + key;
+            String whereCondition = ID_COLUMN_NAME + "=" + key;
             return select(field.getType(), whereCondition, recursive).get(0);
         }
 
         return null;
     }
 
-    private Object readBridgingTable(BridgingTable bridgingTable, Field field, Map<String, Object> row, boolean recursive) {
+    private Object readBridgingTable(Field field, Map<String, Object> row, boolean recursive) {
+        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
         ArrayList<Object> ret = new ArrayList<>();
+
         if (!recursive) {
             return ret;
         }
@@ -170,21 +213,30 @@ public class SqliteDatabase implements Database {
                 "SELECT * FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
                 bridgingTable.bridgingTableName(),
                 otherTableName,
-                getTableName(listClass) + "." + bridgingTable.otherColumnName(),
+                getTableName(listClass) + "." + ID_COLUMN_NAME,
                 bridgingTable.otherForeignColumnName(),
                 bridgingTable.ownForeignColumnName(),
-                row.get(bridgingTable.ownColumnName())
+                row.get(ID_COLUMN_NAME)
         );
 
         for (var new_row: executeQuery(sql)) {
             ret.add(createObject(listClass, new_row, false));
         }
+
         return ret;
     }
 
     private Class<?> getListType(Field field) {
         ParameterizedType listType = (ParameterizedType) field.getGenericType();
         return (Class<?>) listType.getActualTypeArguments()[0];
+    }
+
+    private Object getFieldValue(String field, Object bean) {
+        try {
+            return getFieldValue(bean.getClass().getDeclaredField(field), bean);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Object getFieldValue(Field field, Object bean) {
