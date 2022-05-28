@@ -48,6 +48,7 @@ public class SqliteDatabase implements Database {
         p.getCourses().add(c);
         p.getCourses().add(c2);
         db.update(p);
+        
     }
 
     public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
