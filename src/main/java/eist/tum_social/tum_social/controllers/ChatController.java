@@ -22,7 +22,7 @@ public class ChatController {
         DatabaseFacade db = new SqliteFacade();
         Person person = db.getPerson(getCurrentUsersTumId());
         model.addAttribute("person", person);
-        return "/chat";
+        return "/chat_test";
     }
 
 }
