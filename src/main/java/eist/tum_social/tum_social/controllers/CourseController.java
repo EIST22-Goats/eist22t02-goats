@@ -6,11 +6,10 @@ import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
 import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
@@ -20,10 +19,11 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 public class CourseController {
 
     @GetMapping("/courses")
-    public String coursesPage(Model model) {
+    public String coursesPage(Model model, @RequestParam(value = "searchText", required = false) String searchText) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+
         Storage db = new Storage();
 
         Person person = getCurrentPerson(db);
@@ -34,9 +34,21 @@ public class CourseController {
 
         courses.removeAll(myCourses);
 
+        if (searchText != null) {
+            myCourses = filterCourses(myCourses, searchText);
+            courses = filterCourses(courses, searchText);
+        }
+
+        model.addAttribute("myCoursesList", myCourses);
         model.addAttribute("coursesList", courses);
 
         return "courses";
+    }
+
+    private List<Course> filterCourses(List<Course> courses, String query) {
+        return courses.stream()
+                .filter(it -> it.getName().contains(query) || it.getAcronym().contains(query))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/courses/{courseId}")

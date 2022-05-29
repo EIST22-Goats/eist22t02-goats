@@ -19,7 +19,9 @@
     <div class="row row-cols-lg-auto mb-3 justify-content-between">
         <div class="col-lg-3 mt-3">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Kurse suchen" name="searchText">
+                <form action="/courses" method="get">
+                    <input type="text" class="form-control" placeholder="Kurse suchen" name="searchText" th:value="${param.searchText != null}?${param.searchText}">
+                </form>
             </div>
         </div>
         <div class="col-lg-3 mt-3">
@@ -65,10 +67,10 @@
         </div>
     </div>
 
-    <h4 th:if="${person.getCourses().size()!=0}" class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
+    <h4 th:if="${myCoursesList.size()!=0}" class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
 
-    <div th:if="${person.getCourses().size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
-        <div class="col" th:each="course: ${person.getCourses()}">
+    <div th:if="${myCoursesList.size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="col" th:each="course: ${myCoursesList}">
             <div class="card">
                 <h5 class="card-header">
                     <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
@@ -88,9 +90,9 @@
         </div>
     </div>
 
-    <h4 class="mb-3 pt-3 border-top border-secondary">Alle Kurse</h4>
+    <h4 th:if="${coursesList.size()!=0}" class="mb-3 pt-3 border-top border-secondary">Alle Kurse</h4>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+    <div th:if="${coursesList.size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
         <div class="col" th:each="course: ${coursesList}">
             <div class="card">
                 <div class="card-header">
@@ -115,6 +117,10 @@
                 <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
             </div>
         </div>
+    </div>
+
+    <div th:if="${(coursesList.size() == 0) and (myCoursesList.size() == 0)}">
+        <p>Keine Kurse für "<span th:text="${param.searchText}"></span>" gefunden!</p>
     </div>
 
 </div>
