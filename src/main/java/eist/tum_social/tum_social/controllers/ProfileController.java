@@ -3,8 +3,8 @@ package eist.tum_social.tum_social.controllers;
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.ProfileForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
+import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
-import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
+import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
 public class ProfileController {
@@ -32,7 +34,11 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+
         addPersonToModel(model);
+        List<DegreeProgram> degreePrograms = new Storage().getDegreePrograms();
+        model.addAttribute("degreePrograms", degreePrograms);
+
         return "profile";
     }
 
@@ -41,7 +47,9 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+
         updatePerson(form);
+
         return "redirect:/profile";
     }
 
@@ -66,7 +74,16 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
-        deleteProfile(tumId);
+
+        Storage db = new Storage();
+        db.deletePerson(getCurrentPerson(db));
+        logout();
+        try {
+            Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return "redirect:/login";
     }
 
@@ -84,17 +101,6 @@ public class ProfileController {
         Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
         db.updatePerson(person);
-    }
-
-    private void deleteProfile(String tumId) {
-        Storage db = new Storage();
-        db.deletePerson(tumId);
-        logout();
-        try {
-            Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

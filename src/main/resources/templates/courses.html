@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kurse - Tum Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div class="container">
+    <h4 class="text-right display-4 mb-0">Kurse</h4>
+
+    <div class="row row-cols-lg-auto mb-3 justify-content-between">
+        <div class="col-lg-3 mt-3">
+            <div class="input-group">
+                <form action="/courses" method="get">
+                    <input type="text" class="form-control" placeholder="Kurse suchen" name="searchText" th:value="${param.searchText != null}?${param.searchText}">
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-3 mt-3">
+            <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal"
+                    data-bs-target="#addCourseModal">
+                Neuen Kurs erstellen
+            </button>
+        </div>
+
+        <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/createCourse" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCourseModalLabel">Kurs erstellen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nameLabel" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="nameLabel" name="name"
+                                       placeholder="z.B. Einführung in die Softwaretechnik" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="acronymLabel" class="form-label">Acronym</label>
+                                <input type="text" class="form-control" id="acronymLabel" name="acronym"
+                                       placeholder="z.B. EIST" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descriptionLabel" class="form-label">Beschreibung</label>
+                                <textarea class="form-control" id="descriptionLabel" rows="3"
+                                          name="description" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 th:if="${myCoursesList.size()!=0}" class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
+
+    <div th:if="${myCoursesList.size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="col" th:each="course: ${myCoursesList}">
+            <div class="card">
+                <h5 class="card-header">
+                    <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
+                </h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item overflow-hidden pb-3" style="height: 7em;">
+                        <h5 class="card-title" th:text="${course.getName()}"></h5>
+                        <p th:text="${course.getDescription()}"></p>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge text-bg-primary">Mo 7:00 - 9:00</span>
+                        <span class="badge text-bg-primary">TODO</span>
+                    </li>
+                </ul>
+                <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <h4 th:if="${coursesList.size()!=0}" class="mb-3 pt-3 border-top border-secondary">Alle Kurse</h4>
+
+    <div th:if="${coursesList.size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="col" th:each="course: ${coursesList}">
+            <div class="card">
+                <div class="card-header">
+                    <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
+                    <form th:action="'/joinCourse/'+${course.getId()}" method="post">
+                        <button type="submit" class="btn btn-sm btn-primary col-3 float-end position-relative"
+                                style="z-index: 2;">
+                            Hinzufügen
+                        </button>
+                    </form>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item overflow-hidden pb-3" style="height: 7em;">
+                        <h5 class="card-title" th:text="${course.getName()}"></h5>
+                        <p th:text="${course.getDescription()}"></p>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge text-bg-primary">Mo 7:00 - 9:00</span>
+                        <span class="badge text-bg-primary">TODO</span>
+                    </li>
+                </ul>
+                <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${(coursesList.size() == 0) and (myCoursesList.size() == 0)}">
+        <p>Keine Kurse für "<span th:text="${param.searchText}"></span>" gefunden!</p>
+    </div>
+
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+</body>
+</html>

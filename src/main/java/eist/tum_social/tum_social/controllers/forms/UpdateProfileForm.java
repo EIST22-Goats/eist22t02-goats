@@ -66,13 +66,11 @@ public class UpdateProfileForm implements ProfileForm {
     }
 
     public void apply(Person person) {
-        System.out.println(birthdate);
         person.setFirstname(firstname);
         person.setLastname(lastname);
 
         if (!birthdate.isBlank()) {
-             try {
-                 System.out.println("birthdate: "+birthdate);
+            try {
                 person.setBirthdate(DATE_FORMAT.parse(birthdate));
             } catch (ParseException ignored) {
             }

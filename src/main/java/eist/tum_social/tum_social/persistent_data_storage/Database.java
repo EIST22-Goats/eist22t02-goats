@@ -8,6 +8,7 @@ public interface Database {
 
     void update(Object bean);
 
-    void delete(String tableName, String whereCondition);
+    void delete(Object object);
+
 
 }

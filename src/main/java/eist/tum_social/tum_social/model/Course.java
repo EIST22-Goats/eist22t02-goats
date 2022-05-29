@@ -1,16 +1,38 @@
 package eist.tum_social.tum_social.model;
 
-import java.util.Date;
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
+
 import java.util.List;
 
-public class Course {
+@DatabaseEntity(tableName = "Courses")
+public class Course extends UniquelyIdentifiable {
 
+    private int id = -1;
     private String name;
+    private String acronym;
     private String description;
-    private Date finalDate;
-    private Date retakeDate;
+    @ForeignTable(ownColumnName = "adminId")
+    private Person admin;
+    @BridgingTable(
+            bridgingTableName = "CourseParticipants",
+            ownForeignColumnName = "courseId",
+            otherForeignColumnName = "personId")
+    private List<Person> participants;
+    @IgnoreInDatabase
     private List<Appointment> appointments;
+    @IgnoreInDatabase
     private List<Comment> comments;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -18,6 +40,14 @@ public class Course {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAcronym() {
+        return acronym;
+    }
+
+    public void setAcronym(String acronym) {
+        this.acronym = acronym;
     }
 
     public String getDescription() {
@@ -28,20 +58,20 @@ public class Course {
         this.description = description;
     }
 
-    public Date getFinalDate() {
-        return finalDate;
+    public Person getAdmin() {
+        return admin;
     }
 
-    public void setFinalDate(Date finalDate) {
-        this.finalDate = finalDate;
+    public void setAdmin(Person admin) {
+        this.admin = admin;
     }
 
-    public Date getRetakeDate() {
-        return retakeDate;
+    public List<Person> getParticipants() {
+        return participants;
     }
 
-    public void setRetakeDate(Date retakeDate) {
-        this.retakeDate = retakeDate;
+    public void setParticipants(List<Person> participants) {
+        this.participants = participants;
     }
 
     public List<Appointment> getAppointments() {

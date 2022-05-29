@@ -1,17 +1,15 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.util.ColumnMapping;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
 
 @DatabaseEntity(tableName = "DegreePrograms")
-public class DegreeProgram {
+public class DegreeProgram extends UniquelyIdentifiable {
 
-    @PrimaryKey
     private int id;
     private String name;
     private String description;
-    @ColumnMapping(columnName = "degreeLevelId", isForeignKey = true, foreignKey = "id")
+    @ForeignTable(ownColumnName = "degreeLevelId")
     private DegreeLevel degreeLevel;
 
     public int getId() {

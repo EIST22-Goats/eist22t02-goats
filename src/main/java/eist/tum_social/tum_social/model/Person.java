@@ -1,29 +1,30 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.ColumnMapping;
-import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
-import eist.tum_social.tum_social.persistent_data_storage.util.PrimaryKey;
+import eist.tum_social.tum_social.persistent_data_storage.util.*;
 
 import java.util.Date;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Persons")
-public class Person {
+public class Person extends UniquelyIdentifiable {
 
-    @PrimaryKey
-    private int id;
+    private int id = -1;
     private String firstname;
     private String lastname;
     private Date birthdate;
     private String tumId;
     private String email;
+    @BridgingTable(
+            bridgingTableName = "CourseParticipants",
+            ownForeignColumnName = "personId",
+            otherForeignColumnName = "courseId")
+    private List<Course> courses;
     @IgnoreInDatabase
     private List<Person> friends;
     @IgnoreInDatabase
     private Timetable timetable;
     private int semesterNr;
-    @ColumnMapping(columnName = "degreeProgramId", isForeignKey = true, foreignKey = "id")
+    @ForeignTable(ownColumnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
     private String password;
 
@@ -68,6 +69,14 @@ public class Person {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 
     public List<Person> getFriends() {
@@ -117,4 +126,5 @@ public class Person {
     public void setId(int id) {
         this.id = id;
     }
+
 }
