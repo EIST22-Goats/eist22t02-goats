@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface StorageFacade {
 
+    Object reloadObject(Object bean);
+    <T> List<T> reloadObjects(List<T> beans);
+
     void updatePerson(Person person);
     Person getPerson(String tumId);
     List<Person> getPersons();

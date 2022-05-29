@@ -82,7 +82,7 @@
                     </li>
                     <li class="list-group-item">
                         <span th:each="appointment: ${course.getAppointments()}"
-                              class="badge text-bg-primary">test</span>
+                              class="badge text-bg-primary" th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                     </li>
                 </ul>
                 <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>

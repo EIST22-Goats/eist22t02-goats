@@ -1,7 +1,5 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
-import eist.tum_social.tum_social.model.Appointment;
-import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
@@ -15,8 +13,10 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class SqliteDatabase implements Database {
@@ -43,6 +43,10 @@ public class SqliteDatabase implements Database {
         }
 
         return ret;
+    }
+
+    public Object reloadObject(Object bean) {
+        return select(bean.getClass(), ID_COLUMN_NAME + "=" + getFieldValue(ID_COLUMN_NAME, bean), true).get(0);
     }
 
     public void update(Object bean) {
