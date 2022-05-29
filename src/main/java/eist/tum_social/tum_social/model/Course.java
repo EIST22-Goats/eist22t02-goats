@@ -21,7 +21,10 @@ public class Course extends UniquelyIdentifiable {
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "personId")
     private List<Person> participants;
-    @IgnoreInDatabase
+    @BridgingTable(
+            bridgingTableName = "CourseAppointments",
+            ownForeignColumnName = "courseId",
+            otherForeignColumnName = "appointmentId")
     private List<Appointment> appointments;
     @IgnoreInDatabase
     private List<Comment> comments;

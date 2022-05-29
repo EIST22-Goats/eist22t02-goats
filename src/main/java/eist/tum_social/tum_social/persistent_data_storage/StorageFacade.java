@@ -1,6 +1,7 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
 
+import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
@@ -22,5 +23,9 @@ public interface StorageFacade {
     List<Course> getCourses();
 
     void deleteCourse(Course course);
+
+    void updateAppointment(Appointment appointment);
+    Appointment getAppointment(int id);
+    void deleteAppointment(Appointment appointment);
 
 }

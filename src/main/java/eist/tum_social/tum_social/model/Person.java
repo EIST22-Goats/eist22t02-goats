@@ -2,7 +2,7 @@ package eist.tum_social.tum_social.model;
 
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Persons")
@@ -11,7 +11,7 @@ public class Person extends UniquelyIdentifiable {
     private int id = -1;
     private String firstname;
     private String lastname;
-    private Date birthdate;
+    private LocalDate birthdate;
     private String tumId;
     private String email;
     @BridgingTable(
@@ -47,11 +47,11 @@ public class Person extends UniquelyIdentifiable {
         this.lastname = lastname;
     }
 
-    public Date getBirthdate() {
+    public LocalDate getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
     }
 

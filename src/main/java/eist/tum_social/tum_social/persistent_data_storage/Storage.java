@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
+import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
@@ -9,7 +10,6 @@ import java.util.List;
 
 public class Storage implements StorageFacade {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private final Database db;
 
     public Storage() {
@@ -64,6 +64,21 @@ public class Storage implements StorageFacade {
     @Override
     public void deleteCourse(Course course) {
         db.delete(course);
+    }
+
+    @Override
+    public void updateAppointment(Appointment appointment) {
+        db.update(appointment);
+    }
+
+    @Override
+    public Appointment getAppointment(int id) {
+        return firstOrNull(db.select(Appointment.class, "id=" + id, true));
+    }
+
+    @Override
+    public void deleteAppointment(Appointment appointment) {
+
     }
 
     private <T> T firstOrNull(List<T> list) {

@@ -1,12 +1,16 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +43,14 @@ public class CourseController {
             courses = filterCourses(courses, searchText);
         }
 
+        for (Course course : myCourses) {
+            //Course newCourse = db.getCourse(course.getId());
+
+            for (Appointment appointment: course.getAppointments()) {
+                System.out.println("    "+appointment.getName());
+            }
+        }
+
         model.addAttribute("myCoursesList", myCourses);
         model.addAttribute("coursesList", courses);
 
@@ -47,7 +59,8 @@ public class CourseController {
 
     private List<Course> filterCourses(List<Course> courses, String query) {
         return courses.stream()
-                .filter(it -> it.getName().contains(query) || it.getAcronym().contains(query))
+                .filter(it -> it.getName().toLowerCase().contains(query.toLowerCase())
+                        || it.getAcronym().toLowerCase().contains(query.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

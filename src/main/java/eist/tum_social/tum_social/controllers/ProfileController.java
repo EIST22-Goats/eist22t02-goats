@@ -36,6 +36,7 @@ public class ProfileController {
         }
 
         addPersonToModel(model);
+
         List<DegreeProgram> degreePrograms = new Storage().getDegreePrograms();
         model.addAttribute("degreePrograms", degreePrograms);
 
