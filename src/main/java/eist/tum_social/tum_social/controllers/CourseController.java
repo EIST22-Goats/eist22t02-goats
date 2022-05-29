@@ -43,11 +43,12 @@ public class CourseController {
             courses = filterCourses(courses, searchText);
         }
 
-        for (Course course : myCourses) {
-            //Course newCourse = db.getCourse(course.getId());
+        myCourses = db.reloadObjects(myCourses);
+        courses = db.reloadObjects(courses);
 
-            for (Appointment appointment: course.getAppointments()) {
-                System.out.println("    "+appointment.getName());
+        for (Course course : myCourses) {
+            for (Appointment appointment : course.getAppointments()) {
+                System.out.println("    " + appointment.getName());
             }
         }
 

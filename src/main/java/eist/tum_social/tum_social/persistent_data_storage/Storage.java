@@ -7,6 +7,7 @@ import eist.tum_social.tum_social.model.Person;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Storage implements StorageFacade {
 
@@ -15,6 +16,17 @@ public class Storage implements StorageFacade {
     public Storage() {
         db = new SqliteDatabase();
     }
+
+    @Override
+    public Object reloadObject(Object bean) {
+         return db.reloadObject(bean);
+    }
+
+    @Override
+    public <T> List<T> reloadObjects(List<T> beans) {
+        return beans.stream().map(it -> (T) reloadObject(it)).toList();
+    }
+
 
     @Override
     public void updatePerson(Person person) {

@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 
 import java.time.LocalDate;
@@ -27,9 +28,6 @@ public class Person extends UniquelyIdentifiable {
     @ForeignTable(ownColumnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
     private String password;
-
-    public Person() {
-    }
 
     public String getFirstname() {
         return firstname;
@@ -126,5 +124,4 @@ public class Person extends UniquelyIdentifiable {
     public void setId(int id) {
         this.id = id;
     }
-
 }
