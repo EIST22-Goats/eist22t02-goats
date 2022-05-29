@@ -2,7 +2,6 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.persistent_data_storage.SqliteDatabase;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
-import static eist.tum_social.tum_social.controllers.AuthenticationController.getCurrentUsersTumId;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
 import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
+import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
 public class CourseController {
@@ -50,8 +49,12 @@ public class CourseController {
     }
 
     @PostMapping("/createCourse")
-    public String createPost(Course course) {
-        new Storage().updateCourse(course);
+    public String createCourse(Course course) {
+        Storage storage = new Storage();
+        Person p = getCurrentPerson(storage);
+        course.setAdmin(p);
+
+        storage.updateCourse(course);
 
         return "redirect:/courses";
     }
@@ -63,7 +66,7 @@ public class CourseController {
         }
 
         Storage storage = new Storage();
-        Person p = storage.getPerson(getCurrentUsersTumId());
+        Person p = getCurrentPerson(storage);
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().add(c);
@@ -79,11 +82,23 @@ public class CourseController {
         }
 
         Storage storage = new Storage();
-        Person p = storage.getPerson(getCurrentUsersTumId());
+        Person p = getCurrentPerson(storage);
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().remove(c);
         storage.updatePerson(p);
+
+        return "redirect:/courses";
+    }
+
+    @PostMapping("/deleteCourse/{courseId}")
+    public String deleteCourse(@PathVariable int courseId) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Course course = new Storage().getCourse(courseId);
+        new Storage().deleteCourse(course);
 
         return "redirect:/courses";
     }

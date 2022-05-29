@@ -12,7 +12,7 @@ public interface StorageFacade {
     void updatePerson(Person person);
     Person getPerson(String tumId);
     List<Person> getPersons();
-    void deletePerson(String tumId);
+    void deletePerson(Person person);
 
     DegreeProgram getDegreeProgram(String degreeProgramName);
     List<DegreeProgram> getDegreePrograms();
@@ -20,5 +20,7 @@ public interface StorageFacade {
     void updateCourse(Course course);
     Course getCourse(int courseId);
     List<Course> getCourses();
+
+    void deleteCourse(Course course);
 
 }

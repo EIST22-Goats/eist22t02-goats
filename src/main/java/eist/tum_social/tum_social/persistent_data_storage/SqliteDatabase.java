@@ -1,8 +1,5 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
-import eist.tum_social.tum_social.model.Course;
-import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
@@ -36,7 +33,7 @@ public class SqliteDatabase implements Database {
 
         List<T> ret = new ArrayList<>();
 
-        for (var row: executeQuery(sql)) {
+        for (var row : executeQuery(sql)) {
             ret.add(createObject(clazz, row, recursive));
         }
 
@@ -79,30 +76,43 @@ public class SqliteDatabase implements Database {
         executeStatement(sql);
     }
 
+    public void delete(Object bean) {
+        String tableName = getTableName(bean);
+        int id = (int) getFieldValue(ID_COLUMN_NAME, bean);
+
+        String deleteSql = String.format("DELETE FROM %s WHERE %s=%s", tableName, ID_COLUMN_NAME, id);
+        executeStatement(deleteSql);
+
+        for (Field field : bean.getClass().getDeclaredFields()) {
+            if (hasAnnotation(field, BridgingTable.class)) {
+                deleteFromBridgingTable(field, id);
+            }
+        }
+    }
+
+    private void deleteFromBridgingTable(Field field, int id) {
+        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
+
+        String deleteSql = String.format("DELETE FROM %s WHERE %s=%s",
+                bridgingTable.bridgingTableName(),
+                bridgingTable.ownForeignColumnName(),
+                id
+        );
+        executeStatement(deleteSql);
+    }
+
     private void updateBridgingTable(Field field, Object bean) {
         BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
         String bridgingTableName = bridgingTable.bridgingTableName();
 
-        String clearStatement = String.format(
-                "DELETE FROM %s WHERE %s=%s",
-                bridgingTableName,
-                bridgingTable.ownForeignColumnName(),
-                getFieldValue(ID_COLUMN_NAME, bean)
-        );
+        String clearStatement = String.format("DELETE FROM %s WHERE %s=%s", bridgingTableName, bridgingTable.ownForeignColumnName(), getFieldValue(ID_COLUMN_NAME, bean));
         executeStatement(clearStatement);
 
         Object others = getFieldValue(field, bean);
 
         if (others instanceof List othersList) {
-            for (Object other: othersList) {
-                String sql = String.format(
-                        "INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)",
-                        bridgingTableName,
-                        bridgingTable.ownForeignColumnName(),
-                        bridgingTable.otherForeignColumnName(),
-                        getFieldValue(ID_COLUMN_NAME, bean),
-                        getFieldValue(ID_COLUMN_NAME, other)
-                );
+            for (Object other : othersList) {
+                String sql = String.format("INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)", bridgingTableName, bridgingTable.ownForeignColumnName(), bridgingTable.otherForeignColumnName(), getFieldValue(ID_COLUMN_NAME, bean), getFieldValue(ID_COLUMN_NAME, other));
                 executeStatement(sql);
             }
         }
@@ -196,18 +206,9 @@ public class SqliteDatabase implements Database {
 
         Class<?> listClass = getListType(field);
         String otherTableName = listClass.getAnnotation(DatabaseEntity.class).tableName();
-        String sql = String.format(
-                "SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
-                otherTableName,
-                bridgingTable.bridgingTableName(),
-                otherTableName,
-                getTableName(listClass) + "." + ID_COLUMN_NAME,
-                bridgingTable.otherForeignColumnName(),
-                bridgingTable.ownForeignColumnName(),
-                row.get(ID_COLUMN_NAME)
-        );
+        String sql = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s", otherTableName, bridgingTable.bridgingTableName(), otherTableName, getTableName(listClass) + "." + ID_COLUMN_NAME, bridgingTable.otherForeignColumnName(), bridgingTable.ownForeignColumnName(), row.get(ID_COLUMN_NAME));
 
-        for (var new_row: executeQuery(sql)) {
+        for (var new_row : executeQuery(sql)) {
             ret.add(createObject(listClass, new_row, false));
         }
 

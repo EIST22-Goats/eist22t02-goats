@@ -32,8 +32,8 @@ public class Storage implements StorageFacade {
     }
 
     @Override
-    public void deletePerson(String tumId) {
-        db.delete("Persons", "tumId='" + tumId + "'");
+    public void deletePerson(Person person) {
+        db.delete(person);
     }
 
     @Override
@@ -59,6 +59,11 @@ public class Storage implements StorageFacade {
     @Override
     public List<Course> getCourses() {
         return db.select(Course.class, "1", false);
+    }
+
+    @Override
+    public void deleteCourse(Course course) {
+        db.delete(course);
     }
 
     private <T> T firstOrNull(List<T> list) {

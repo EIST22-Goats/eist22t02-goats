@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.model;
 
 import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
 
 import java.util.List;
@@ -9,10 +10,12 @@ import java.util.List;
 @DatabaseEntity(tableName = "Courses")
 public class Course extends UniquelyIdentifiable {
 
-    private int id;
+    private int id = -1;
     private String name;
     private String acronym;
     private String description;
+    @ForeignTable(ownColumnName = "adminId")
+    private Person admin;
     @BridgingTable(
             bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "courseId",
@@ -53,6 +56,14 @@ public class Course extends UniquelyIdentifiable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Person getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Person admin) {
+        this.admin = admin;
     }
 
     public List<Person> getParticipants() {

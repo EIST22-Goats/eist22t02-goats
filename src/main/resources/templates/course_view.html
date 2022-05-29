@@ -19,12 +19,21 @@
   <div class="row">
     <div class="col-lg-3">
       <div class="card mb-3">
-        <div class="card-header">
-          Beschreibung
-        </div>
+        <div class="card-header">Beschreibung</div>
         <div class="card-body">
           <p th:text="${course.getDescription()}"></p>
         </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">Mitglieder</div>
+        <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+          <li th:each="participant: ${course.getParticipants()}" class="list-group-item">
+            <img th:src="'/profile_pictures/'+${participant.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                 alt="" class="rounded-circle float-start me-2" width="27" height="27" style="object-fit: cover">
+            <span th:text="${participant.getFirstname()}+' '+${participant.getLastname()}"></span>
+          </li>
+        </ul>
       </div>
 
       <form th:if="${person.getCourses().contains(course)}" th:action="'/leaveCourse/'+${course.getId()}" method="post">
@@ -32,7 +41,6 @@
           Kurs verlassen
         </button>
         <div class="modal fade" id="leaveCourseModal" tabindex="-1" aria-hidden="true">
-
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -48,8 +56,31 @@
         </div>
       </form>
 
+      <form th:if="${!person.getCourses().contains(course)}" th:action="'/joinCourse/'+${course.getId()}" method="post">
+      <button type="submit" class="btn btn-primary w-100 mb-3">Kurs hinzufügen</button>
+      </form>
 
+      <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/deleteCourse/'+${course.getId()}" method="post">
+        <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">
+          Kurs löschen
+        </button>
+        <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Kurs wirklich löschen?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="submit" class="btn btn-danger">Kurs löschen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
+
     <div class="col-lg-9">
       Chat, Forum, Announcements, ...
     </div>
