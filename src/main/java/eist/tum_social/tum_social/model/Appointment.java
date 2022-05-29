@@ -1,16 +1,81 @@
 package eist.tum_social.tum_social.model;
 
-import java.util.List;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 
-public abstract class Appointment {
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-    protected Location location;
+@DatabaseEntity(tableName = "Appointments")
+public class Appointment extends UniquelyIdentifiable {
 
-    public Appointment(Location location) {
-        this.location = location;
+    private int id = -1;
+    private String name;
+    private String description;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private LocalDate startDate;
+    private int repetitions;
+    @ForeignTable(ownColumnName = "locationId")
+    private Location location;
+    @ForeignTable(ownColumnName = "roomId")
+    private Room room;
+
+    public int getId() {
+        return id;
     }
 
-    public abstract List<Timeslot> getTimeslots();
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getRepetitions() {
+        return repetitions;
+    }
+
+    public void setRepetitions(int repetitions) {
+        this.repetitions = repetitions;
+    }
 
     public Location getLocation() {
         return location;
@@ -20,4 +85,11 @@ public abstract class Appointment {
         this.location = location;
     }
 
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 }

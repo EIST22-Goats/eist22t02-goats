@@ -2,11 +2,12 @@ package eist.tum_social.tum_social.model;
 
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 
-@DatabaseEntity(tableName = "DegreeLevel")
-public class DegreeLevel extends UniquelyIdentifiable {
+@DatabaseEntity(tableName = "Rooms")
+public class Room extends UniquelyIdentifiable {
 
     private int id = -1;
     private String name;
+    private String address;
 
     public int getId() {
         return id;
@@ -24,4 +25,11 @@ public class DegreeLevel extends UniquelyIdentifiable {
         this.name = name;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }
