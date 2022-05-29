@@ -4,7 +4,7 @@ import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 
 @DatabaseEntity(tableName = "DegreePrograms")
-public class DegreeProgram {
+public class DegreeProgram extends UniquelyIdentifiable {
 
     private int id;
     private String name;

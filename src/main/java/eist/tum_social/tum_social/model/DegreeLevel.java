@@ -3,7 +3,7 @@ package eist.tum_social.tum_social.model;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 
 @DatabaseEntity(tableName = "DegreeLevel")
-public class DegreeLevel {
+public class DegreeLevel extends UniquelyIdentifiable {
 
     private int id;
     private String name;

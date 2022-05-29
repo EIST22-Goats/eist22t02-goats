@@ -7,7 +7,7 @@ import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Courses")
-public class Course {
+public class Course extends UniquelyIdentifiable {
 
     private int id;
     private String name;

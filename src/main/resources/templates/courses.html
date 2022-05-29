@@ -65,12 +65,14 @@
         </div>
     </div>
 
-    <h4 class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
+    <h4 th:if="${person.getCourses().size()!=0}" class="mb-3 pt-3 border-top border-secondary">Meine Kurse</h4>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+    <div th:if="${person.getCourses().size()!=0}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
         <div class="col" th:each="course: ${person.getCourses()}">
             <div class="card">
-                <h5 class="card-header" th:text="${course.getAcronym()}"></h5>
+                <h5 class="card-header">
+                    <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
+                </h5>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item overflow-hidden pb-3" style="height: 7em;">
                         <h5 class="card-title" th:text="${course.getName()}"></h5>
@@ -81,6 +83,7 @@
                         <span class="badge text-bg-primary">TODO</span>
                     </li>
                 </ul>
+                <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
             </div>
         </div>
     </div>
@@ -90,7 +93,15 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
         <div class="col" th:each="course: ${coursesList}">
             <div class="card">
-                <h5 class="card-header" th:text="${course.getAcronym()}"></h5>
+                <div class="card-header">
+                    <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
+                    <form th:action="'/joinCourse/'+${course.getId()}" method="post">
+                        <button type="submit" class="btn btn-sm btn-primary col-3 float-end position-relative"
+                                style="z-index: 2;">
+                            Hinzufügen
+                        </button>
+                    </form>
+                </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item overflow-hidden pb-3" style="height: 7em;">
                         <h5 class="card-title" th:text="${course.getName()}"></h5>
@@ -101,6 +112,7 @@
                         <span class="badge text-bg-primary">TODO</span>
                     </li>
                 </ul>
+                <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
             </div>
         </div>
     </div>

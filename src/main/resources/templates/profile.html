@@ -64,10 +64,10 @@
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label for="degreeProgram" class="form-label">Studiengang</label>
-                            <input name="degreeProgramName" class="form-control" list="datalistOptions" id="degreeProgram"
+                            <input name="degreeProgramName" class="form-control" list="degreeProgramOptions" id="degreeProgram"
                                    placeholder="Suchen..."
                                    th:value="${person.getDegreeProgram() != null}?${person.getDegreeProgram().getName()}">
-                            <datalist id="datalistOptions">
+                            <datalist id="degreeProgramOptions">
                                 <option th:each="degreeProgram: ${degreePrograms}" th:value="${degreeProgram.getName()}">
                             </datalist>
                         </div>

@@ -30,27 +30,6 @@ public class SqliteDatabase implements Database {
         dataSource.setUrl(URL);
     }
 
-    public static void main(String[] args) {
-        SqliteDatabase db = new SqliteDatabase();
-        Person p = new Person();
-        p.setId(25);
-        p.setFirstname("Peter");
-        p.setLastname("Lustig");
-        p.setTumId("abc");
-        DegreeProgram degreeProgram = new DegreeProgram();
-        degreeProgram.setId(1);
-        p.setDegreeProgram(degreeProgram);
-        Course c = new Course();
-        c.setId(2);
-        p.setCourses(new ArrayList<>());
-        Course c2 = new Course();
-        c2.setId(3);
-        p.getCourses().add(c);
-        p.getCourses().add(c2);
-        db.update(p);
-        
-    }
-
     public <T> List<T> select(Class<T> clazz, String whereCondition, boolean recursive) {
         String tableName = getTableName(clazz);
         String sql = "SELECT * FROM " + tableName + " WHERE " + whereCondition;
@@ -97,7 +76,6 @@ public class SqliteDatabase implements Database {
         values.deleteCharAt(values.length() - 1);
 
         String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values);
-        System.out.println(sql);
         executeStatement(sql);
     }
 
@@ -105,11 +83,18 @@ public class SqliteDatabase implements Database {
         BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
         String bridgingTableName = bridgingTable.bridgingTableName();
 
+        String clearStatement = String.format(
+                "DELETE FROM %s WHERE %s=%s",
+                bridgingTableName,
+                bridgingTable.ownForeignColumnName(),
+                getFieldValue(ID_COLUMN_NAME, bean)
+        );
+        executeStatement(clearStatement);
+
         Object others = getFieldValue(field, bean);
 
         if (others instanceof List othersList) {
             for (Object other: othersList) {
-                System.out.println("getting ids " + other);
                 String sql = String.format(
                         "INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)",
                         bridgingTableName,
@@ -166,6 +151,7 @@ public class SqliteDatabase implements Database {
     }
 
     private Object readFieldValueFromRow(Field field, Map<String, Object> row, boolean recursive) {
+
         Object value;
 
         if (hasAnnotation(field, ForeignTable.class)) {
@@ -211,7 +197,8 @@ public class SqliteDatabase implements Database {
         Class<?> listClass = getListType(field);
         String otherTableName = listClass.getAnnotation(DatabaseEntity.class).tableName();
         String sql = String.format(
-                "SELECT * FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
+                "SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
+                otherTableName,
                 bridgingTable.bridgingTableName(),
                 otherTableName,
                 getTableName(listClass) + "." + ID_COLUMN_NAME,

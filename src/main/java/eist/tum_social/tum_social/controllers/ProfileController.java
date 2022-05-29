@@ -3,6 +3,8 @@ package eist.tum_social.tum_social.controllers;
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.ProfileForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
+import eist.tum_social.tum_social.model.DegreeLevel;
+import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import eist.tum_social.tum_social.model.Person;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
@@ -32,7 +35,11 @@ public class ProfileController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+
         addPersonToModel(model);
+        List<DegreeProgram> degreePrograms = new Storage().getDegreePrograms();
+        model.addAttribute("degreePrograms", degreePrograms);
+
         return "profile";
     }
 

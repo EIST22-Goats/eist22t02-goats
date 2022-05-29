@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Persons")
-public class Person {
+public class Person extends UniquelyIdentifiable {
 
     private int id = -1;
     private String firstname;
