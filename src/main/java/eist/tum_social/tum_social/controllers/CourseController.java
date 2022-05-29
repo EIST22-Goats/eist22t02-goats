@@ -24,10 +24,16 @@ public class CourseController {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
-        addPersonToModel(model);
+        Storage db = new Storage();
 
-        StorageFacade db = new Storage();
+        Person person = getCurrentPerson(db);
+        model.addAttribute(person);
+
+        List<Course> myCourses = person.getCourses();
         List<Course> courses = db.getCourses();
+
+        courses.removeAll(myCourses);
+
         model.addAttribute("coursesList", courses);
 
         return "courses";
@@ -50,6 +56,10 @@ public class CourseController {
 
     @PostMapping("/createCourse")
     public String createCourse(Course course) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
         Storage storage = new Storage();
         Person p = getCurrentPerson(storage);
         course.setAdmin(p);
@@ -102,4 +112,21 @@ public class CourseController {
 
         return "redirect:/courses";
     }
+
+    @PostMapping("/updateCourse/{courseId}")
+    public String updateCourse(@PathVariable int courseId, Course courseForm) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Storage storage = new Storage();
+        Course course = storage.getCourse(courseId);
+        course.setName(courseForm.getName());
+        course.setAcronym(courseForm.getAcronym());
+        course.setDescription(courseForm.getDescription());
+        storage.updateCourse(course);
+
+        return "redirect:/courses/" + courseId;
+    }
+
 }

@@ -60,25 +60,69 @@
       <button type="submit" class="btn btn-primary w-100 mb-3">Kurs hinzufügen</button>
       </form>
 
-      <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/deleteCourse/'+${course.getId()}" method="post">
-        <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">
-          Kurs löschen
-        </button>
-        <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Kurs wirklich löschen?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                <button type="submit" class="btn btn-danger">Kurs löschen</button>
+      <div class="row">
+        <div class="col-6">
+          <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/deleteCourse/'+${course.getId()}" method="post">
+            <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">
+              Kurs löschen
+            </button>
+            <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Kurs wirklich löschen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-danger">Kurs löschen</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
-      </form>
+        <div class="col-6">
+          <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/updateCourse/'+${course.getId()}" method="post">
+            <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#editCourseModal">
+              bearbeiten
+            </button>
+            <div class="modal fade" id="editCourseModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Kurs wirklich löschen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label for="nameLabel" class="form-label">Name</label>
+                      <input type="text" class="form-control" id="nameLabel" name="name"
+                             placeholder="z.B. Einführung in die Softwaretechnik" required
+                             th:value="${course.getName()}">
+                    </div>
+                    <div class="mb-3">
+                      <label for="acronymLabel" class="form-label">Acronym</label>
+                      <input type="text" class="form-control" id="acronymLabel" name="acronym"
+                             placeholder="z.B. EIST" required
+                             th:value="${course.getAcronym()}">
+                    </div>
+                    <div class="mb-3">
+                      <label for="descriptionLabel" class="form-label">Beschreibung</label>
+                      <textarea class="form-control" id="descriptionLabel" rows="3"
+                                name="description" required th:text="${course.getDescription()}"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary">speichern</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <div class="col-lg-9">
