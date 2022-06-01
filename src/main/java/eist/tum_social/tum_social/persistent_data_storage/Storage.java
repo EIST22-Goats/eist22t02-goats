@@ -27,7 +27,6 @@ public class Storage implements StorageFacade {
         return beans.stream().map(it -> (T) reloadObject(it)).toList();
     }
 
-
     @Override
     public void updatePerson(Person person) {
         db.update(person);

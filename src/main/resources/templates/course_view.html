@@ -35,6 +35,8 @@
                         <span th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                     </li>
                 </ul>
+
+                <a href="/timetable" class="stretched-link"></a>
             </div>
 
             <div class="card mb-3">

@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
+import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
@@ -81,8 +82,9 @@ public class SqliteDatabase implements Database {
         parameters.deleteCharAt(parameters.length() - 1);
         values.deleteCharAt(values.length() - 1);
 
-        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values);
-        executeStatement(sql);
+        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s);", tableName, parameters, values);
+        int key = updateQuery(sql);
+        setFieldValue(ID_COLUMN_NAME, bean, key);
     }
 
     public void delete(Object bean) {
@@ -145,10 +147,6 @@ public class SqliteDatabase implements Database {
             return new Pair<>(name, toSqlString(value));
         }
         return null;
-    }
-
-    public void delete(String tableName, String whereCondition) {
-        executeStatement(String.format("DELETE FROM %s WHERE %s", tableName, whereCondition));
     }
 
     private <T> T createObject(Class<T> clazz, Map<String, Object> row, boolean recursive) {
@@ -244,6 +242,14 @@ public class SqliteDatabase implements Database {
         }
     }
 
+    private void setFieldValue(String field, Object bean, Object value) {
+        try {
+            setFieldValue(bean.getClass().getDeclaredField(field), bean, value);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void setFieldValue(Field field, Object bean, Object value) {
         try {
             if (value != null) {
@@ -272,6 +278,29 @@ public class SqliteDatabase implements Database {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e + " SQL: " + sql);
+        }
+    }
+
+    private int updateQuery(String sql) {
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("insert failed");
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return (int) generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -316,6 +345,8 @@ public class SqliteDatabase implements Database {
             return "NULL";
         } else if (object instanceof LocalDate localDate) {
             return "'" + localDate.format(DATE_FORMAT) + "'";
+        } else if (object instanceof LocalTime localTime) {
+            return "'" + localTime.format(TIME_FORMAT) + "'";
         } else if (object instanceof String) {
             return "'" + object + "'";
         } else {
