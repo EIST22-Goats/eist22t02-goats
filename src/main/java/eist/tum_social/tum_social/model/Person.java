@@ -1,7 +1,9 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.Storage;
-import eist.tum_social.tum_social.persistent_data_storage.util.*;
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +24,11 @@ public class Person extends UniquelyIdentifiable {
     private List<Course> courses;
     @IgnoreInDatabase
     private List<Person> friends;
-    @IgnoreInDatabase
-    private Timetable timetable;
+    @BridgingTable(
+            bridgingTableName = "PersonAppointments",
+            ownForeignColumnName = "personId",
+            otherForeignColumnName = "appointmentId")
+    private List<Appointment> appointments;
     private int semesterNr;
     @ForeignTable(ownColumnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
@@ -85,12 +90,12 @@ public class Person extends UniquelyIdentifiable {
         this.friends = friends;
     }
 
-    public Timetable getTimetable() {
-        return timetable;
+    public List<Appointment> getTimetable() {
+        return appointments;
     }
 
-    public void setTimetable(Timetable timetable) {
-        this.timetable = timetable;
+    public void setTimetable(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 
     public String getPassword() {
@@ -123,5 +128,13 @@ public class Person extends UniquelyIdentifiable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }
