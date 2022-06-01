@@ -82,7 +82,7 @@
                     </li>
                     <li class="list-group-item">
                         <span th:each="appointment: ${course.getAppointments()}"
-                              class="badge text-bg-primary" th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
+                              class="badge text-bg-primary me-2" th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                     </li>
                 </ul>
                 <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
@@ -110,8 +110,8 @@
                         <p th:text="${course.getDescription()}"></p>
                     </li>
                     <li class="list-group-item">
-                        <span class="badge text-bg-primary">Mo 7:00 - 9:00</span>
-                        <span class="badge text-bg-primary">TODO</span>
+                        <span th:each="appointment: ${course.getAppointments()}"
+                              class="badge text-bg-primary me-2" th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                     </li>
                 </ul>
                 <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>

@@ -5,6 +5,7 @@ import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 @DatabaseEntity(tableName = "Appointments")
 public class Appointment extends UniquelyIdentifiable {
@@ -91,5 +92,9 @@ public class Appointment extends UniquelyIdentifiable {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public double getDurationInHours() {
+        return startTime.until(endTime, ChronoUnit.MINUTES) / 60.0;
     }
 }
