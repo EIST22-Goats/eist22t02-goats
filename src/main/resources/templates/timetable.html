@@ -1,4 +1,17 @@
-<header th:fragment="header" class="p-3 mb-3 border-bottom">
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tum Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+<header class="p-3 mb-3 border-bottom">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
@@ -7,7 +20,7 @@
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 ms-3 justify-content-center mb-md-0">
                 <li><a href="/courses" class="nav-link px-2 link-dark">Kurse</a></li>
-                <li><a href="/timetable" class="nav-link px-2 link-dark">Terminkalender</a></li>
+                <li><a href="#" class="nav-link px-2 link-dark">Terminkalender</a></li>
                 <li><a href="#" class="nav-link px-2 link-dark"><span class="position-relative">
                     Chat
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -49,7 +62,7 @@
             <div class="dropdown text-end">
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img th:src="'/profile_pictures/'+${person.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}" alt="" class="rounded-circle"
+                    <img src="/profile_pictures/ge95bit.png?44" alt="" class="rounded-circle"
                          width="32" height="32" style="object-fit: cover">
                 </a>
                 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
@@ -64,3 +77,58 @@
         </div>
     </div>
 </header>
+
+<div class="container">
+
+    <div class="row mb-3" th:style="'height: '+${(endTime - startTime + 2) * 2.5}+'em'">
+        <div class="col-1 position-relative">
+            <div class="position-absolute border-bottom w-100 text-center p-1" style="height: 2.5em">
+                <span class="lead">Zeit</span>
+            </div>
+
+            <div th:each="i: ${#numbers.sequence(0, endTime - startTime)}"
+                 class="position-absolute bg border-bottom w-100 text-center p-2"
+                 th:style="'height: 2.5em; top:'+${(i + 1) * 2.5}+'em;'"
+                 th:text="${#numbers.formatInteger(i + startTime, 2)}+':00'"></div>
+        </div>
+        <div th:each="day: ${daysOfWeek}" class="col position-relative">
+            <div class="position-absolute border-bottom border-start-0 w-100 text-center p-1" style="height: 2.5em">
+                <span class="lead" th:text="${day}"></span>
+            </div>
+
+            <div th:each="i: ${#numbers.sequence(0, endTime - startTime)}" class="position-absolute border-bottom w-100"
+                 th:style="'height: 2.5em; top:'+${(i + 1) * 2.5}+'em;'"></div>
+
+            <div th:each="appointment: ${mappedAppointments.get(day)}"
+                 class="w-100 border-start border-end position-absolute bg-light p-1 overflow-hidden"
+                 th:style="'top: '+${((appointment.getStartTime().getHour() - startTime + 1) + appointment.getStartTime().getMinute() / 60.0) * 2.5}+'em; height: '+
+                                   ${(appointment.getDurationInHours()) * 2.5}+'em;'">
+                <span class="fw-bold" th:text="${appointment.getName()}"></span>
+                <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="border-top">
+    <footer class="container d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
+        <p class="col-md-6 mb-0 text-muted">© 2022 Tum Social</p>
+
+        <a href="/"
+           class="col-md-6 d-flex align-items-center justify-content-end mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+            <img src="/logo.svg" alt="logo" height="20">
+        </a>
+    </footer>
+</div>
+
+<div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+            crossorigin="anonymous"></script>
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+</div>
+
+</body>
+</html>
