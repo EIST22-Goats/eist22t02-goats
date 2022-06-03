@@ -45,36 +45,37 @@
             <div th:each="i: ${#numbers.sequence(0, endTime - startTime)}" class="position-absolute border-bottom w-100"
                  th:style="'height: 2.5em; top:'+${(i + 1) * 2.5}+'em;'"></div>
 
-            <div th:each="appointment: ${mappedAppointments.get(day)}"
-                 class="w-100 border-start border-end position-absolute po bg-light p-1 overflow-hidden"
+            <div class="px-1 position-absolute w-100" th:each="appointment: ${mappedAppointments.get(day)}"
                  th:style="'top: '+${((appointment.getStartTime().getHour() - startTime + 1) + appointment.getStartTime().getMinute() / 60.0) * 2.5}+'em; height: '+
                                    ${(appointment.getDurationInHours()) * 2.5}+'em;'">
-                <span class="fw-bold" th:text="${appointment.getName()}"></span>
-                <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
+                <div class="w-100 border-start border-end rounded bg-light overflow-hidden p-1 h-100">
+                    <span class="fw-bold" th:text="${appointment.getName()}"></span>
+                    <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
 
-                <a type="button" class="stretched-link" data-bs-toggle="modal"
-                   th:data-bs-target="'#timeslotModal'+${appointment.getId()}"></a>
+                    <a type="button" class="stretched-link" data-bs-toggle="modal"
+                       th:data-bs-target="'#timeslotModal'+${appointment.getId()}"></a>
 
-                <div class="modal fade" th:id="'timeslotModal'+${appointment.getId()}" tabindex="-1"
-                     th:aria-labelledby="'timeslotModalLabel'+${appointment.getId()}"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"
-                                    th:aria-labelledby="'timeslotModalLabel'+${appointment.getId()}"
-                                    th:text="${appointment.getName()}"></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p th:text="${appointment.getDescription()}"></p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Schließen
-                                </button>
-                                <button type="button" class="btn btn-primary">Ändern</button>
+                    <div class="modal fade" th:id="'timeslotModal'+${appointment.getId()}" tabindex="-1"
+                         th:aria-labelledby="'timeslotModalLabel'+${appointment.getId()}"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"
+                                        th:aria-labelledby="'timeslotModalLabel'+${appointment.getId()}"
+                                        th:text="${appointment.getName()}"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p th:text="${appointment.getDescription()}"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        Schließen
+                                    </button>
+                                    <button type="button" class="btn btn-primary">Ändern</button>
+                                </div>
                             </div>
                         </div>
                     </div>
