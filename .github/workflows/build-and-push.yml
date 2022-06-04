@@ -57,7 +57,7 @@ jobs:
       run: git config --global user.email "organisation-name@github.com" && git config --global user.name "GitHub Action Runner"
 
     - name: Fix merge conflicts if any
-      run: git pull --rebase upstream
+      run: git pull --rebase upstream --all
 
     - name: Git push to other repo
       run: git push upstream
