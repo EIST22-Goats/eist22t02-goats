@@ -201,8 +201,6 @@ public class TimetableController {
             storage.deleteAppointment(appointment);
         }
 
-
         return "redirect:/timetable";
     }
-
 }
