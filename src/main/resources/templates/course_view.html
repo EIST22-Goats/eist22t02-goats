@@ -63,16 +63,17 @@
                                     </thead>
                                     <tbody>
                                     <tr th:each="appointment: ${course.getAppointments()}">
-                                        <th th:text="${appointment.getStartDate().getDayOfWeek()}"></th>
-                                        <td th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
-                                        <td><a href="#">bearbeiten</a> <a href="#" class="">löschen</a></td>
+                                        <td th:text="${appointment.getStartDate().getDayOfWeek()}"></td>
+<!-- TODO language support -->          <td th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
+                                        <td><a href="#">bearbeiten</a> <a href="#" class="link-danger">löschen</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                                <button type="button" class="btn btn-primary">Neuer Termin</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#newDateModal">Neuer Termin</button>
                             </div>
                         </form>
                     </div>

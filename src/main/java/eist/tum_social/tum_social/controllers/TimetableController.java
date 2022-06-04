@@ -203,4 +203,19 @@ public class TimetableController {
 
         return "redirect:/timetable";
     }
+
+    @PostMapping("/deleteCourseAppointment/{appointmentId}")
+    public String deleteCourseAppointment(@PathVariable int appointmentId) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Storage storage = new Storage();
+        Appointment appointment = storage.getAppointment(appointmentId);
+
+        storage.deleteAppointment(appointment);
+
+        return "redirect:/timetable";
+    }
+
 }
