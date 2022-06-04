@@ -19,6 +19,8 @@ permissions:
 
 jobs:
   build:
+  
+  # CODE FOR PUSH TO BITBUCKET TAKEN FROM github.com/babyygemperor/github-action-push-to-another-repository.git
 
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository }}
