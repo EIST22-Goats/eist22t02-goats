@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -7,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @DatabaseEntity(tableName = "Appointments")
 public class Appointment extends UniquelyIdentifiable {
@@ -22,6 +24,16 @@ public class Appointment extends UniquelyIdentifiable {
     private Location location;
     @ForeignTable(ownColumnName = "roomId")
     private Room room;
+    @BridgingTable(
+            bridgingTableName = "PersonAppointments",
+            ownForeignColumnName = "appointmentId",
+            otherForeignColumnName = "personId")
+    private List<Person> owners;
+    @BridgingTable(
+            bridgingTableName = "CourseAppointments",
+            ownForeignColumnName = "appointmentId",
+            otherForeignColumnName = "courseId")
+    private List<Course> course;
 
     public int getId() {
         return id;
@@ -97,5 +109,21 @@ public class Appointment extends UniquelyIdentifiable {
 
     public double getDurationInHours() {
         return startTime.until(endTime, ChronoUnit.MINUTES) / 60.0;
+    }
+
+    public List<Person> getOwners() {
+        return owners;
+    }
+
+    public void setOwners(List<Person> owner) {
+        this.owners = owner;
+    }
+
+    public List<Course> getCourse() {
+        return course;
+    }
+
+    public void setCourse(List<Course> course) {
+        this.course = course;
     }
 }

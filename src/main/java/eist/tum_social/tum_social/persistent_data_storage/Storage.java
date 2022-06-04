@@ -89,7 +89,7 @@ public class Storage implements StorageFacade {
 
     @Override
     public void deleteAppointment(Appointment appointment) {
-
+        db.delete(appointment);
     }
 
     private <T> T firstOrNull(List<T> list) {

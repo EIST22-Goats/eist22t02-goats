@@ -39,6 +39,90 @@
                 <a href="/timetable" class="stretched-link"></a>
             </div>
 
+            <button th:if="${course.getAdmin().getId() == person.getId()}" class="btn btn-primary w-100 mb-3"
+                    data-bs-toggle="modal" data-bs-target="#updateCourseDatesModal">
+                Termine bearbeiten
+            </button>
+
+            <div class="modal fade" id="updateCourseDatesModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Kurs Termine</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Wochentag</th>
+                                        <th scope="col">Zeit</th>
+                                        <th scope="col">#</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="appointment: ${course.getAppointments()}">
+                                        <th th:text="${appointment.getStartDate().getDayOfWeek()}"></th>
+                                        <td th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
+                                        <td><a href="#">bearbeiten</a> <a href="#" class="">löschen</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="button" class="btn btn-primary">Neuer Termin</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="newDateModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="'/createCourseAppointment/'+${course.getId()}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Neuer Termin</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea class="form-control" rows="3"
+                                              name="description"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tag</label>
+                                    <input name="startDate" type="date" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Startzeit</label>
+                                    <input name="startTime" type="time" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Endzeit</label>
+                                    <input name="endTime" type="time" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Wiederholungen</label>
+                                    <input name="repetitions" type="number" value="0" min="0" class="form-control">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="submit" class="btn btn-primary">Speichern</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="card mb-3">
                 <div class="card-header">Mitglieder</div>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
@@ -118,7 +202,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Kurs wirklich löschen?</h5>
+                                        <h5 class="modal-title">Kurs bearbeiten</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>

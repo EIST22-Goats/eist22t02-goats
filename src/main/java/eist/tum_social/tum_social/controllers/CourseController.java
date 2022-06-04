@@ -46,12 +46,6 @@ public class CourseController {
         myCourses = db.reloadObjects(myCourses);
         courses = db.reloadObjects(courses);
 
-        for (Course course : myCourses) {
-            for (Appointment appointment : course.getAppointments()) {
-                System.out.println("    " + appointment.getName());
-            }
-        }
-
         model.addAttribute("myCoursesList", myCourses);
         model.addAttribute("coursesList", courses);
 
@@ -133,8 +127,12 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Course course = new Storage().getCourse(courseId);
-        new Storage().deleteCourse(course);
+        Storage storage = new Storage();
+        Course course = storage.getCourse(courseId);
+
+        if (course.getAdmin().getId() == getCurrentPerson().getId()) {
+            storage.deleteCourse(course);
+        }
 
         return "redirect:/courses";
     }
@@ -145,12 +143,15 @@ public class CourseController {
             return "redirect:/login";
         }
 
+
         Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
-        course.setName(courseForm.getName());
-        course.setAcronym(courseForm.getAcronym());
-        course.setDescription(courseForm.getDescription());
-        storage.updateCourse(course);
+        if (course.getAdmin().getId() == getCurrentPerson().getId()) {
+            course.setName(courseForm.getName());
+            course.setAcronym(courseForm.getAcronym());
+            course.setDescription(courseForm.getDescription());
+            storage.updateCourse(course);
+        }
 
         return "redirect:/courses/" + courseId;
     }
