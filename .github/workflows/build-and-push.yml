@@ -50,14 +50,14 @@ jobs:
     - name: Add bitbucket to known SSH-HOST
       run: echo ${{env.BITBUCKET_PUB_KEY}} >> ~/.ssh/known_hosts
 
-    - name: Pull upstream
+    - name: Pull origin
       run: git fetch --unshallow
 
     - name: Specify Identity in case of rebasing
       run: git config --global user.email "organisation-name@github.com" && git config --global user.name "GitHub Action Runner"
 
     - name: Fix merge conflicts if any
-      run: git pull upstream --all --rebase
+      run: git pull --rebase upstream main
 
     - name: Git push to other repo
       run: git push upstream
