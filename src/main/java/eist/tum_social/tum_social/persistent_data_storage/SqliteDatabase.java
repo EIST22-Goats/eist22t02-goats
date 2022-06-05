@@ -136,6 +136,7 @@ public class SqliteDatabase implements Database {
         if (value != null && !(name.equals(ID_COLUMN_NAME) && (int) value == -1)) {
             if (hasAnnotation(field, ForeignTable.class)) {
                 name = field.getAnnotation(ForeignTable.class).ownColumnName();
+                name = field.getAnnotation(ForeignTable.class).ownColumnName();
                 try {
                     value = getFieldValue(field.getType().getDeclaredField(ID_COLUMN_NAME), value);
                 } catch (NoSuchFieldException e) {
