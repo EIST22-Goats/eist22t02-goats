@@ -2,11 +2,11 @@
 <html lang="de">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="'Kurs '+${course.getAcronym()}+' - Tum Social'"></title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Kurs '+${course.getAcronym()}+' - Tum Social'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 
 <body>
@@ -14,121 +14,256 @@
 <header th:replace="fragments/header :: header"></header>
 
 <div class="container">
-  <h4 class="text-right display-4 mb-4" th:text="${course.getName()}"></h4>
+    <h4 class="text-right display-4 mb-4" th:text="${course.getName()}"></h4>
 
-  <div class="row">
-    <div class="col-lg-3">
-      <div class="card mb-3">
-        <div class="card-header">Beschreibung</div>
-        <div class="card-body">
-          <p th:text="${course.getDescription()}"></p>
-        </div>
-      </div>
-
-      <div class="card mb-3">
-        <div class="card-header">Mitglieder</div>
-        <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
-          <li th:each="participant: ${course.getParticipants()}" class="list-group-item">
-            <img th:src="'/profile_pictures/'+${participant.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
-                 alt="" class="rounded-circle float-start me-2" width="27" height="27" style="object-fit: cover">
-            <span th:text="${participant.getFirstname()}+' '+${participant.getLastname()}"></span>
-          </li>
-        </ul>
-      </div>
-
-      <form th:if="${person.getCourses().contains(course)}" th:action="'/leaveCourse/'+${course.getId()}" method="post">
-        <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal" data-bs-target="#leaveCourseModal">
-          Kurs verlassen
-        </button>
-        <div class="modal fade" id="leaveCourseModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Kurs wirklich verlassen?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                <button type="submit" class="btn btn-danger">Kurs verlassen</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
-      <form th:if="${!person.getCourses().contains(course)}" th:action="'/joinCourse/'+${course.getId()}" method="post">
-      <button type="submit" class="btn btn-primary w-100 mb-3">Kurs hinzufügen</button>
-      </form>
-
-      <div class="row">
-        <div class="col-6">
-          <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/deleteCourse/'+${course.getId()}" method="post">
-            <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">
-              Kurs löschen
-            </button>
-            <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Kurs wirklich löschen?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="submit" class="btn btn-danger">Kurs löschen</button>
-                  </div>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card mb-3">
+                <div class="card-header">Beschreibung</div>
+                <div class="card-body">
+                    <p th:text="${course.getDescription()}"></p>
                 </div>
-              </div>
             </div>
-          </form>
-        </div>
-        <div class="col-6">
-          <form th:if="${person.getId() == course.getAdmin().getId()}" th:action="'/updateCourse/'+${course.getId()}" method="post">
-            <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#editCourseModal">
-              bearbeiten
-            </button>
-            <div class="modal fade" id="editCourseModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Kurs wirklich löschen?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <label for="nameLabel" class="form-label">Name</label>
-                      <input type="text" class="form-control" id="nameLabel" name="name"
-                             placeholder="z.B. Einführung in die Softwaretechnik" required
-                             th:value="${course.getName()}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="acronymLabel" class="form-label">Acronym</label>
-                      <input type="text" class="form-control" id="acronymLabel" name="acronym"
-                             placeholder="z.B. EIST" required
-                             th:value="${course.getAcronym()}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="descriptionLabel" class="form-label">Beschreibung</label>
-                      <textarea class="form-control" id="descriptionLabel" rows="3"
-                                name="description" required th:text="${course.getDescription()}"></textarea>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="submit" class="btn btn-primary">speichern</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
 
-    <div class="col-lg-9">
-      Chat, Forum, Announcements, ...
+            <div class="card mb-3">
+                <div class="card-header">
+                    Termine
+                </div>
+
+                <ul class="list-group list-group-flush">
+                    <li th:each="appointment: ${course.getAppointments()}" class="list-group-item">
+                        <span th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
+                    </li>
+                </ul>
+
+                <a href="/timetable" class="stretched-link"></a>
+            </div>
+
+            <button th:if="${course.getAdmin().getId() == person.getId()}" class="btn btn-primary w-100 mb-3"
+                    data-bs-toggle="modal" data-bs-target="#updateCourseDatesModal">
+                Termine bearbeiten
+            </button>
+
+            <div class="modal fade" id="updateCourseDatesModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Kurs Termine</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Wochentag</th>
+                                        <th scope="col">Zeit</th>
+                                        <th scope="col">#</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="appointment: ${course.getAppointments()}">
+                                        <td th:text="${appointment.getStartDate().getDayOfWeek()}"></td>
+<!-- TODO language support -->          <td th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
+                                        <td><a href="#">bearbeiten</a> <a href="#" class="link-danger">löschen</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#newDateModal">Neuer Termin</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="newDateModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="'/createCourseAppointment/'+${course.getId()}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Neuer Termin</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea class="form-control" rows="3"
+                                              name="description"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tag</label>
+                                    <input name="startDate" type="date" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Startzeit</label>
+                                    <input name="startTime" type="time" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Endzeit</label>
+                                    <input name="endTime" type="time" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Wiederholungen</label>
+                                    <input name="repetitions" type="number" value="0" min="0" class="form-control">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="submit" class="btn btn-primary">Speichern</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Mitglieder</div>
+                <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+                    <li th:each="participant: ${course.getParticipants()}" class="list-group-item">
+                        <img th:src="'/profile_pictures/'+${participant.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
+                             style="object-fit: cover">
+                        <span th:text="${participant.getFirstname()}+' '+${participant.getLastname()}"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <form th:if="${person.getCourses().contains(course)}" th:action="'/leaveCourse/'+${course.getId()}"
+                  method="post">
+                <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal"
+                        data-bs-target="#leaveCourseModal">
+                    Kurs verlassen
+                </button>
+                <div class="modal fade" id="leaveCourseModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Kurs wirklich verlassen?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen
+                                </button>
+                                <button type="submit" class="btn btn-danger">Kurs verlassen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form th:if="${!person.getCourses().contains(course)}" th:action="'/joinCourse/'+${course.getId()}"
+                  method="post">
+                <button type="submit" class="btn btn-primary w-100 mb-3">Kurs hinzufügen</button>
+            </form>
+
+            <div class="row">
+                <div class="col-6">
+                    <form th:if="${person.getId() == course.getAdmin().getId()}"
+                          th:action="'/deleteCourse/'+${course.getId()}" method="post">
+                        <button type="button" class="btn btn-danger w-100 mb-3" data-bs-toggle="modal"
+                                data-bs-target="#deleteCourseModal">
+                            Kurs löschen
+                        </button>
+                        <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Kurs wirklich löschen?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Abbrechen
+                                        </button>
+                                        <button type="submit" class="btn btn-danger">Kurs löschen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <form th:if="${person.getId() == course.getAdmin().getId()}"
+                          th:action="'/updateCourse/'+${course.getId()}" method="post">
+                        <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal"
+                                data-bs-target="#editCourseModal">
+                            bearbeiten
+                        </button>
+                        <div class="modal fade" id="editCourseModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Kurs bearbeiten</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="nameLabel" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="nameLabel" name="name"
+                                                   placeholder="z.B. Einführung in die Softwaretechnik" required
+                                                   th:value="${course.getName()}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="acronymLabel" class="form-label">Acronym</label>
+                                            <input type="text" class="form-control" id="acronymLabel" name="acronym"
+                                                   placeholder="z.B. EIST" required
+                                                   th:value="${course.getAcronym()}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="descriptionLabel" class="form-label">Beschreibung</label>
+                                            <textarea class="form-control" id="descriptionLabel" rows="3"
+                                                      name="description" required
+                                                      th:text="${course.getDescription()}"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Abbrechen
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">speichern</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card mb-3">
+                <h5 class="card-header">Ankündigungen</h5>
+                <div class="card-body">
+
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <h5 class="card-header">Ankündigungen</h5>
+                <div class="card-body">
+
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <h5 class="card-header">Ankündigungen</h5>
+                <div class="card-body">
+
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
 </div>
 
@@ -138,3 +273,4 @@
 
 </body>
 </html>
+

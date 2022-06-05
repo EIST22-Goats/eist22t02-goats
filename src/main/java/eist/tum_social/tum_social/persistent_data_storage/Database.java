@@ -10,5 +10,6 @@ public interface Database {
 
     void delete(Object object);
 
+    Object reloadObject(Object bean);
 
 }

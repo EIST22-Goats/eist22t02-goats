@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
+import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
@@ -10,14 +11,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.sql.*;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
 
 public class SqliteDatabase implements Database {
 
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH-mm");
     private static final String ID_COLUMN_NAME = "id";
     private static final String URL = "jdbc:sqlite:tum_social.db";
     private final SQLiteDataSource dataSource;
@@ -38,6 +44,10 @@ public class SqliteDatabase implements Database {
         }
 
         return ret;
+    }
+
+    public Object reloadObject(Object bean) {
+        return select(bean.getClass(), ID_COLUMN_NAME + "=" + getFieldValue(ID_COLUMN_NAME, bean), true).get(0);
     }
 
     public void update(Object bean) {
@@ -72,8 +82,9 @@ public class SqliteDatabase implements Database {
         parameters.deleteCharAt(parameters.length() - 1);
         values.deleteCharAt(values.length() - 1);
 
-        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s)", tableName, parameters, values);
-        executeStatement(sql);
+        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s);", tableName, parameters, values);
+        int key = updateQuery(sql);
+        setFieldValue(ID_COLUMN_NAME, bean, key);
     }
 
     public void delete(Object bean) {
@@ -138,10 +149,6 @@ public class SqliteDatabase implements Database {
         return null;
     }
 
-    public void delete(String tableName, String whereCondition) {
-        executeStatement(String.format("DELETE FROM %s WHERE %s", tableName, whereCondition));
-    }
-
     private <T> T createObject(Class<T> clazz, Map<String, Object> row, boolean recursive) {
         try {
             T object = clazz.getDeclaredConstructor().newInstance();
@@ -161,7 +168,6 @@ public class SqliteDatabase implements Database {
     }
 
     private Object readFieldValueFromRow(Field field, Map<String, Object> row, boolean recursive) {
-
         Object value;
 
         if (hasAnnotation(field, ForeignTable.class)) {
@@ -172,12 +178,12 @@ public class SqliteDatabase implements Database {
             value = row.get(field.getName());
         }
 
-        try {
-            if (value != null && field.getType() == Date.class) {
-                value = DATE_FORMAT.parse(value.toString());
+        if (value != null) {
+            if (field.getType() == LocalDate.class) {
+                value = LocalDate.parse(value.toString(), DATE_FORMAT);
+            } else if (field.getType() == LocalTime.class) {
+                value = LocalTime.parse(value.toString(), TIME_FORMAT);
             }
-        } catch (ParseException e) {
-            throw new RuntimeException("Date was not stored correctly in database");
         }
 
         return value;
@@ -187,7 +193,7 @@ public class SqliteDatabase implements Database {
         ForeignTable foreignTable = field.getAnnotation(ForeignTable.class);
         String name = foreignTable.ownColumnName();
 
-        if (recursive && row.get(name) != null) {
+        if (row.get(name) != null) {
             int key = (int) row.get(name);
             String whereCondition = ID_COLUMN_NAME + "=" + key;
             return select(field.getType(), whereCondition, recursive).get(0);
@@ -236,6 +242,14 @@ public class SqliteDatabase implements Database {
         }
     }
 
+    private void setFieldValue(String field, Object bean, Object value) {
+        try {
+            setFieldValue(bean.getClass().getDeclaredField(field), bean, value);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void setFieldValue(Field field, Object bean, Object value) {
         try {
             if (value != null) {
@@ -264,6 +278,29 @@ public class SqliteDatabase implements Database {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e + " SQL: " + sql);
+        }
+    }
+
+    private int updateQuery(String sql) {
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("insert failed");
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return (int) generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -306,8 +343,10 @@ public class SqliteDatabase implements Database {
     private String toSqlString(Object object) {
         if (object == null) {
             return "NULL";
-        } else if (object instanceof Date) {
-            return "'" + DATE_FORMAT.format(object) + "'";
+        } else if (object instanceof LocalDate localDate) {
+            return "'" + localDate.format(DATE_FORMAT) + "'";
+        } else if (object instanceof LocalTime localTime) {
+            return "'" + localTime.format(TIME_FORMAT) + "'";
         } else if (object instanceof String) {
             return "'" + object + "'";
         } else {

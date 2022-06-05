@@ -1,8 +1,11 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.util.*;
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.IgnoreInDatabase;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @DatabaseEntity(tableName = "Persons")
@@ -11,7 +14,7 @@ public class Person extends UniquelyIdentifiable {
     private int id = -1;
     private String firstname;
     private String lastname;
-    private Date birthdate;
+    private LocalDate birthdate;
     private String tumId;
     private String email;
     @BridgingTable(
@@ -21,15 +24,15 @@ public class Person extends UniquelyIdentifiable {
     private List<Course> courses;
     @IgnoreInDatabase
     private List<Person> friends;
-    @IgnoreInDatabase
-    private Timetable timetable;
+    @BridgingTable(
+            bridgingTableName = "PersonAppointments",
+            ownForeignColumnName = "personId",
+            otherForeignColumnName = "appointmentId")
+    private List<Appointment> appointments;
     private int semesterNr;
     @ForeignTable(ownColumnName = "degreeProgramId")
     private DegreeProgram degreeProgram;
     private String password;
-
-    public Person() {
-    }
 
     public String getFirstname() {
         return firstname;
@@ -47,11 +50,11 @@ public class Person extends UniquelyIdentifiable {
         this.lastname = lastname;
     }
 
-    public Date getBirthdate() {
+    public LocalDate getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
     }
 
@@ -87,12 +90,12 @@ public class Person extends UniquelyIdentifiable {
         this.friends = friends;
     }
 
-    public Timetable getTimetable() {
-        return timetable;
+    public List<Appointment> getTimetable() {
+        return appointments;
     }
 
-    public void setTimetable(Timetable timetable) {
-        this.timetable = timetable;
+    public void setTimetable(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 
     public String getPassword() {
@@ -127,4 +130,11 @@ public class Person extends UniquelyIdentifiable {
         this.id = id;
     }
 
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
+    }
 }

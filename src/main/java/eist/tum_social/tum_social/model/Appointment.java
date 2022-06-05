@@ -1,16 +1,95 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
+import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
+import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public abstract class Appointment {
+@DatabaseEntity(tableName = "Appointments")
+public class Appointment extends UniquelyIdentifiable {
 
-    protected Location location;
+    private int id = -1;
+    private String name;
+    private String description;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private LocalDate startDate;
+    private int repetitions;
+    @ForeignTable(ownColumnName = "locationId")
+    private Location location;
+    @ForeignTable(ownColumnName = "roomId")
+    private Room room;
+    @BridgingTable(
+            bridgingTableName = "PersonAppointments",
+            ownForeignColumnName = "appointmentId",
+            otherForeignColumnName = "personId")
+    private List<Person> owners;
+    @BridgingTable(
+            bridgingTableName = "CourseAppointments",
+            ownForeignColumnName = "appointmentId",
+            otherForeignColumnName = "courseId")
+    private List<Course> course;
 
-    public Appointment(Location location) {
-        this.location = location;
+    public int getId() {
+        return id;
     }
 
-    public abstract List<Timeslot> getTimeslots();
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getRepetitions() {
+        return repetitions;
+    }
+
+    public void setRepetitions(int repetitions) {
+        this.repetitions = repetitions;
+    }
 
     public Location getLocation() {
         return location;
@@ -20,4 +99,31 @@ public abstract class Appointment {
         this.location = location;
     }
 
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public double getDurationInHours() {
+        return startTime.until(endTime, ChronoUnit.MINUTES) / 60.0;
+    }
+
+    public List<Person> getOwners() {
+        return owners;
+    }
+
+    public void setOwners(List<Person> owner) {
+        this.owners = owner;
+    }
+
+    public List<Course> getCourse() {
+        return course;
+    }
+
+    public void setCourse(List<Course> course) {
+        this.course = course;
+    }
 }

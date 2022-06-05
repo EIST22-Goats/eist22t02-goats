@@ -6,8 +6,8 @@ import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
 
 import java.text.ParseException;
-
-import static eist.tum_social.tum_social.persistent_data_storage.Storage.DATE_FORMAT;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class UpdateProfileForm implements ProfileForm {
     private String firstname;
@@ -70,10 +70,7 @@ public class UpdateProfileForm implements ProfileForm {
         person.setLastname(lastname);
 
         if (!birthdate.isBlank()) {
-            try {
-                person.setBirthdate(DATE_FORMAT.parse(birthdate));
-            } catch (ParseException ignored) {
-            }
+            person.setBirthdate(LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
 
         person.setEmail(email);

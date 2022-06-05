@@ -1,12 +1,16 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +43,9 @@ public class CourseController {
             courses = filterCourses(courses, searchText);
         }
 
+        myCourses = db.reloadObjects(myCourses);
+        courses = db.reloadObjects(courses);
+
         model.addAttribute("myCoursesList", myCourses);
         model.addAttribute("coursesList", courses);
 
@@ -47,7 +54,8 @@ public class CourseController {
 
     private List<Course> filterCourses(List<Course> courses, String query) {
         return courses.stream()
-                .filter(it -> it.getName().contains(query) || it.getAcronym().contains(query))
+                .filter(it -> it.getName().toLowerCase().contains(query.toLowerCase())
+                        || it.getAcronym().toLowerCase().contains(query.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -119,8 +127,12 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Course course = new Storage().getCourse(courseId);
-        new Storage().deleteCourse(course);
+        Storage storage = new Storage();
+        Course course = storage.getCourse(courseId);
+
+        if (course.getAdmin().getId() == getCurrentPerson().getId()) {
+            storage.deleteCourse(course);
+        }
 
         return "redirect:/courses";
     }
@@ -131,12 +143,15 @@ public class CourseController {
             return "redirect:/login";
         }
 
+
         Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
-        course.setName(courseForm.getName());
-        course.setAcronym(courseForm.getAcronym());
-        course.setDescription(courseForm.getDescription());
-        storage.updateCourse(course);
+        if (course.getAdmin().getId() == getCurrentPerson().getId()) {
+            course.setName(courseForm.getName());
+            course.setAcronym(courseForm.getAcronym());
+            course.setDescription(courseForm.getDescription());
+            storage.updateCourse(course);
+        }
 
         return "redirect:/courses/" + courseId;
     }

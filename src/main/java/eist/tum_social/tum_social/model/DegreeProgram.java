@@ -6,7 +6,7 @@ import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 @DatabaseEntity(tableName = "DegreePrograms")
 public class DegreeProgram extends UniquelyIdentifiable {
 
-    private int id;
+    private int id = -1;
     private String name;
     private String description;
     @ForeignTable(ownColumnName = "degreeLevelId")
