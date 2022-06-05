@@ -82,7 +82,7 @@ public class CourseController {
 
         Storage storage = new Storage();
         Person p = getCurrentPerson(storage);
-        course.setAdmin(p);
+        // TODO course.setAdmin(p);
 
         storage.updateCourse(course);
 

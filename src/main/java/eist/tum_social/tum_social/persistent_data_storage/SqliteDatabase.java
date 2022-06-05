@@ -1,6 +1,5 @@
 package eist.tum_social.tum_social.persistent_data_storage;
 
-import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
