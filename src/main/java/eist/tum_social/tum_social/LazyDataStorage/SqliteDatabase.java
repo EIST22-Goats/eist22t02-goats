@@ -9,18 +9,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class SqliteDatabase implements Database {
@@ -38,12 +33,18 @@ public class SqliteDatabase implements Database {
 
     public static void main(String[] args) {
         Database db = new SqliteDatabase();
-        Person p = db.select(Person.class, "tumId='ge95bit'").get(0);
-        System.out.println(p.getFirstname());
-        for (var c : p.getCourses()) {
-            System.out.println(c.getName());
-            System.out.println(c.getParticipants().get(0).getCourses());
-        }
+        Person p = db.select(Person.class, "tumId='ge47son'").get(0);
+        System.out.println(p.getFirstname()+" "+p.getLastname());
+
+        p.setFirstname("Florian");
+
+        db.update(p);
+
+//        System.out.println(p.getFirstname());
+//        for (var c : p.getCourses()) {
+//            System.out.println(c.getName());
+//            System.out.println(c.getParticipants().get(0).getCourses());
+//        }
     }
 
     public <T> List<T> select(Class<T> clazz, String whereCondition) {
@@ -60,6 +61,161 @@ public class SqliteDatabase implements Database {
         }
 
         return ret;
+    }
+
+    public void update(Object bean) {
+        String tableName = getTableName(bean.getClass());
+
+        StringBuilder parameters = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+
+        for (Field field : bean.getClass().getDeclaredFields()) {
+            String name = field.getName();
+
+            if (hasAnnotation(field, IgnoreInDatabase.class) || name.equals("class")) {
+                continue;
+            }
+
+            if (hasAnnotation(field, BridgingTable.class)) {
+                updateBridgingTable(field, bean);
+                continue;
+            }
+
+            Pair<String, String> assignment = createFieldSqlAssignment(field, bean);
+
+            if (assignment != null) {
+                String sqlName = assignment.first();
+                String sqlValue = assignment.second();
+
+                parameters.append(sqlName).append(",");
+                values.append(sqlValue).append(",");
+            }
+        }
+
+        parameters.deleteCharAt(parameters.length() - 1);
+        values.deleteCharAt(values.length() - 1);
+
+        String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s);", tableName, parameters, values);
+        //int key = updateQuery(sql);
+        //setFieldValue(ID_COLUMN_NAME, bean, key);
+        System.out.println("running query: "+ sql);
+    }
+
+    // TODO
+    private void updateBridgingTable(Field field, Object bean) {
+        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
+        String bridgingTableName = bridgingTable.bridgingTableName();
+
+        String clearStatement = String.format("DELETE FROM %s WHERE %s=%s", bridgingTableName, bridgingTable.ownForeignColumnName(), getFieldValue(ID_COLUMN_NAME, bean));
+        executeStatement(clearStatement);
+
+        Object others = getFieldValue(field, bean);
+
+        if (others instanceof List othersList) {
+            for (Object other : othersList) {
+                String sql = String.format("INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)", bridgingTableName, bridgingTable.ownForeignColumnName(), bridgingTable.otherForeignColumnName(), getFieldValue(ID_COLUMN_NAME, bean), getFieldValue(ID_COLUMN_NAME, other));
+                executeStatement(sql);
+            }
+        }
+    }
+
+    // TODO
+    private void executeStatement(String sql) {
+        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e + " SQL: " + sql);
+        }
+    }
+
+    // TODO
+    private Pair<String, String> createFieldSqlAssignment(Field field, Object bean) {
+        String name = field.getName();
+
+        Object value = getFieldValue(field, bean);
+        if (value != null && !(name.equals(ID_COLUMN_NAME) && (int) value == -1)) {
+            if (hasAnnotation(field, ForeignTable.class)) {
+                name = field.getAnnotation(ForeignTable.class).ownColumnName();
+                value = getLazyFieldValue(field, bean);
+                try {
+                    value = getFieldValue(value.getClass().getDeclaredField(ID_COLUMN_NAME), value);
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return new Pair<>(name, toSqlString(value));
+        }
+        return null;
+    }
+
+    private String getNameOfLazyGetter(Field field) {
+        String field_name = field.getName();
+        String actual_field_name = field_name.substring(0, field_name.length()-6);
+        System.out.println("edited name: "+actual_field_name);
+        return "get"+actual_field_name.substring(0, 1).toUpperCase() + actual_field_name.substring(1);
+    }
+
+    private Class<?> getTypeOfLazyField(Field field, Object bean) {
+        try {
+            if (field.getName().endsWith("Entity")) {
+                String nameOfGetter = getNameOfLazyGetter(field);
+                return bean.getClass().getMethod(nameOfGetter).getReturnType();
+            } else {
+                return field.getType();
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private Object getLazyFieldValue(Field field, Object bean) {
+        try {
+            if (field.getName().endsWith("Entity")) {
+                String nameOfGetter = getNameOfLazyGetter(field);
+                System.out.println(bean.getClass().getMethod(nameOfGetter).getReturnType());
+                return bean.getClass().getMethod(nameOfGetter).invoke(bean);
+            } else {
+                Object value = getFieldValue(field, bean);
+                return getFieldValue(field.getType().getDeclaredField(ID_COLUMN_NAME), value);
+            }
+        } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+
+
+            throw new RuntimeException("Foreign key " + ID_COLUMN_NAME + " in object " + bean + " not found");
+        }
+    }
+    // TODO
+    private Object getFieldValue(String field, Object bean) {
+        try {
+            return getFieldValue(bean.getClass().getDeclaredField(field), bean);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // TODO
+    private String toSqlString(Object object) {
+        if (object == null) {
+            return "NULL";
+        } else if (object instanceof LocalDate localDate) {
+            return "'" + localDate.format(DATE_FORMAT) + "'";
+        } else if (object instanceof LocalTime localTime) {
+            return "'" + localTime.format(TIME_FORMAT) + "'";
+        } else if (object instanceof String) {
+            return "'" + object + "'";
+        } else {
+            return object.toString();
+        }
+    }
+
+    private Object getFieldValue(Field field, Object bean) {
+        try {
+            return new PropertyDescriptor(field.getName(), bean.getClass()).getReadMethod().invoke(bean);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
     }
 
     private <T> T instantiateBean(Class<T> clazz, Map<String, Object> row) {
