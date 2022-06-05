@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.LazyDataStorage.ForeignEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 
@@ -9,8 +10,10 @@ public class DegreeProgram extends UniquelyIdentifiable {
     private int id = -1;
     private String name;
     private String description;
-    @ForeignTable(ownColumnName = "degreeLevelId")
-    private DegreeLevel degreeLevel;
+    @ForeignTable(
+            foreignTableName = "DegreeLevel",
+            ownColumnName = "degreeLevelId")
+    private ForeignEntity<DegreeLevel> degreeLevelEntity;
 
     public int getId() {
         return id;
@@ -36,12 +39,16 @@ public class DegreeProgram extends UniquelyIdentifiable {
         this.description = description;
     }
 
-    public DegreeLevel getDegreeLevel() {
-        return degreeLevel;
+    public ForeignEntity<DegreeLevel> getDegreeLevelEntity() {
+        return degreeLevelEntity;
     }
 
-    public void setDegreeLevel(DegreeLevel degreeLevel) {
-        this.degreeLevel = degreeLevel;
+    public DegreeLevel getDegreeLevel() {
+        return degreeLevelEntity.get();
+    }
+
+    public void setDegreeLevelEntity(ForeignEntity<DegreeLevel> degreeLevel) {
+        this.degreeLevelEntity = degreeLevel;
     }
 
 }

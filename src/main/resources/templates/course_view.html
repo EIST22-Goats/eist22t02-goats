@@ -31,7 +31,7 @@
                 </div>
 
                 <ul class="list-group list-group-flush">
-                    <li th:each="appointment: ${course.getAppointments()}" class="list-group-item">
+                    <li th:each="appointment: ${course.getAppointmentEntities()}" class="list-group-item">
                         <span th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                     </li>
                 </ul>
@@ -62,7 +62,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="appointment: ${course.getAppointments()}">
+                                    <tr th:each="appointment: ${course.getAppointmentEntities()}">
                                         <td th:text="${appointment.getStartDate().getDayOfWeek()}"></td>
 <!-- TODO language support -->          <td th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
                                         <td><a href="#">bearbeiten</a> <a href="#" class="link-danger">löschen</a></td>
@@ -127,7 +127,7 @@
             <div class="card mb-3">
                 <div class="card-header">Mitglieder</div>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
-                    <li th:each="participant: ${course.getParticipants()}" class="list-group-item">
+                    <li th:each="participant: ${course.getParticipantEntities()}" class="list-group-item">
                         <img th:src="'/profile_pictures/'+${participant.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
                              alt="" class="rounded-circle float-start me-2" width="27" height="27"
                              style="object-fit: cover">

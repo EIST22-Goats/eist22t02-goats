@@ -4,7 +4,6 @@ import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.persistent_data_storage.Storage;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
@@ -162,7 +160,7 @@ public class TimetableController {
 
         storage.updateAppointment(appointment);
         Course course = storage.getCourse(courseId);
-        course.getAppointments().add(appointment);
+        // TODO course.getAppointmentEntities().add(appointment);
         storage.updateCourse(course);
 
         return "redirect:/timetable";

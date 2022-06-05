@@ -20,9 +20,13 @@ public class Appointment extends UniquelyIdentifiable {
     private LocalTime endTime;
     private LocalDate startDate;
     private int repetitions;
-    @ForeignTable(ownColumnName = "locationId")
+    @ForeignTable(
+            foreignTableName = "Locations",
+            ownColumnName = "locationId")
     private Location location;
-    @ForeignTable(ownColumnName = "roomId")
+    @ForeignTable(
+            foreignTableName = "Rooms",
+            ownColumnName = "roomId")
     private Room room;
     @BridgingTable(
             bridgingTableName = "PersonAppointments",

@@ -81,7 +81,7 @@ public class UpdateProfileForm implements ProfileForm {
 
             DegreeProgram degreeProgram = db.getDegreeProgram(degreeProgramName);
             if (degreeProgram != null) {
-                person.setDegreeProgram(degreeProgram);
+                // TODO person.setDegreeProgram(degreeProgram);
             }
         }
     }

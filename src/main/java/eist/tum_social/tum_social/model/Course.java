@@ -1,5 +1,7 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.LazyDataStorage.BridgingEntities;
+import eist.tum_social.tum_social.LazyDataStorage.ForeignEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
@@ -14,18 +16,20 @@ public class Course extends UniquelyIdentifiable {
     private String name;
     private String acronym;
     private String description;
-    @ForeignTable(ownColumnName = "adminId")
-    private Person admin;
+    @ForeignTable(
+            foreignTableName = "Persons",
+            ownColumnName = "adminId")
+    private ForeignEntity<Person> adminEntity;
     @BridgingTable(
             bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "personId")
-    private List<Person> participants;
+    private BridgingEntities<Person> participantEntities;
     @BridgingTable(
             bridgingTableName = "CourseAppointments",
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "appointmentId")
-    private List<Appointment> appointments;
+    private BridgingEntities<Appointment> appointmentEntities;
     @IgnoreInDatabase
     private List<Comment> comments;
 
@@ -61,27 +65,39 @@ public class Course extends UniquelyIdentifiable {
         this.description = description;
     }
 
-    public Person getAdmin() {
-        return admin;
+    public ForeignEntity<Person> getAdminEntity() {
+        return adminEntity;
     }
 
-    public void setAdmin(Person admin) {
-        this.admin = admin;
+    public Person getAdmin() {
+        return adminEntity.get();
+    }
+
+    public void setAdminEntity(ForeignEntity<Person> adminEntity) {
+        this.adminEntity = adminEntity;
+    }
+
+    public BridgingEntities<Person> getParticipantEntities() {
+        return participantEntities;
     }
 
     public List<Person> getParticipants() {
-        return participants;
+        return participantEntities.get();
     }
 
-    public void setParticipants(List<Person> participants) {
-        this.participants = participants;
+    public void setParticipantEntities(BridgingEntities<Person> participantEntities) {
+        this.participantEntities = participantEntities;
+    }
+
+    public BridgingEntities<Appointment> getAppointmentEntities() {
+        return appointmentEntities;
     }
 
     public List<Appointment> getAppointments() {
-        return appointments;
+        return appointmentEntities.get();
     }
 
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
+    public void setAppointmentEntities(BridgingEntities<Appointment> appointmentEntities) {
+        this.appointmentEntities = appointmentEntities;
     }
 }

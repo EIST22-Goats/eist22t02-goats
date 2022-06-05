@@ -1,5 +1,7 @@
 package eist.tum_social.tum_social.model;
 
+import eist.tum_social.tum_social.LazyDataStorage.BridgingEntities;
+import eist.tum_social.tum_social.LazyDataStorage.ForeignEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
 import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
 import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
@@ -17,22 +19,24 @@ public class Person extends UniquelyIdentifiable {
     private LocalDate birthdate;
     private String tumId;
     private String email;
+    private String password;
     @BridgingTable(
             bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "personId",
             otherForeignColumnName = "courseId")
-    private List<Course> courses;
-    @IgnoreInDatabase
-    private List<Person> friends;
+    private BridgingEntities<Course> courseEntities;
     @BridgingTable(
             bridgingTableName = "PersonAppointments",
             ownForeignColumnName = "personId",
             otherForeignColumnName = "appointmentId")
-    private List<Appointment> appointments;
+    private BridgingEntities<Appointment> appointmentEntities;
     private int semesterNr;
-    @ForeignTable(ownColumnName = "degreeProgramId")
-    private DegreeProgram degreeProgram;
-    private String password;
+    @ForeignTable(
+            foreignTableName = "DegreePrograms",
+            ownColumnName = "degreeProgramId")
+    private ForeignEntity<DegreeProgram> degreeProgramEntity;
+    @IgnoreInDatabase
+    private List<Person> friends;
 
     public String getFirstname() {
         return firstname;
@@ -74,28 +78,12 @@ public class Person extends UniquelyIdentifiable {
         this.email = email;
     }
 
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
-
     public List<Person> getFriends() {
         return friends;
     }
 
     public void setFriends(List<Person> friends) {
         this.friends = friends;
-    }
-
-    public List<Appointment> getTimetable() {
-        return appointments;
-    }
-
-    public void setTimetable(List<Appointment> appointments) {
-        this.appointments = appointments;
     }
 
     public String getPassword() {
@@ -114,12 +102,16 @@ public class Person extends UniquelyIdentifiable {
         this.semesterNr = semesterNr;
     }
 
-    public DegreeProgram getDegreeProgram() {
-        return degreeProgram;
+    public ForeignEntity<DegreeProgram> getDegreeProgramEntity() {
+        return degreeProgramEntity;
     }
 
-    public void setDegreeProgram(DegreeProgram degreeProgram) {
-        this.degreeProgram = degreeProgram;
+    public DegreeProgram getDegreeProgram() {
+        return degreeProgramEntity.get();
+    }
+
+    public void setDegreeProgramEntity(ForeignEntity<DegreeProgram> degreeProgramEntity) {
+        this.degreeProgramEntity = degreeProgramEntity;
     }
 
     public int getId() {
@@ -130,11 +122,27 @@ public class Person extends UniquelyIdentifiable {
         this.id = id;
     }
 
-    public List<Appointment> getAppointments() {
-        return appointments;
+    public BridgingEntities<Course> getCourseEntities() {
+        return courseEntities;
     }
 
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
+    public List<Course> getCourses() {
+        return courseEntities.get();
+    }
+
+    public void setCourseEntities(BridgingEntities<Course> courseEntities) {
+        this.courseEntities = courseEntities;
+    }
+
+    public BridgingEntities<Appointment> getAppointmentEntities() {
+        return appointmentEntities;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointmentEntities.get();
+    }
+
+    public void setAppointmentEntities(BridgingEntities<Appointment> appointmentEntities) {
+        this.appointmentEntities = appointmentEntities;
     }
 }
