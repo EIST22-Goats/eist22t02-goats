@@ -1,6 +1,8 @@
 package eist.tum_social.tum_social.LazyDataStorage;
 
+import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Person;
+import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.persistent_data_storage.util.*;
 import org.sqlite.SQLiteDataSource;
 
@@ -37,6 +39,8 @@ public class SqliteDatabase implements Database {
         System.out.println(p.getFirstname()+" "+p.getLastname());
 
         p.setFirstname("Florian");
+        Appointment appointment = new Storage().getAppointment(31);
+        p.getAppointments().add(appointment);
 
         db.update(p);
 
@@ -96,9 +100,51 @@ public class SqliteDatabase implements Database {
         values.deleteCharAt(values.length() - 1);
 
         String sql = String.format("INSERT OR REPLACE INTO %s (%s) VALUES (%s);", tableName, parameters, values);
-        //int key = updateQuery(sql);
-        //setFieldValue(ID_COLUMN_NAME, bean, key);
-        System.out.println("running query: "+ sql);
+        int key = updateQuery(sql);
+        setFieldValue(ID_COLUMN_NAME, bean, key);
+    }
+
+    // TODO
+    private void setFieldValue(String field, Object bean, Object value) {
+        try {
+            setFieldValue(bean.getClass().getDeclaredField(field), bean, value);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setFieldValue(Field field, Object bean, Object value) {
+        try {
+            if (value != null) {
+                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    // TODO
+    private int updateQuery(String sql) {
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("insert failed");
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return (int) generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // TODO
@@ -106,10 +152,15 @@ public class SqliteDatabase implements Database {
         BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
         String bridgingTableName = bridgingTable.bridgingTableName();
 
+        System.out.println("updating bridging table "+bridgingTableName);
+
         String clearStatement = String.format("DELETE FROM %s WHERE %s=%s", bridgingTableName, bridgingTable.ownForeignColumnName(), getFieldValue(ID_COLUMN_NAME, bean));
         executeStatement(clearStatement);
 
-        Object others = getFieldValue(field, bean);
+        System.out.println(field.getName());
+
+        Object others = getLazyFieldValue(field, bean);
+
 
         if (others instanceof List othersList) {
             for (Object other : othersList) {
@@ -152,8 +203,12 @@ public class SqliteDatabase implements Database {
 
     private String getNameOfLazyGetter(Field field) {
         String field_name = field.getName();
-        String actual_field_name = field_name.substring(0, field_name.length()-6);
-        System.out.println("edited name: "+actual_field_name);
+        String actual_field_name = field_name;
+        if (field_name.endsWith("Entity")) {
+            actual_field_name = field_name.substring(0, field_name.length() - "Entity".length());
+        } else if (field_name.endsWith("Entities")) {
+            actual_field_name = field_name.substring(0, field_name.length() - "Entities".length())+"s";
+        }
         return "get"+actual_field_name.substring(0, 1).toUpperCase() + actual_field_name.substring(1);
     }
 
@@ -171,11 +226,10 @@ public class SqliteDatabase implements Database {
     }
     private Object getLazyFieldValue(Field field, Object bean) {
         try {
-            if (field.getName().endsWith("Entity")) {
+            if (field.getName().endsWith("Entity") || field.getName().endsWith("Entities")) {
                 String nameOfGetter = getNameOfLazyGetter(field);
-                System.out.println(bean.getClass().getMethod(nameOfGetter).getReturnType());
                 return bean.getClass().getMethod(nameOfGetter).invoke(bean);
-            } else {
+            } else{
                 Object value = getFieldValue(field, bean);
                 return getFieldValue(field.getType().getDeclaredField(ID_COLUMN_NAME), value);
             }
