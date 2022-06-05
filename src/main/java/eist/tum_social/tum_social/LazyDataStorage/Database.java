@@ -12,7 +12,7 @@ public interface Database {
 
     <T> List<T> loadBridgingTableObjects(Field field, Map<String, Object> row);
 
-    // void update(Object bean);
+    void update(Object bean);
 
     // void delete(Object object);
 
