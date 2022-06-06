@@ -1,10 +1,9 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.model.Appointment;
+import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.DataStorage.StorageFacade;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.persistent_data_storage.Storage;
-import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,9 +41,6 @@ public class CourseController {
             myCourses = filterCourses(myCourses, searchText);
             courses = filterCourses(courses, searchText);
         }
-
-        myCourses = db.reloadObjects(myCourses);
-        courses = db.reloadObjects(courses);
 
         model.addAttribute("myCoursesList", myCourses);
         model.addAttribute("coursesList", courses);
@@ -84,7 +80,7 @@ public class CourseController {
         Person p = getCurrentPerson(storage);
         course.setAdmin(p);
 
-        storage.updateCourse(course);
+        storage.update(course);
 
         return "redirect:/courses";
     }
@@ -100,7 +96,7 @@ public class CourseController {
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().add(c);
-        storage.updatePerson(p);
+        storage.update(p);
 
         return "redirect:/courses";
     }
@@ -116,7 +112,7 @@ public class CourseController {
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().remove(c);
-        storage.updatePerson(p);
+        storage.update(p);
 
         return "redirect:/courses";
     }
@@ -131,7 +127,7 @@ public class CourseController {
         Course course = storage.getCourse(courseId);
 
         if (course.getAdmin().getId() == getCurrentPerson().getId()) {
-            storage.deleteCourse(course);
+            storage.delete(course);
         }
 
         return "redirect:/courses";
@@ -150,7 +146,7 @@ public class CourseController {
             course.setName(courseForm.getName());
             course.setAcronym(courseForm.getAcronym());
             course.setDescription(courseForm.getDescription());
-            storage.updateCourse(course);
+            storage.update(course);
         }
 
         return "redirect:/courses/" + courseId;
