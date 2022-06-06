@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.UpdateCourseAppointmentForm;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
@@ -122,7 +123,7 @@ public class TimetableController {
     private List<Appointment> filterAppointments(List<Appointment> appointments, LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
         appointments = appointments.stream().filter(appointment ->
-                           appointment.getStartDate().plusWeeks(appointment.getRepetitions()).isAfter(startDate)
+                           appointment.getStartDate().plusWeeks(appointment.getRepetitions()-1).isAfter(startDate)
                         && appointment.getStartDate().isBefore(endDate)
         ).toList();
 
@@ -160,7 +161,7 @@ public class TimetableController {
         course.getAppointments().add(appointment);
         storage.update(course);
 
-        return "redirect:/timetable";
+        return "redirect:/courses/"+course.getId();
     }
 
     @PostMapping("/updateAppointment")
@@ -177,6 +178,24 @@ public class TimetableController {
         }
 
         return "redirect:/timetable";
+    }
+
+    @PostMapping("/updateCourseAppointment")
+    public String updateCourseAppointment(UpdateCourseAppointmentForm appointmentForm) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Storage storage = new Storage();
+        Appointment appointment = storage.getAppointment(appointmentForm.getId());
+        appointmentForm.apply(appointment);
+        Person person = getCurrentPerson(storage);
+        Course course = appointment.getCourses().get(0);
+        if (course.getAdmin().equals(person)) {
+            storage.update(appointment);
+        }
+
+        return "redirect:/courses/" + course.getId();
     }
 
     @PostMapping("/deleteAppointment/{appointmentId}")
@@ -205,10 +224,15 @@ public class TimetableController {
 
         Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
+        Person person = getCurrentPerson(storage);
 
-        storage.delete(appointment);
+        Course course = appointment.getCourses().get(0);
+        if (course.getAdmin().equals(person)) {
+            storage.delete(appointment);
+        }
 
-        return "redirect:/timetable";
+        return "redirect:/courses/" + course.getId();
+
     }
 
 }

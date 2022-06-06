@@ -15,7 +15,6 @@ public class Storage implements StorageFacade {
         db = new SqliteDatabase();
     }
 
-
     @Override
     public Person getPerson(String tumId) {
         return firstOrNull(db.select(Person.class, "tumId='" + tumId + "'"));
