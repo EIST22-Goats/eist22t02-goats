@@ -110,6 +110,10 @@ public class Person extends UniquelyIdentifiable {
         return degreeProgramEntity.get();
     }
 
+    public void setDegreeProgram(DegreeProgram degreeProgram) {
+        degreeProgramEntity.set(degreeProgram);
+    }
+
     public void setDegreeProgramEntity(ForeignEntity<DegreeProgram> degreeProgramEntity) {
         this.degreeProgramEntity = degreeProgramEntity;
     }

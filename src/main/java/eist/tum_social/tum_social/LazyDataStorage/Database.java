@@ -9,7 +9,6 @@ public interface Database {
     <T> List<T> select(Class<T> clazz, String whereCondition);
 
     <T> T loadForeignTableObject(Field field, Map<String, Object> row);
-
     <T> List<T> loadBridgingTableObjects(Field field, Map<String, Object> row);
 
     void update(Object bean);
