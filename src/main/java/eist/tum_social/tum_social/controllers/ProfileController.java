@@ -4,7 +4,7 @@ import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.ProfileForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.persistent_data_storage.Storage;
+import eist.tum_social.tum_social.DataStorage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,7 +77,7 @@ public class ProfileController {
         }
 
         Storage db = new Storage();
-        db.deletePerson(getCurrentPerson(db));
+        db.delete(getCurrentPerson(db));
         logout();
         try {
             Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
@@ -101,7 +101,7 @@ public class ProfileController {
         Storage db = new Storage();
         Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);
-        db.updatePerson(person);
+        db.update(person);
     }
 
 }

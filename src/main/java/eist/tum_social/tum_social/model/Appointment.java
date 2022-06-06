@@ -1,9 +1,10 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
-import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
-import org.springframework.format.annotation.DateTimeFormat;
+import eist.tum_social.tum_social.DataStorage.BridgingEntities;
+import eist.tum_social.tum_social.DataStorage.ForeignEntity;
+import eist.tum_social.tum_social.DataStorage.util.BridgingTable;
+import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
+import eist.tum_social.tum_social.DataStorage.util.ForeignTable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,20 +21,24 @@ public class Appointment extends UniquelyIdentifiable {
     private LocalTime endTime;
     private LocalDate startDate;
     private int repetitions;
-    @ForeignTable(ownColumnName = "locationId")
-    private Location location;
-    @ForeignTable(ownColumnName = "roomId")
-    private Room room;
+    @ForeignTable(
+            foreignTableName = "Locations",
+            ownColumnName = "locationId")
+    private ForeignEntity<Location> locationEntity;
+    @ForeignTable(
+            foreignTableName = "Rooms",
+            ownColumnName = "roomId")
+    private ForeignEntity<Room> roomEntity;
     @BridgingTable(
             bridgingTableName = "PersonAppointments",
             ownForeignColumnName = "appointmentId",
             otherForeignColumnName = "personId")
-    private List<Person> owners;
+    private BridgingEntities<Person> subscriberEntities;
     @BridgingTable(
             bridgingTableName = "CourseAppointments",
             ownForeignColumnName = "appointmentId",
             otherForeignColumnName = "courseId")
-    private List<Course> course;
+    private BridgingEntities<Course> courseEntities;
 
     public int getId() {
         return id;
@@ -91,39 +96,55 @@ public class Appointment extends UniquelyIdentifiable {
         this.repetitions = repetitions;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
     public double getDurationInHours() {
         return startTime.until(endTime, ChronoUnit.MINUTES) / 60.0;
     }
 
-    public List<Person> getOwners() {
-        return owners;
+    public ForeignEntity<Location> getLocationEntity() {
+        return locationEntity;
     }
 
-    public void setOwners(List<Person> owner) {
-        this.owners = owner;
+    public Location getLocation() {
+        return locationEntity.get();
     }
 
-    public List<Course> getCourse() {
-        return course;
+    public void setLocationEntity(ForeignEntity<Location> locationEntity) {
+        this.locationEntity = locationEntity;
     }
 
-    public void setCourse(List<Course> course) {
-        this.course = course;
+    public ForeignEntity<Room> getRoomEntity() {
+        return roomEntity;
+    }
+
+    public Room getRoom() {
+        return roomEntity.get();
+    }
+
+    public void setRoomEntity(ForeignEntity<Room> roomEntity) {
+        this.roomEntity = roomEntity;
+    }
+
+    public BridgingEntities<Person> getSubscriberEntities() {
+        return subscriberEntities;
+    }
+
+    public List<Person> getSubscribers() {
+        return subscriberEntities.get();
+    }
+
+    public void setSubscriberEntities(BridgingEntities<Person> subscriberEntities) {
+        this.subscriberEntities = subscriberEntities;
+    }
+
+    public BridgingEntities<Course> getCourseEntities() {
+        return courseEntities;
+    }
+
+    public List<Course> getCourses() {
+        return courseEntities.get();
+    }
+
+    public void setCourseEntities(BridgingEntities<Course> courseEntities) {
+        this.courseEntities = courseEntities;
     }
 }

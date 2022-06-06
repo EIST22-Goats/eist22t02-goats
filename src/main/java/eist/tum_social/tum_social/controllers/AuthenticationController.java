@@ -1,8 +1,8 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.DataStorage.StorageFacade;
 import eist.tum_social.tum_social.controllers.util.Status;
-import eist.tum_social.tum_social.persistent_data_storage.StorageFacade;
-import eist.tum_social.tum_social.persistent_data_storage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
@@ -105,7 +105,7 @@ public class AuthenticationController {
         String hashedPassword = hashPassword(person.getPassword());
         person.setPassword(hashedPassword);
 
-        db.updatePerson(person);
+        db.update(person);
 
         createDefaultProfilePicture(person.getTumId());
 
