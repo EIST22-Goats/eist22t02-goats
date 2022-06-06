@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.LazyDataStorage;
+package eist.tum_social.tum_social.DataStorage;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -10,6 +10,11 @@ public class BridgingEntities<T> extends Entity {
 
     public BridgingEntities(Database database, Field field, Map<String, Object> row) {
         super(database, field, row);
+    }
+
+    @Override
+    boolean isSet() {
+        return values != null;
     }
 
     public List<T> get() {

@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.LazyDataStorage;
+package eist.tum_social.tum_social.DataStorage;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -13,6 +13,6 @@ public interface Database {
 
     void update(Object bean);
 
-    // void delete(Object object);
+    void delete(Object object);
 
 }

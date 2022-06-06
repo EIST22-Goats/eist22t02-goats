@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.LazyDataStorage;
+package eist.tum_social.tum_social.DataStorage;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -14,5 +14,7 @@ public abstract class Entity {
         this.field = field;
         this.row = row;
     }
+
+    abstract boolean isSet();
 
 }
