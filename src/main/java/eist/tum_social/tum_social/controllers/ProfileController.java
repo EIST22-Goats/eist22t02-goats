@@ -4,7 +4,7 @@ import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.ProfileForm;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

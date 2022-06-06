@@ -1,11 +1,11 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.DataStorage.BridgingEntities;
-import eist.tum_social.tum_social.DataStorage.ForeignEntity;
-import eist.tum_social.tum_social.DataStorage.util.BridgingTable;
-import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
-import eist.tum_social.tum_social.DataStorage.util.ForeignTable;
-import eist.tum_social.tum_social.DataStorage.util.IgnoreInDatabase;
+import eist.tum_social.tum_social.datastorage.BridgingEntities;
+import eist.tum_social.tum_social.datastorage.ForeignEntity;
+import eist.tum_social.tum_social.datastorage.util.BridgingTable;
+import eist.tum_social.tum_social.datastorage.util.DatabaseEntity;
+import eist.tum_social.tum_social.datastorage.util.ForeignTable;
+import eist.tum_social.tum_social.datastorage.util.IgnoreInDatabase;
 
 import java.util.List;
 

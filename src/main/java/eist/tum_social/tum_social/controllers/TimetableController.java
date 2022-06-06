@@ -4,7 +4,7 @@ import eist.tum_social.tum_social.controllers.forms.UpdateCourseAppointmentForm;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.datastorage.Storage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +33,9 @@ public class TimetableController {
 
         List<Appointment> appointments = findAllAppointmentsForPerson(person);
 
-        // TODO settings or dynamic calculation ?
+        for (var it : appointments) {
+            System.out.println(it.getLocation());
+        }
 
         if (startDate == null) {
             startDate = LocalDate.now();

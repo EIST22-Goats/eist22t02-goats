@@ -1,6 +1,8 @@
-package eist.tum_social.tum_social.DataStorage;
+package eist.tum_social.tum_social.datastorage;
 
-import eist.tum_social.tum_social.DataStorage.util.*;
+import eist.tum_social.tum_social.datastorage.util.*;
+import eist.tum_social.tum_social.model.DegreeProgram;
+import eist.tum_social.tum_social.model.Person;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -103,10 +105,8 @@ public class SqliteDatabase implements Database {
             }
 
             Pair<String, String> assignment = createFieldSqlAssignment(field, bean);
-            if (assignment != null) {
-                parameters.add(assignment.first());
-                values.add(assignment.second());
-            }
+            parameters.add(assignment.first());
+            values.add(assignment.second());
         }
 
         String sql = String.format(
@@ -212,10 +212,10 @@ public class SqliteDatabase implements Database {
                 }
             }
 
-            return new Pair<>(name, valueToRawString(value));
+            value = valueToRawString(value);
         }
 
-        return null;
+        return new Pair<>(name, (String) value);
     }
 
     private int getIdOfBean(Object bean) {
