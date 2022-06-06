@@ -19,7 +19,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
 public class SqliteDatabase implements Database {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -38,9 +37,8 @@ public class SqliteDatabase implements Database {
         Person p = db.select(Person.class, "tumId='ge47son'").get(0);
         System.out.println(p.getFirstname()+" "+p.getLastname());
 
-        p.setFirstname("Florian");
-        Appointment appointment = new Storage().getAppointment(31);
-        p.getAppointments().add(appointment);
+        p.setFirstname("Willi");
+        p.getAppointments().clear();
 
         db.update(p);
 

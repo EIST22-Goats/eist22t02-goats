@@ -175,7 +175,7 @@ public class TimetableController {
         Storage storage = new Storage();
         appointment = (Appointment) storage.reloadObject(appointment);
 
-        boolean hasAccessRights = appointment.getOwners().contains(getCurrentPerson());
+        boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
             storage.updateAppointment(appointment);
@@ -193,7 +193,7 @@ public class TimetableController {
         Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
 
-        boolean hasAccessRights = appointment.getOwners().contains(getCurrentPerson());
+        boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
             storage.deleteAppointment(appointment);
