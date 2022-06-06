@@ -49,6 +49,43 @@ public class SqliteDatabase implements Database {
         db.update(p);
     }
 
+    public <T> T loadForeignTableObject(Field field, Map<String, Object> row) {
+        ForeignTable foreignTable = field.getAnnotation(ForeignTable.class);
+        String name = foreignTable.ownColumnName();
+
+        if (row.get(name) != null) {
+            int key = (int) row.get(name);
+            String whereCondition = ID_COLUMN_NAME + "=" + key;
+            return (T) select(foreignTable.foreignTableName(), getGenericType(field), whereCondition).get(0);
+        }
+
+        return null;
+    }
+
+    public <T> List<T> loadBridgingTableObjects(Field field, Map<String, Object> row) {
+        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
+        ArrayList<T> ret = new ArrayList<>();
+
+        Class<?> listClass = getGenericType(field);
+        String otherTableName = listClass.getAnnotation(DatabaseEntity.class).tableName();
+        String sql = String.format(
+                "SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
+                otherTableName,
+                bridgingTable.bridgingTableName(),
+                otherTableName,
+                getTableName(listClass) + "." + ID_COLUMN_NAME,
+                bridgingTable.otherForeignColumnName(),
+                bridgingTable.ownForeignColumnName(),
+                row.get(ID_COLUMN_NAME)
+        );
+
+        for (var new_row : executeQuery(sql)) {
+            ret.add((T) instantiateBean(listClass, new_row));
+        }
+
+        return ret;
+    }
+
     public <T> List<T> select(Class<T> clazz, String whereCondition) {
         return select(getTableName(clazz), clazz, whereCondition);
     }
@@ -101,16 +138,6 @@ public class SqliteDatabase implements Database {
         setIdOfBean(bean, key);
     }
 
-    private void setFieldValue(Field field, Object bean, Object value) {
-        try {
-            if (value != null) {
-                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
-            }
-        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
-        }
-    }
-
     private int updateQuery(String sql) {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -160,15 +187,6 @@ public class SqliteDatabase implements Database {
         }
     }
 
-    private void executeStatement(String sql) {
-        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e + " SQL: " + sql);
-        }
-    }
-
     private Pair<String, String> createFieldSqlAssignment(Field field, Object bean) {
         String name = field.getName();
         Object value = getValueOfField(field, bean);
@@ -180,7 +198,7 @@ public class SqliteDatabase implements Database {
                 value = getIdOfBean(value);
             }
 
-            return new Pair<>(name, toSqlString(value));
+            return new Pair<>(name, valueToRawString(value));
         }
 
         return null;
@@ -196,23 +214,9 @@ public class SqliteDatabase implements Database {
 
     private void setIdOfBean(Object bean, Object value) {
         try {
-            setFieldValue(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean, value);
+            setValueOfField(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean, value);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private String toSqlString(Object object) {
-        if (object == null) {
-            return "NULL";
-        } else if (object instanceof LocalDate localDate) {
-            return "'" + localDate.format(DATE_FORMAT) + "'";
-        } else if (object instanceof LocalTime localTime) {
-            return "'" + localTime.format(TIME_FORMAT) + "'";
-        } else if (object instanceof String) {
-            return "'" + object + "'";
-        } else {
-            return object.toString();
         }
     }
 
@@ -261,38 +265,19 @@ public class SqliteDatabase implements Database {
             value = new BridgingEntities<>(this, field, row);
         } else {
             Object rawValue = row.get(field.getName());
-            value = parseRawValue(field, rawValue);
+            value = rawStringToValue(field, rawValue);
         }
 
         return value;
     }
 
-    public <T> T loadForeignTableObject(Field field, Map<String, Object> row) {
-        ForeignTable foreignTable = field.getAnnotation(ForeignTable.class);
-        String name = foreignTable.ownColumnName();
-
-        if (row.get(name) != null) {
-            int key = (int) row.get(name);
-            String whereCondition = ID_COLUMN_NAME + "=" + key;
-            return (T) select(foreignTable.foreignTableName(), getGenericType(field), whereCondition).get(0);
+    private void executeStatement(String sql) {
+        try (Connection conn = DriverManager.getConnection(dataSource.getUrl())) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e + " SQL: " + sql);
         }
-
-        return null;
-    }
-
-    public <T> List<T> loadBridgingTableObjects(Field field, Map<String, Object> row) {
-        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
-        ArrayList<T> ret = new ArrayList<>();
-
-        Class<?> listClass = getGenericType(field);
-        String otherTableName = listClass.getAnnotation(DatabaseEntity.class).tableName();
-        String sql = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s", otherTableName, bridgingTable.bridgingTableName(), otherTableName, getTableName(listClass) + "." + ID_COLUMN_NAME, bridgingTable.otherForeignColumnName(), bridgingTable.ownForeignColumnName(), row.get(ID_COLUMN_NAME));
-
-        for (var new_row : executeQuery(sql)) {
-            ret.add((T) instantiateBean(listClass, new_row));
-        }
-
-        return ret;
     }
 
     private List<Map<String, Object>> executeQuery(String sql) {
@@ -331,12 +316,24 @@ public class SqliteDatabase implements Database {
         return data;
     }
 
-    private Object parseRawValue(Field field, Object rawValue) {
+    private String valueToRawString(Object object) {
+        if (object == null) {
+            return "NULL";
+        } else if (object instanceof LocalDate localDate) {
+            return "'" + localDate.format(DATE_FORMAT) + "'";
+        } else if (object instanceof LocalTime localTime) {
+            return "'" + localTime.format(TIME_FORMAT) + "'";
+        } else if (object instanceof String) {
+            return "'" + object + "'";
+        } else {
+            return object.toString();
+        }
+    }
+
+    private Object rawStringToValue(Field field, Object rawValue) {
         if (rawValue == null) {
             return null;
-        }
-
-        if (field.getType() == LocalDate.class) {
+        } else if (field.getType() == LocalDate.class) {
             return LocalDate.parse(rawValue.toString(), DATE_FORMAT);
         } else if (field.getType() == LocalTime.class) {
             return LocalTime.parse(rawValue.toString(), TIME_FORMAT);
