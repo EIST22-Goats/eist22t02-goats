@@ -1,10 +1,15 @@
 package eist.tum_social.tum_social.location;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import eist.tum_social.tum_social.datastorage.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static eist.tum_social.tum_social.location.util.Requests.escapeQueryValue;
 import static eist.tum_social.tum_social.location.util.Requests.getRequest;
@@ -12,12 +17,12 @@ import static eist.tum_social.tum_social.location.util.Requests.getRequest;
 public class Navigatum {
 
     public static void main(String[] args) {
-        List<Room> rooms = findRooms("interims");
+        List<Room> rooms = findRooms("5606.EG.036");
 
         for (Room room:rooms) {
             System.out.println(room.getRoomId()+" "+room.getName()+" "+room.getBuilding());
-            System.out.println(getRoomCoords(room.getRoomId()));
         }
+        System.out.println(getRoomImageData(rooms.get(0).getRoomId()));
 
     }
 
@@ -44,6 +49,36 @@ public class Navigatum {
         coords.setLatitude(jsonCoords.get("lat").getAsString());
         coords.setLongitude(jsonCoords.get("lon").getAsString());
         return coords;
+    }
+
+    public static Pair<String, Marker> getRoomImageData(String roomId) {
+        String sURL = "https://nav.tum.sexy/api/get/" + roomId;
+
+        JsonObject root = getRequest(sURL).getAsJsonObject();
+
+        JsonObject jsonObject = root.get("maps").getAsJsonObject();
+
+        if (jsonObject.keySet().contains("roomfinder")) {
+            JsonObject jsonEntry = jsonObject
+                    .get("roomfinder").getAsJsonObject()
+                    .get("available").getAsJsonArray()
+                    .get(0).getAsJsonObject();
+
+            String fileName = jsonEntry.get("file").getAsString();
+            String source = jsonEntry.get("source").getAsString().toLowerCase();
+            String url = "https://nav.tum.sexy/cdn/maps/" + source + "/" + fileName;
+
+            int width = jsonEntry.get("width").getAsInt();
+            int height = jsonEntry.get("height").getAsInt();
+            int markerX = jsonEntry.get("x").getAsInt();
+            int markerY = jsonEntry.get("y").getAsInt();
+
+            Marker marker = new Marker((double) markerX / width * 100, (double) markerY / height * 100);
+
+            return new Pair<>(url, marker);
+        } else {
+            return null;
+        }
     }
 
     public static JsonObject getJsonFacet(JsonArray array, String name) {

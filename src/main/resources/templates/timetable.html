@@ -268,11 +268,21 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Raum Nummer/Name</label>
-                                <input type="text" class="form-control" id="roomNameInput" name="roomName">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" name="roomName" id="roomNameInput">
+                                    <button class="btn btn-outline-secondary" type="button" id="triggerRoomPreview">
+                                        Vorschau
+                                    </button>
+                                </div>
                             </div>
-                            <iframe class="w-100" style="height: 25em" id="locationPreview1"
+                            <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview1"
                                     src="https://www.openstreetmap.org/export/embed.html">
                             </iframe>
+                            <div class="position-relative w-100 d-none" id="roomImageDiv">
+                                <img class="w-100" id="roomImage">
+                                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+                                     role="status" id="roomImageMarker"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -295,14 +305,47 @@
     let roomNameInput = $('#roomNameInput');
     let locationPreview1 = $('#locationPreview1');
     let triggerLocationPreview = $('#triggerLocationPreview');
+    let triggerRoomPreview = $('#triggerRoomPreview');
+    let roomImageDiv = $('#roomImageDiv');
+    let roomImage = $('#roomImage');
+    let roomImageMarker = $('#roomImageMarker');
 
     triggerLocationPreview.on('click', () => {
         if (addressInput.val().length >= 3) {
             $.ajax({
                 url: "/getIframeUrl?location=" + addressInput.val(),
                 success: function (data) {
-                    console.log(data);
-                    locationPreview1.attr("src", data);
+                    locationPreview1.attr("src", data["iframeUrl"]);
+                    if (!roomImageDiv.hasClass("d-none")) {
+                        roomImageDiv.addClass("d-none");
+                    }
+                }
+            })
+        }
+    })
+
+    triggerRoomPreview.on('click', () => {
+        if (roomNameInput.val().length >= 3) {
+            $.ajax({
+                url: "/getIframeUrl?roomName=" + roomNameInput.val(),
+                success: function (data) {
+                    locationPreview1.attr("src", data["iframeUrl"]);
+                    roomNameInput.val(data["roomId"]);
+                    if ("roomImageUrl" in data) {
+                        if (roomImageDiv.hasClass("d-none")) {
+                            roomImageDiv.removeClass("d-none");
+                        }
+                        roomImage.attr("src", data["roomImageUrl"]);
+                        if (roomImageMarker.hasClass("d-none")) {
+                            roomImageMarker.removeClass("d-none");
+                        }
+                        roomImageMarker.css("left", data["markerX"] + "%");
+                        roomImageMarker.css("top", data["markerY"] + "%");
+                    } else {
+                        if (!roomImageDiv.hasClass("d-none")) {
+                            roomImageDiv.addClass("d-none");
+                        }
+                    }
                 }
             })
         }
