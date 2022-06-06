@@ -1,10 +1,10 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.DataStorage.BridgingEntities;
-import eist.tum_social.tum_social.DataStorage.ForeignEntity;
-import eist.tum_social.tum_social.DataStorage.util.BridgingTable;
-import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
-import eist.tum_social.tum_social.DataStorage.util.ForeignTable;
+import eist.tum_social.tum_social.datastorage.BridgingEntities;
+import eist.tum_social.tum_social.datastorage.ForeignEntity;
+import eist.tum_social.tum_social.datastorage.util.BridgingTable;
+import eist.tum_social.tum_social.datastorage.util.DatabaseEntity;
+import eist.tum_social.tum_social.datastorage.util.ForeignTable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,10 +25,6 @@ public class Appointment extends UniquelyIdentifiable {
             foreignTableName = "Locations",
             ownColumnName = "locationId")
     private ForeignEntity<Location> locationEntity;
-    @ForeignTable(
-            foreignTableName = "Rooms",
-            ownColumnName = "roomId")
-    private ForeignEntity<Room> roomEntity;
     @BridgingTable(
             bridgingTableName = "PersonAppointments",
             ownForeignColumnName = "appointmentId",
@@ -110,18 +106,6 @@ public class Appointment extends UniquelyIdentifiable {
 
     public void setLocationEntity(ForeignEntity<Location> locationEntity) {
         this.locationEntity = locationEntity;
-    }
-
-    public ForeignEntity<Room> getRoomEntity() {
-        return roomEntity;
-    }
-
-    public Room getRoom() {
-        return roomEntity.get();
-    }
-
-    public void setRoomEntity(ForeignEntity<Room> roomEntity) {
-        this.roomEntity = roomEntity;
     }
 
     public BridgingEntities<Person> getSubscriberEntities() {

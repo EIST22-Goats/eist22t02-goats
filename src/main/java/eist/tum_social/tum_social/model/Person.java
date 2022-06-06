@@ -1,8 +1,8 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.DataStorage.BridgingEntities;
-import eist.tum_social.tum_social.DataStorage.ForeignEntity;
-import eist.tum_social.tum_social.DataStorage.util.*;
+import eist.tum_social.tum_social.datastorage.BridgingEntities;
+import eist.tum_social.tum_social.datastorage.ForeignEntity;
+import eist.tum_social.tum_social.datastorage.util.*;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.DataStorage.Storage;
-import eist.tum_social.tum_social.DataStorage.StorageFacade;
+import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;

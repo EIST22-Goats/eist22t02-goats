@@ -1,6 +1,6 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
+import eist.tum_social.tum_social.datastorage.util.DatabaseEntity;
 
 @DatabaseEntity(tableName = "DegreeLevel")
 public class DegreeLevel extends UniquelyIdentifiable {
