@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.persistent_data_storage.util;
+package eist.tum_social.tum_social.DataStorage.util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

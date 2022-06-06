@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.LazyDataStorage;
+package eist.tum_social.tum_social.DataStorage;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -9,6 +9,11 @@ public class ForeignEntity<T> extends Entity {
 
     public ForeignEntity(Database database, Field field, Map<String, Object> row) {
         super(database, field, row);
+    }
+
+    @Override
+    boolean isSet() {
+        return value != null;
     }
 
     public T get() {

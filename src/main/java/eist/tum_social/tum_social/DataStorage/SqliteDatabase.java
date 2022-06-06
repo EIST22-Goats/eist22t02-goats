@@ -1,9 +1,6 @@
-package eist.tum_social.tum_social.LazyDataStorage;
+package eist.tum_social.tum_social.DataStorage;
 
-import eist.tum_social.tum_social.model.Appointment;
-import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.persistent_data_storage.util.*;
+import eist.tum_social.tum_social.DataStorage.util.*;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -32,21 +29,6 @@ public class SqliteDatabase implements Database {
     public SqliteDatabase() {
         dataSource = new SQLiteDataSource();
         dataSource.setUrl(URL);
-    }
-
-    public static void main(String[] args) {
-        Database db = new SqliteDatabase();
-        Person p = db.select(Person.class, "tumId='go47tum'").get(0);
-        System.out.println(p.getFirstname() + " " + p.getLastname());
-
-        DegreeProgram degreeProgram = db.select(DegreeProgram.class, "1").get(0);
-
-        p.setFirstname("Willi");
-        p.setDegreeProgram(degreeProgram);
-        Appointment a = db.select(Appointment.class, "1").get(0);
-        p.getAppointments().add(a);
-
-        db.update(p);
     }
 
     public <T> T loadForeignTableObject(Field field, Map<String, Object> row) {
@@ -138,6 +120,11 @@ public class SqliteDatabase implements Database {
         setIdOfBean(bean, key);
     }
 
+    @Override
+    public void delete(Object object) {
+        // TODO delete
+    }
+
     private int updateQuery(String sql) {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -163,26 +150,29 @@ public class SqliteDatabase implements Database {
     private void updateBridgingTable(Field field, Object bean) {
         BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
         String bridgingTableName = bridgingTable.bridgingTableName();
+        BridgingEntities<?> bridgingEntities = ((BridgingEntities<?>) getValueOfField(field, bean));
 
-        String clearStatement = String.format(
-                "DELETE FROM %s WHERE %s=%s",
-                bridgingTableName,
-                bridgingTable.ownForeignColumnName(),
-                getIdOfBean(bean));
-        executeStatement(clearStatement);
+        if (bridgingEntities.isSet()) {
+            String clearStatement = String.format(
+                    "DELETE FROM %s WHERE %s=%s",
+                    bridgingTableName,
+                    bridgingTable.ownForeignColumnName(),
+                    getIdOfBean(bean));
+            executeStatement(clearStatement);
 
-        Object others = ((BridgingEntities<?>) getValueOfField(field, bean)).get();
-        if (others instanceof List othersList) {
-            for (Object other : othersList) {
-                String sql = String.format(
-                        "INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)",
-                        bridgingTableName,
-                        bridgingTable.ownForeignColumnName(),
-                        bridgingTable.otherForeignColumnName(),
-                        getIdOfBean(bean),
-                        getIdOfBean(other)
-                );
-                executeStatement(sql);
+            Object others = bridgingEntities.get();
+            if (others instanceof List othersList) {
+                for (Object other : othersList) {
+                    String sql = String.format(
+                            "INSERT OR REPLACE INTO %s (%s, %s) VALUES (%s, %s)",
+                            bridgingTableName,
+                            bridgingTable.ownForeignColumnName(),
+                            bridgingTable.otherForeignColumnName(),
+                            getIdOfBean(bean),
+                            getIdOfBean(other)
+                    );
+                    executeStatement(sql);
+                }
             }
         }
     }

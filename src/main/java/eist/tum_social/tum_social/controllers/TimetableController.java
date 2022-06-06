@@ -3,7 +3,7 @@ package eist.tum_social.tum_social.controllers;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.persistent_data_storage.Storage;
+import eist.tum_social.tum_social.DataStorage.Storage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,10 +32,7 @@ public class TimetableController {
 
         List<Appointment> appointments = findAllAppointmentsForPerson(person);
 
-        appointments = new Storage().reloadObjects(appointments);
-
         // TODO settings or dynamic calculation ?
-
 
         if (startDate == null) {
             startDate = LocalDate.now();
@@ -89,7 +86,7 @@ public class TimetableController {
 
     private List<Appointment> findAllAppointmentsForPerson(Person person) {
         List<Appointment> appointments = new ArrayList<>(person.getAppointments());
-        for (Course course : new Storage().reloadObjects(person.getCourses())) {
+        for (Course course : person.getCourses()) {
             appointments.addAll(course.getAppointments());
         }
         return appointments;
@@ -140,12 +137,12 @@ public class TimetableController {
 
         Storage storage = new Storage();
 
-        storage.updateAppointment(appointment);
+        storage.update(appointment);
 
         Person person = getCurrentPerson();
         person.getAppointments().add(appointment);
 
-        storage.updatePerson(person);
+        storage.update(person);
 
         return "redirect:/timetable";
     }
@@ -158,14 +155,14 @@ public class TimetableController {
 
         Storage storage = new Storage();
 
-        storage.updateAppointment(appointment);
+        storage.update(appointment);
         Course course = storage.getCourse(courseId);
-        // TODO course.getAppointmentEntities().add(appointment);
-        storage.updateCourse(course);
+        course.getAppointments().add(appointment);
+        storage.update(course);
 
         return "redirect:/timetable";
     }
-    
+
     @PostMapping("/updateAppointment")
     public String updateAppointment(Appointment appointment) {
         if (!isLoggedIn()) {
@@ -173,12 +170,10 @@ public class TimetableController {
         }
 
         Storage storage = new Storage();
-        appointment = (Appointment) storage.reloadObject(appointment);
-
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
-            storage.updateAppointment(appointment);
+            storage.update(appointment);
         }
 
         return "redirect:/timetable";
@@ -196,7 +191,7 @@ public class TimetableController {
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
-            storage.deleteAppointment(appointment);
+            storage.delete(appointment);
         }
 
         return "redirect:/timetable";
@@ -211,7 +206,7 @@ public class TimetableController {
         Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
 
-        storage.deleteAppointment(appointment);
+        storage.delete(appointment);
 
         return "redirect:/timetable";
     }

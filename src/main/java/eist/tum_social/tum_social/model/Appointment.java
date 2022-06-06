@@ -1,11 +1,10 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.LazyDataStorage.BridgingEntities;
-import eist.tum_social.tum_social.LazyDataStorage.ForeignEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.BridgingTable;
-import eist.tum_social.tum_social.persistent_data_storage.util.DatabaseEntity;
-import eist.tum_social.tum_social.persistent_data_storage.util.ForeignTable;
-import org.springframework.format.annotation.DateTimeFormat;
+import eist.tum_social.tum_social.DataStorage.BridgingEntities;
+import eist.tum_social.tum_social.DataStorage.ForeignEntity;
+import eist.tum_social.tum_social.DataStorage.util.BridgingTable;
+import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
+import eist.tum_social.tum_social.DataStorage.util.ForeignTable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
