@@ -54,10 +54,10 @@ public class OpenStreetMap {
 
     public static BoundingBox jsonToBoundingBox(JsonArray json) {
         return new BoundingBox(
-                json.get(0).getAsString(),
-                json.get(1).getAsString(),
                 json.get(2).getAsString(),
-                json.get(3).getAsString()
+                json.get(0).getAsString(),
+                json.get(3).getAsString(),
+                json.get(1).getAsString()
         );
     }
 
@@ -67,35 +67,34 @@ public class OpenStreetMap {
 
     public static String createUrl(Room room) {
         Coordinate coords = Navigatum.getRoomCoords(room.getRoomId());
-        return createUrl(boundingBoxFrom(coords), coords);
+        return createUrl(boundingBoxFromCoordinate(coords), coords);
     }
 
     public static String createUrl(BoundingBox boundingBox, Coordinate coordinate) {
-        return "https://www.openstreetmap.org/export/embed.html?" + bboxString(boundingBox) + "&amp;layer=mapnik&amp;marker=" + coordinateString(coordinate);
+        return getBaseUrl() + "?" + bboxString(boundingBox) + "&amp&layer=mapnik&marker=" + coordinateString(coordinate);
     }
 
-    public static BoundingBox boundingBoxFrom(Coordinate coords) {
+    public static String getBaseUrl() {
+        return "https://www.openstreetmap.org/export/embed.html";
+    }
+
+    public static BoundingBox boundingBoxFromCoordinate(Coordinate coords) {
         double latitude = Double.parseDouble(coords.getLatitude());
         double longitude = Double.parseDouble(coords.getLongitude());
 
-        String upperLeftLatitude = String.valueOf((latitude - 0.0001));
-        String upperLeftLongitude = String.valueOf(longitude - 0.0001);
-        String lowerRightLatitude = String.valueOf(latitude + 0.0001);
-        String lowerRightLongitude = String.valueOf(latitude + 0.0001);
+        String left = String.valueOf(longitude - 0.000001);
+        String top = String.valueOf(latitude - 0.000001);
+        String right = String.valueOf(longitude + 0.000001);
+        String bottom = String.valueOf(latitude + 0.000001);
 
-        return new BoundingBox(
-                upperLeftLatitude,
-                upperLeftLongitude,
-                lowerRightLatitude,
-                lowerRightLongitude
-        );
+        return new BoundingBox(left, top, right, bottom);
     }
 
     public static String bboxString(BoundingBox boundingBox) {
-        return "bbox=" + boundingBox.getLowerRightLatitude() + "%2C" +
-                boundingBox.getUpperLeftLatitude() + "%2C" +
-                boundingBox.getLowerRightLongitude() + "%2C" +
-                boundingBox.getUpperLeftLongitude();
+        return "bbox=" + boundingBox.getLeft() + "%2C" +
+                boundingBox.getTop() + "%2C" +
+                boundingBox.getRight() + "%2C" +
+                boundingBox.getBottom();
     }
 
     public static String coordinateString(Coordinate coordinate) {

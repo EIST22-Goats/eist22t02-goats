@@ -33,10 +33,6 @@ public class TimetableController {
 
         List<Appointment> appointments = findAllAppointmentsForPerson(person);
 
-        for (var it : appointments) {
-            System.out.println(it.getLocation());
-        }
-
         if (startDate == null) {
             startDate = LocalDate.now();
         }

@@ -1,50 +1,48 @@
 package eist.tum_social.tum_social.location;
 
-import net.bytebuddy.asm.Advice;
-
 public class BoundingBox {
 
-    private String upperLeftLatitude;
-    private String upperLeftLongitude;
-    private String lowerRightLatitude;
-    private String lowerRightLongitude;
+    private String left;
+    private String top;
+    private String right;
+    private String bottom;
 
-    public BoundingBox(String upperLeftLatitude, String upperLeftLongitude, String lowerRightLatitude, String lowerRightLongitude) {
-        this.upperLeftLatitude = upperLeftLatitude;
-        this.upperLeftLongitude = upperLeftLongitude;
-        this.lowerRightLatitude = lowerRightLatitude;
-        this.lowerRightLongitude = lowerRightLongitude;
+    public BoundingBox(String left, String top, String right, String bottom) {
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
     }
 
-    public String getUpperLeftLatitude() {
-        return upperLeftLatitude;
+    public String getLeft() {
+        return left;
     }
 
-    public void setUpperLeftLatitude(String upperLeftLatitude) {
-        this.upperLeftLatitude = upperLeftLatitude;
+    public void setLeft(String left) {
+        this.left = left;
     }
 
-    public String getUpperLeftLongitude() {
-        return upperLeftLongitude;
+    public String getTop() {
+        return top;
     }
 
-    public void setUpperLeftLongitude(String upperLeftLongitude) {
-        this.upperLeftLongitude = upperLeftLongitude;
+    public void setTop(String top) {
+        this.top = top;
     }
 
-    public String getLowerRightLatitude() {
-        return lowerRightLatitude;
+    public String getRight() {
+        return right;
     }
 
-    public void setLowerRightLatitude(String lowerRightLatitude) {
-        this.lowerRightLatitude = lowerRightLatitude;
+    public void setRight(String right) {
+        this.right = right;
     }
 
-    public String getLowerRightLongitude() {
-        return lowerRightLongitude;
+    public String getBottom() {
+        return bottom;
     }
 
-    public void setLowerRightLongitude(String lowerRightLongitude) {
-        this.lowerRightLongitude = lowerRightLongitude;
+    public void setBottom(String bottom) {
+        this.bottom = bottom;
     }
 }
