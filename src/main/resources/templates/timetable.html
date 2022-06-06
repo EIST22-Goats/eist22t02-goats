@@ -105,7 +105,7 @@
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                         Schließen
                                     </button>
-                                    <button th:if="${appointment.getOwners().size() != 0 && appointment.getOwners().get(0).getId() == person.getId()}"
+                                    <button th:if="${appointment.getSubscribers().size() != 0 && appointment.getSubscribers().get(0).getId() == person.getId()}"
                                             type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             th:data-bs-target="'#changeDateModal'+${appointment.getId()}">Ändern</button>
                                 </div>
@@ -118,7 +118,7 @@
                             <div class="modal-content">
                                 <form action="/updateAppointment" method="post">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Neuer Termin</h5>
+                                        <h5 class="modal-title">Termin bearbeiten</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
