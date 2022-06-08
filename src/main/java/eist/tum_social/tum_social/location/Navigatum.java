@@ -17,12 +17,13 @@ import static eist.tum_social.tum_social.location.util.Requests.getRequest;
 public class Navigatum {
 
     public static void main(String[] args) {
-        List<Room> rooms = findRooms("5606.EG.036");
+        List<Room> rooms = findRooms("galileo");
 
         for (Room room:rooms) {
             System.out.println(room.getRoomId()+" "+room.getName()+" "+room.getBuilding());
         }
         System.out.println(getRoomImageData(rooms.get(0).getRoomId()));
+        System.out.println(getRoomCoords(rooms.get(0).getRoomId()));
 
     }
 

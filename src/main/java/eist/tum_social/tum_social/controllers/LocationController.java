@@ -37,14 +37,13 @@ public class LocationController {
                 Room room = rooms.get(0);
                 System.out.println("found room: " + room.getName());
                 ret.put("roomId", room.getRoomId());
+                ret.put("iframeUrl", OpenStreetMap.createUrl(room));
 
                 Pair<String, Marker> imageResult = Navigatum.getRoomImageData(room.getRoomId());
                 if (imageResult != null) {
                     String imageUrl = imageResult.first();
                     Marker marker = imageResult.second();
-                    System.out.println("imageUrl: " + imageUrl);
 
-                    ret.put("iframeUrl", OpenStreetMap.createUrl(room));
                     ret.put("roomImageUrl", imageUrl);
                     ret.put("markerX", String.valueOf(marker.getX()));
                     ret.put("markerY", String.valueOf(marker.getY()));

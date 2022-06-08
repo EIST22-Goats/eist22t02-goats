@@ -1,6 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.controllers.forms.UpdateAppointmentForm;
+import eist.tum_social.tum_social.controllers.forms.AppointmentForm;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
@@ -129,12 +129,20 @@ public class TimetableController {
     }
 
     @PostMapping("/createAppointment")
-    public String createAppointment(Appointment appointment) {
+    public String createAppointment(AppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = new Appointment();
+        System.out.println("form address: "+form.getAddress());
+        System.out.println("form room: "+form.getRoomName());
+
+        form.apply(appointment);
+
+        System.out.println("appointment address: " + appointment.getAddress());
+        System.out.println("appointment room: " + appointment.getRoomName());
 
         storage.update(appointment);
 
@@ -147,12 +155,14 @@ public class TimetableController {
     }
 
     @PostMapping("/createCourseAppointment/{courseId}")
-    public String createCourseAppointment(Appointment appointment, @PathVariable int courseId) {
+    public String createCourseAppointment(AppointmentForm form, @PathVariable int courseId) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = new Appointment();
+        form.apply(appointment);
 
         storage.update(appointment);
         Course course = storage.getCourse(courseId);
@@ -163,7 +173,7 @@ public class TimetableController {
     }
 
     @PostMapping("/updateAppointment/{appointmentId}")
-    public String updateAppointment(@PathVariable int appointmentId, UpdateAppointmentForm form) {
+    public String updateAppointment(@PathVariable int appointmentId, AppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
@@ -181,7 +191,7 @@ public class TimetableController {
     }
 
     @PostMapping("/updateCourseAppointment/{appointmentId}")
-    public String updateCourseAppointment(@PathVariable int appointmentId, UpdateAppointmentForm form) {
+    public String updateCourseAppointment(@PathVariable int appointmentId, AppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.getValueOfField;
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.setValueOfField;
+import static eist.tum_social.tum_social.datastorage.util.BeanUtil.hasAnnotation;
 
 public class SqliteDatabase implements Database {
 
@@ -355,10 +356,6 @@ public class SqliteDatabase implements Database {
     private Class<?> getGenericType(Field field) {
         ParameterizedType listType = (ParameterizedType) field.getGenericType();
         return (Class<?>) listType.getActualTypeArguments()[0];
-    }
-
-    private <T extends Annotation> boolean hasAnnotation(Field field, Class<T> annotationClass) {
-        return field.getAnnotation(annotationClass) != null;
     }
 
 }

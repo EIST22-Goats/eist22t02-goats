@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.datastorage.util;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
@@ -23,6 +24,10 @@ public class BeanUtil {
         } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
             throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
         }
+    }
+
+    public static <T extends Annotation> boolean hasAnnotation(Field field, Class<T> annotationClass) {
+        return field.getAnnotation(annotationClass) != null;
     }
 
 

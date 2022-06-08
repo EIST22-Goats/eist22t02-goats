@@ -72,10 +72,10 @@
                     <span class="fw-bold" th:text="${appointment.getName()}"></span>
                     <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
 
-                    <a type="button" class="stretched-link" data-bs-toggle="modal"
+                    <a type="button" class="stretched-link showDateBtn" data-bs-toggle="modal"
                        th:data-bs-target="'#timeslotModal'+${appointment.getId()}"></a>
 
-                    <div th:class="${appointment.getLocation() == null}?'modal fade':'modal fade modal-lg'"
+                    <div th:class="${appointment.getAddress() == '' && appointment.getRoomName() == ''}?'modal fade':'modal fade modal-lg'"
                          th:id="'timeslotModal'+${appointment.getId()}" tabindex="-1"
                          th:aria-labelledby="'timeslotModalLabel'+${appointment.getId()}"
                          aria-hidden="true">
@@ -88,7 +88,7 @@
                                             aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body row">
-                                    <div th:class="${appointment.getLocation == null}?'':'col-4'">
+                                    <div th:class="${appointment.getAddress() == '' && appointment.getRoomName() == ''}?'':'col-4'">
                                         <div class="mb-3">
                                             <p><span class="fw-bold">Name</span><br><span
                                                     th:text="${appointment.getName()}"></span></p>
@@ -114,12 +114,19 @@
                                             <p><span class="fw-bold">Wiederholungen</span><br><span
                                                     th:text="${appointment.getRepetitions()}"></span></p>
                                         </div>
+                                        <div class="mb-3" th:if="${appointment.getRoomName() != ''}">
+                                            <p><span class="fw-bold">Raum Name</span><br><span
+                                                    th:text="${appointment.getRoomName()}"></span></p>
+                                        </div>
+                                        <div class="mb-3" th:if="${appointment.getAddress != ''}">
+                                            <p><span class="fw-bold">Addresse</span><br><span
+                                                    th:text="${appointment.getAddress()}"></span></p>
+                                        </div>
                                     </div>
-                                    <div th:if="${appointment.getLocation() != null}" class="col-8">
+                                    <div th:if="${appointment.getAddress() != '' || appointment.getRoomName() != ''}" class="col-8">
                                         <p class="fw-bold">Ort</p>
-                                        <iframe class="w-100" style="height: 20em"
-                                                src="https://www.openstreetmap.org/export/embed.html?bbox=9.699318408966066%2C47.484177893725764%2C9.729595184326174%2C47.49977861091604&amp;layer=mapnik&amp;marker=47.49197883161885%2C9.714467525482178">
-                                        </iframe>
+                                        <iframe class="w-100 locationView" th:address="${appointment.getAddress()}" style="height: 20em"></iframe>
+                                        <img class="roomView" th:if="${appointment.getRoomName() != ''}" th:roomName="${appointment.getRoomName()}">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -135,7 +142,7 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" th:id="'changeDateModal'+${appointment.getId()}" tabindex="-1"
+                    <div class="modal fade modal-lg" th:id="'changeDateModal'+${appointment.getId()}" tabindex="-1"
                          aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -145,38 +152,81 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">Name</label>
-                                            <input type="text" class="form-control" th:value="${appointment.getName()}"
-                                                   name="name" required>
+
+                                    <div class="modal-body row">
+                                        <div class="col-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Name</label>
+                                                <input type="text" class="form-control"
+                                                       th:value="${appointment.getName()}"
+                                                       name="name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Beschreibung</label>
+                                                <textarea class="form-control" rows="3"
+                                                          name="description"
+                                                          th:text="${appointment.getDescription()}"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Tag</label>
+                                                <input name="startDate" type="date"
+                                                       th:value="${appointment.getStartDate()}"
+                                                       class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Startzeit</label>
+                                                <input name="startTime" type="time"
+                                                       th:value="${appointment.getStartTime()}"
+                                                       class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Endzeit</label>
+                                                <input name="endTime" type="time" th:value="${appointment.getEndTime()}"
+                                                       class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Wiederholungen</label>
+                                                <input name="repetitions" type="number"
+                                                       th:value="${appointment.getRepetitions()}" min="0"
+                                                       class="form-control">
+                                            </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Beschreibung</label>
-                                            <textarea class="form-control" rows="3"
-                                                      name="description"
-                                                      th:text="${appointment.getDescription()}"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Tag</label>
-                                            <input name="startDate" type="date" th:value="${appointment.getStartDate()}"
-                                                   class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Startzeit</label>
-                                            <input name="startTime" type="time" th:value="${appointment.getStartTime()}"
-                                                   class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Endzeit</label>
-                                            <input name="endTime" type="time" th:value="${appointment.getEndTime()}"
-                                                   class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Wiederholungen</label>
-                                            <input name="repetitions" type="number"
-                                                   th:value="${appointment.getRepetitions()}" min="0"
-                                                   class="form-control">
+                                        <div class="col-8">
+                                            <div class="mb-3">
+                                                <label class="form-label">Adresse oder Ortsbeschreibung</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" name="address"
+                                                           th:id="'addressInput'+${appointment.getId()}"
+                                                           th:value="${appointment.getAddress()}"
+                                                           th:attrappend="disabled=${appointment.getAddress() == '' && appointment.getRoomName() != ''}?@{true}">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            th:id="'triggerLocationPreview'+${appointment.getId()}">
+                                                        Vorschau
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Raum Nummer/Name</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" name="roomName"
+                                                           th:id="'roomNameInput'+${appointment.getId()}"
+                                                           th:value="${appointment.getRoomName()}"
+                                                           th:attrappend="disabled=${appointment.getRoomName() == '' && appointment.getAddress != ''}?@{true}">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            th:id="'triggerRoomPreview'+${appointment.getId()}">
+                                                        Vorschau
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <iframe class="w-100 mb-3" style="height: 25em" th:id="'locationPreview'+${appointment.getId()}"
+                                                    src="https://www.openstreetmap.org/export/embed.html">
+                                            </iframe>
+                                            <div class="position-relative w-100 d-none" th:id="'roomImageDiv'+${appointment.getId()}">
+                                                <img class="w-100" th:id="'roomImage'+${appointment.getId()}">
+                                                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+                                                     role="status"
+                                                     th:id="'roomImageMarker'+${appointment.getId()}"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -274,7 +324,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview1"
+                            <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview"
                                     src="https://www.openstreetmap.org/export/embed.html">
                             </iframe>
                             <div class="position-relative w-100 d-none" id="roomImageDiv">
@@ -300,72 +350,117 @@
 <div th:replace="fragments/jsImports :: jsImports"></div>
 
 <script>
-    let addressInput = $('#addressInput');
-    let roomNameInput = $('#roomNameInput');
-    let locationPreview1 = $('#locationPreview1');
-    let triggerLocationPreview = $('#triggerLocationPreview');
-    let triggerRoomPreview = $('#triggerRoomPreview');
-    let roomImageDiv = $('#roomImageDiv');
-    let roomImage = $('#roomImage');
-    let roomImageMarker = $('#roomImageMarker');
-
-    triggerLocationPreview.on('click', () => {
-        if (addressInput.val().length >= 3) {
-            $.ajax({
-                url: "/getIframeUrl?location=" + addressInput.val(),
-                success: function (data) {
-                    locationPreview1.attr("src", data["iframeUrl"]);
-                    if (!roomImageDiv.hasClass("d-none")) {
-                        roomImageDiv.addClass("d-none");
-                    }
-                }
-            })
-        }
-    })
-
-    triggerRoomPreview.on('click', () => {
-        if (roomNameInput.val().length >= 3) {
-            $.ajax({
-                url: "/getIframeUrl?roomName=" + roomNameInput.val(),
-                success: function (data) {
-                    locationPreview1.attr("src", data["iframeUrl"]);
-                    roomNameInput.val(data["roomId"]);
-                    if ("roomImageUrl" in data) {
-                        if (roomImageDiv.hasClass("d-none")) {
-                            roomImageDiv.removeClass("d-none");
-                        }
-                        roomImage.attr("src", data["roomImageUrl"]);
-                        if (roomImageMarker.hasClass("d-none")) {
-                            roomImageMarker.removeClass("d-none");
-                        }
-                        roomImageMarker.css("left", data["markerX"] + "%");
-                        roomImageMarker.css("top", data["markerY"] + "%");
-                    } else {
+    function locationPreview(addressInput, roomNameInput, locationPreview, triggerLocationPreview, triggerRoomPreview, roomImageDiv, roomImage, roomImageMarker) {
+        triggerLocationPreview.on('click', () => {
+            if (addressInput.val().length >= 3) {
+                $.ajax({
+                    url: "/getIframeUrl?location=" + addressInput.val(),
+                    success: function (data) {
+                        locationPreview.attr("src", data["iframeUrl"]);
                         if (!roomImageDiv.hasClass("d-none")) {
                             roomImageDiv.addClass("d-none");
                         }
                     }
-                }
-            })
-        }
-    })
+                })
+            }
+        })
 
-    addressInput.on('input', () => {
-        if (addressInput.val() !== "") {
-            roomNameInput.attr("disabled", "");
-        } else {
-            roomNameInput.removeAttr("disabled");
-        }
-    })
+        triggerRoomPreview.on('click', () => {
+            if (roomNameInput.val().length >= 3) {
+                $.ajax({
+                    url: "/getIframeUrl?roomName=" + roomNameInput.val(),
+                    success: function (data) {
+                        locationPreview.attr("src", data["iframeUrl"]);
+                        roomNameInput.val(data["roomId"]);
+                        if ("roomImageUrl" in data) {
+                            if (roomImageDiv.hasClass("d-none")) {
+                                roomImageDiv.removeClass("d-none");
+                            }
+                            roomImage.attr("src", data["roomImageUrl"]);
+                            if (roomImageMarker.hasClass("d-none")) {
+                                roomImageMarker.removeClass("d-none");
+                            }
+                            roomImageMarker.css("left", data["markerX"] + "%");
+                            roomImageMarker.css("top", data["markerY"] + "%");
+                        } else {
+                            if (!roomImageDiv.hasClass("d-none")) {
+                                roomImageDiv.addClass("d-none");
+                            }
+                        }
+                    }
+                })
+            }
+        })
 
-    roomNameInput.on('input', () => {
-        if (roomNameInput.val() !== "") {
-            addressInput.attr("disabled", "");
-        } else {
-            addressInput.removeAttr("disabled");
-        }
-    })
+        addressInput.on('input', () => {
+            if (addressInput.val() !== "") {
+                roomNameInput.attr("disabled", "");
+            } else {
+                roomNameInput.removeAttr("disabled");
+            }
+        })
+
+        roomNameInput.on('input', () => {
+            if (roomNameInput.val() !== "") {
+                addressInput.attr("disabled", "");
+            } else {
+                addressInput.removeAttr("disabled");
+            }
+        })
+    }
+
+    locationPreview(
+        $('#addressInput'),
+        $('#roomNameInput'),
+        $('#locationPreview'),
+        $('#triggerLocationPreview'),
+        $('#triggerRoomPreview'),
+        $('#roomImageDiv'),
+        $('#roomImage'),
+        $('#roomImageMarker')
+    );
+
+    $('.showDateBtn').on('click', (e) => {
+        e = $(e.target).parent().parent();
+        let locationView = e.find('.locationView');
+        let roomView = e.find('.roomView');
+
+        let address = locationView.attr("address");
+        let roomName = roomView.attr("roomName");
+
+        setTimeout(() => {
+            if (address !== undefined) {
+                $.ajax({
+                    url: "/getIframeUrl?location=" + address,
+                    success: function (data) {
+                        locationView.attr("src", data["iframeUrl"]);
+                    }
+                })
+            } else if (roomName !== undefined) {
+                $.ajax({
+                    url: "/getIframeUrl?roomName=" + roomName,
+                    success: function (data) {
+                        roomView.attr("src", data["roomImageUrl"]);
+                        locationView.attr("src", data["iframeUrl"]);
+                    }
+                })
+            }
+        }, 100);
+    });
 </script>
-
+<div th:each="day: ${mappedAppointments.keySet()}">
+    <script th:inline="text" th:each="appointment: ${mappedAppointments.get(day)}">
+        locationPreview(
+            $('#addressInput[[${appointment.getId()}]]'),
+            $('#roomNameInput[[${appointment.getId()}]]'),
+            $('#locationPreview[[${appointment.getId()}]]'),
+            $('#triggerLocationPreview[[${appointment.getId()}]]'),
+            $('#triggerRoomPreview[[${appointment.getId()}]]'),
+            $('#roomImageDiv[[${appointment.getId()}]]'),
+            $('#roomImage[[${appointment.getId()}]]'),
+            $('#roomImageMarker[[${appointment.getId()}]]')
+        );
+    </script>
+</div>
 </body>
 </html>

@@ -1,11 +1,14 @@
 package eist.tum_social.tum_social.controllers.forms;
 
+import eist.tum_social.tum_social.controllers.forms.Form;
+import eist.tum_social.tum_social.controllers.util.FormIgnore;
 import eist.tum_social.tum_social.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
-public class UpdateAppointmentForm extends Form<Appointment> {
+public class AppointmentForm extends Form<Appointment> {
 
     private String name;
     private String description;
@@ -13,6 +16,10 @@ public class UpdateAppointmentForm extends Form<Appointment> {
     private LocalTime endTime;
     private LocalDate startDate;
     private int repetitions;
+    @FormIgnore
+    private String roomName;
+    @FormIgnore
+    private String address;
 
     public String getName() {
         return name;
@@ -62,4 +69,26 @@ public class UpdateAppointmentForm extends Form<Appointment> {
         this.repetitions = repetitions;
     }
 
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Override
+    public void apply(Appointment object) {
+        super.apply(object);
+        object.setAddress(Objects.requireNonNullElse(address, ""));
+        object.setRoomName(Objects.requireNonNullElse(roomName, ""));
+    }
 }
