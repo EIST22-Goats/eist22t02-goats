@@ -8,7 +8,7 @@ import eist.tum_social.tum_social.model.Person;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class UpdateProfileForm implements ProfileForm {
+public class UpdateProfileForm extends Form<Person> {
     private String firstname;
     private String lastname;
     private String birthdate;

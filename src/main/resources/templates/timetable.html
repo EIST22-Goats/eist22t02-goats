@@ -139,14 +139,13 @@
                          aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form action="/updateAppointment" method="post">
+                                <form th:action="'/updateAppointment/'+${appointment.getId()}" method="post">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Termin bearbeiten</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <input type="hidden" name="id" th:value="${appointment.getId()}">
                                         <div class="mb-3">
                                             <label class="form-label">Name</label>
                                             <input type="text" class="form-control" th:value="${appointment.getName()}"
@@ -252,7 +251,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="repetitions" class="form-label">Wiederholungen</label>
-                                <input name="repetitions" type="number" value="0" min="0" id="repetitions"
+                                <input name="repetitions" type="number" value="1" min="1" id="repetitions"
                                        class="form-control">
                             </div>
                         </div>

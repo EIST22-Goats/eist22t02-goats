@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
-import eist.tum_social.tum_social.controllers.forms.ProfileForm;
+import eist.tum_social.tum_social.controllers.forms.Form;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.datastorage.Storage;
@@ -97,7 +97,7 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    private void updatePerson(ProfileForm form) {
+    private void updatePerson(Form<Person> form) {
         Storage db = new Storage();
         Person person = db.getPerson(getCurrentUsersTumId());
         form.apply(person);

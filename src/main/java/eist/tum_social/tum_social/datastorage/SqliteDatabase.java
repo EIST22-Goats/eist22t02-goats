@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static eist.tum_social.tum_social.datastorage.util.BeanUtil.getValueOfField;
+import static eist.tum_social.tum_social.datastorage.util.BeanUtil.setValueOfField;
+
 public class SqliteDatabase implements Database {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -105,8 +108,10 @@ public class SqliteDatabase implements Database {
             }
 
             Pair<String, String> assignment = createFieldSqlAssignment(field, bean);
-            parameters.add(assignment.first());
-            values.add(assignment.second());
+            if (assignment != null) {
+                parameters.add(assignment.first());
+                values.add(assignment.second());
+            }
         }
 
         String sql = String.format(
@@ -211,11 +216,12 @@ public class SqliteDatabase implements Database {
                     value = getIdOfBean(value);
                 }
             }
+            String stringValue = valueToRawString(value);
 
-            value = valueToRawString(value);
+            return new Pair<>(name, stringValue);
+        } else {
+            return null;
         }
-
-        return new Pair<>(name, (String) value);
     }
 
     private int getIdOfBean(Object bean) {
@@ -231,24 +237,6 @@ public class SqliteDatabase implements Database {
             setValueOfField(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean, value);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private Object getValueOfField(Field field, Object bean) {
-        try {
-            return new PropertyDescriptor(field.getName(), bean.getClass()).getReadMethod().invoke(bean);
-        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
-        }
-    }
-
-    private void setValueOfField(Field field, Object bean, Object value) {
-        try {
-            if (value != null) {
-                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
-            }
-        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
         }
     }
 

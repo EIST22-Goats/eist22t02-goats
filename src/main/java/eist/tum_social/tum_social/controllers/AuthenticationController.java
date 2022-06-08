@@ -1,5 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.RegistrationForm;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.controllers.util.Status;
@@ -72,14 +73,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public String registrationPage(Model model, Person person) {
+    public String registrationPage(Model model, RegistrationForm form) {
         if (isLoggedIn()) {
             return "redirect:/";
         }
 
+        Person person = new Person();
+        form.apply(person);
+
         Status status = registerPerson(person);
         if (status == SUCCESS) {
-            login(person.getTumId());
+            login(form.getTumId());
             return "redirect:/";
         } else {
             model.addAttribute("registrationFailed", true);
