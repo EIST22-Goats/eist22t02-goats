@@ -21,10 +21,8 @@ public class Appointment extends UniquelyIdentifiable {
     private LocalTime endTime;
     private LocalDate startDate;
     private int repetitions;
-    @ForeignTable(
-            foreignTableName = "Locations",
-            ownColumnName = "locationId")
-    private ForeignEntity<Location> locationEntity;
+    private String address;
+    private String roomName;
     @BridgingTable(
             bridgingTableName = "PersonAppointments",
             ownForeignColumnName = "appointmentId",
@@ -96,18 +94,6 @@ public class Appointment extends UniquelyIdentifiable {
         return startTime.until(endTime, ChronoUnit.MINUTES) / 60.0;
     }
 
-    public ForeignEntity<Location> getLocationEntity() {
-        return locationEntity;
-    }
-
-    public Location getLocation() {
-        return locationEntity.get();
-    }
-
-    public void setLocationEntity(ForeignEntity<Location> locationEntity) {
-        this.locationEntity = locationEntity;
-    }
-
     public BridgingEntities<Person> getSubscriberEntities() {
         return subscriberEntities;
     }
@@ -130,5 +116,21 @@ public class Appointment extends UniquelyIdentifiable {
 
     public void setCourseEntities(BridgingEntities<Course> courseEntities) {
         this.courseEntities = courseEntities;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 }

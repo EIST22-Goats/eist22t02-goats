@@ -45,8 +45,6 @@ public class OpenStreetMap {
         String name = json.get("display_name").getAsString();
         JsonArray jsonBoundingbox = json.get("boundingbox").getAsJsonArray();
 
-        System.out.println(">>> json bbox: "+jsonBoundingbox);
-
         BoundingBox boundingBox = jsonToBoundingBox(jsonBoundingbox);
 
         return new OpenStreetmapLocation(name, boundingBox, coords);
