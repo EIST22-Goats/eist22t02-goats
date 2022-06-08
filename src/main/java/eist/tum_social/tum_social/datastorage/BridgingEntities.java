@@ -8,6 +8,10 @@ public class BridgingEntities<T> extends Entity {
 
     private List<T> values;
 
+    public BridgingEntities() {
+        super(null, null, null);
+    }
+
     public BridgingEntities(Database database, Field field, Map<String, Object> row) {
         super(database, field, row);
     }

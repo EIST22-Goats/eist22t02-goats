@@ -5,23 +5,14 @@ import eist.tum_social.tum_social.model.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class UpdateCourseAppointmentForm {
+public class UpdateAppointmentForm extends Form<Appointment> {
 
-    private int id;
     private String name;
     private String description;
     private LocalTime startTime;
     private LocalTime endTime;
     private LocalDate startDate;
     private int repetitions;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -69,15 +60,6 @@ public class UpdateCourseAppointmentForm {
 
     public void setRepetitions(int repetitions) {
         this.repetitions = repetitions;
-    }
-
-    public void apply(Appointment appointment) {
-        appointment.setName(name);
-        appointment.setDescription(description);
-        appointment.setEndTime(endTime);
-        appointment.setStartDate(startDate);
-        appointment.setEndTime(endTime);
-        appointment.setRepetitions(repetitions);
     }
 
 }

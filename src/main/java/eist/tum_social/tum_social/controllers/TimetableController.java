@@ -1,6 +1,6 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.controllers.forms.UpdateCourseAppointmentForm;
+import eist.tum_social.tum_social.controllers.forms.UpdateAppointmentForm;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
@@ -162,13 +162,15 @@ public class TimetableController {
         return "redirect:/courses/"+course.getId();
     }
 
-    @PostMapping("/updateAppointment")
-    public String updateAppointment(Appointment appointment) {
+    @PostMapping("/updateAppointment/{appointmentId}")
+    public String updateAppointment(@PathVariable int appointmentId, UpdateAppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = storage.getAppointment(appointmentId);
+        form.apply(appointment);
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
@@ -178,15 +180,15 @@ public class TimetableController {
         return "redirect:/timetable";
     }
 
-    @PostMapping("/updateCourseAppointment")
-    public String updateCourseAppointment(UpdateCourseAppointmentForm appointmentForm) {
+    @PostMapping("/updateCourseAppointment/{appointmentId}")
+    public String updateCourseAppointment(@PathVariable int appointmentId, UpdateAppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
-        Appointment appointment = storage.getAppointment(appointmentForm.getId());
-        appointmentForm.apply(appointment);
+        Appointment appointment = storage.getAppointment(appointmentId);
+        form.apply(appointment);
         Person person = getCurrentPerson(storage);
         Course course = appointment.getCourses().get(0);
         if (course.getAdmin().equals(person)) {

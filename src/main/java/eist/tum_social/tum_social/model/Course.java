@@ -19,17 +19,17 @@ public class Course extends UniquelyIdentifiable {
     @ForeignTable(
             foreignTableName = "Persons",
             ownColumnName = "adminId")
-    private ForeignEntity<Person> adminEntity;
+    private ForeignEntity<Person> adminEntity = new ForeignEntity<>();
     @BridgingTable(
             bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "personId")
-    private BridgingEntities<Person> participantEntities;
+    private BridgingEntities<Person> participantEntities = new BridgingEntities<>();
     @BridgingTable(
             bridgingTableName = "CourseAppointments",
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "appointmentId")
-    private BridgingEntities<Appointment> appointmentEntities;
+    private BridgingEntities<Appointment> appointmentEntities = new BridgingEntities<>();
     @IgnoreInDatabase
     private List<Comment> comments;
 
