@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.controllers.util;
 
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.DataStorage.Storage;
 import org.springframework.ui.Model;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.getCurrentUsersTumId;

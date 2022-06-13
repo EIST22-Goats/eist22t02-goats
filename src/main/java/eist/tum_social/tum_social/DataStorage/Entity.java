@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.datastorage;
+package eist.tum_social.tum_social.DataStorage;
 
 import java.lang.reflect.Field;
 import java.util.Map;

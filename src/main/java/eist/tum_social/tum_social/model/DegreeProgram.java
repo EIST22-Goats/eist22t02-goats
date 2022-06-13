@@ -1,7 +1,7 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.datastorage.ForeignEntity;
-import eist.tum_social.tum_social.datastorage.util.*;
+import eist.tum_social.tum_social.DataStorage.ForeignEntity;
+import eist.tum_social.tum_social.DataStorage.util.*;
 
 @DatabaseEntity(tableName = "DegreePrograms")
 public class DegreeProgram extends UniquelyIdentifiable {

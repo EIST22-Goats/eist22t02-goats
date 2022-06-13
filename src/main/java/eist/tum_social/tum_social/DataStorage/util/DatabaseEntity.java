@@ -1,15 +1,12 @@
-package eist.tum_social.tum_social.datastorage.util;
+package eist.tum_social.tum_social.DataStorage.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ForeignTable {
-
-    String foreignTableName();
-    String ownColumnName();
-
+public @interface DatabaseEntity {
+    String tableName();
 }

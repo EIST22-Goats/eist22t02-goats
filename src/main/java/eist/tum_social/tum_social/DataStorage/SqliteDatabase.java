@@ -1,8 +1,6 @@
-package eist.tum_social.tum_social.datastorage;
+package eist.tum_social.tum_social.DataStorage;
 
-import eist.tum_social.tum_social.datastorage.util.*;
-import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.Person;
+import eist.tum_social.tum_social.DataStorage.util.*;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -19,10 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static eist.tum_social.tum_social.datastorage.util.BeanUtil.getValueOfField;
-import static eist.tum_social.tum_social.datastorage.util.BeanUtil.setValueOfField;
-import static eist.tum_social.tum_social.datastorage.util.BeanUtil.hasAnnotation;
 
 public class SqliteDatabase implements Database {
 
@@ -127,29 +121,8 @@ public class SqliteDatabase implements Database {
     }
 
     @Override
-    public void delete(Object bean) {
-        String tableName = getTableName(bean.getClass());
-        int id = getIdOfBean(bean);
-
-        String deleteSql = String.format("DELETE FROM %s WHERE %s=%s", tableName, ID_COLUMN_NAME, id);
-        executeStatement(deleteSql);
-
-        for (Field field : bean.getClass().getDeclaredFields()) {
-            if (hasAnnotation(field, BridgingTable.class)) {
-                deleteFromBridgingTable(field, id);
-            }
-        }
-    }
-
-    private void deleteFromBridgingTable(Field field, int id) {
-        BridgingTable bridgingTable = field.getAnnotation(BridgingTable.class);
-
-        String deleteSql = String.format("DELETE FROM %s WHERE %s=%s",
-                bridgingTable.bridgingTableName(),
-                bridgingTable.ownForeignColumnName(),
-                id
-        );
-        executeStatement(deleteSql);
+    public void delete(Object object) {
+        // TODO delete
     }
 
     private int updateQuery(String sql) {
@@ -179,7 +152,7 @@ public class SqliteDatabase implements Database {
         String bridgingTableName = bridgingTable.bridgingTableName();
         BridgingEntities<?> bridgingEntities = ((BridgingEntities<?>) getValueOfField(field, bean));
 
-        if (bridgingEntities != null && bridgingEntities.isSet()) {
+        if (bridgingEntities.isSet()) {
             String clearStatement = String.format(
                     "DELETE FROM %s WHERE %s=%s",
                     bridgingTableName,
@@ -212,22 +185,18 @@ public class SqliteDatabase implements Database {
             if (hasAnnotation(field, ForeignTable.class)) {
                 name = field.getAnnotation(ForeignTable.class).ownColumnName();
                 value = ((ForeignEntity<?>) value).get();
-
-                if (value != null) {
-                    value = getIdOfBean(value);
-                }
+                value = getIdOfBean(value);
             }
-            String stringValue = valueToRawString(value);
 
-            return new Pair<>(name, stringValue);
-        } else {
-            return null;
+            return new Pair<>(name, valueToRawString(value));
         }
+
+        return null;
     }
 
-    private int getIdOfBean(Object bean) {
+    private Object getIdOfBean(Object bean) {
         try {
-            return (int) getValueOfField(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean);
+            return getValueOfField(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -238,6 +207,24 @@ public class SqliteDatabase implements Database {
             setValueOfField(bean.getClass().getDeclaredField(ID_COLUMN_NAME), bean, value);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private Object getValueOfField(Field field, Object bean) {
+        try {
+            return new PropertyDescriptor(field.getName(), bean.getClass()).getReadMethod().invoke(bean);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException("Failed accessing Field " + field.getName() + " of Object " + bean);
+        }
+    }
+
+    private void setValueOfField(Field field, Object bean, Object value) {
+        try {
+            if (value != null) {
+                new PropertyDescriptor(field.getName(), bean.getClass()).getWriteMethod().invoke(bean, value);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new BeanFieldException(e + " Failed accessing Field " + field.getName() + " of Object " + bean);
         }
     }
 
@@ -356,6 +343,10 @@ public class SqliteDatabase implements Database {
     private Class<?> getGenericType(Field field) {
         ParameterizedType listType = (ParameterizedType) field.getGenericType();
         return (Class<?>) listType.getActualTypeArguments()[0];
+    }
+
+    private <T extends Annotation> boolean hasAnnotation(Field field, Class<T> annotationClass) {
+        return field.getAnnotation(annotationClass) != null;
     }
 
 }

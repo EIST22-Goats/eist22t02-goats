@@ -1,8 +1,7 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.controllers.forms.RegistrationForm;
-import eist.tum_social.tum_social.datastorage.Storage;
-import eist.tum_social.tum_social.datastorage.StorageFacade;
+import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.DataStorage.StorageFacade;
 import eist.tum_social.tum_social.controllers.util.Status;
 import eist.tum_social.tum_social.model.Person;
 import org.mindrot.jbcrypt.BCrypt;
@@ -73,17 +72,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public String registrationPage(Model model, RegistrationForm form) {
+    public String registrationPage(Model model, Person person) {
         if (isLoggedIn()) {
             return "redirect:/";
         }
 
-        Person person = new Person();
-        form.apply(person);
-
         Status status = registerPerson(person);
         if (status == SUCCESS) {
-            login(form.getTumId());
+            login(person.getTumId());
             return "redirect:/";
         } else {
             model.addAttribute("registrationFailed", true);

@@ -2,11 +2,11 @@ package eist.tum_social.tum_social.model;
 
 import eist.tum_social.tum_social.DataStorage.util.DatabaseEntity;
 
-@DatabaseEntity(tableName = "Locations")
-public class Location {
+@DatabaseEntity(tableName = "Rooms")
+public class Room extends UniquelyIdentifiable {
 
     private int id = -1;
-    private String description;
+    private String name;
     private String address;
 
     public int getId() {
@@ -17,12 +17,12 @@ public class Location {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAddress() {

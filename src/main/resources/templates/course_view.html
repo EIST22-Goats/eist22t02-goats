@@ -44,7 +44,7 @@
                 Termine bearbeiten
             </button>
 
-            <div class="modal fade modal-lg" id="updateCourseDatesModal" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="updateCourseDatesModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <form>
@@ -56,23 +56,16 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th scope="col">Erstes Datum</th>
+                                        <th scope="col">Wochentag</th>
                                         <th scope="col">Zeit</th>
-                                        <th scope="col">Wiederholungen</th>
                                         <th scope="col">#</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr th:each="appointment: ${course.getAppointments()}">
-                                        <td th:text="${#temporals.format(appointment.getStartDate(), 'dd.MM.YYYY')}"></td>
-                                        <td th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
-                                        <td th:text="${appointment.getRepetitions()}"></td>
-                                        <td>
-                                            <a href="#" data-bs-toggle="modal"
-                                               th:data-bs-target="'#updateAppointmentModal'+${appointment.getId()}">bearbeiten</a>
-                                            <a href="#" class="link-danger" data-bs-toggle="modal"
-                                               th:data-bs-target="'#deleteAppointmentModal'+${appointment.getId()}">löschen</a>
-                                        </td>
+                                        <td th:text="${appointment.getStartDate().getDayOfWeek()}"></td>
+<!-- TODO language support -->          <td th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></td>
+                                        <td><a href="#">bearbeiten</a> <a href="#" class="link-danger">löschen</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -83,69 +76,6 @@
                                         data-bs-target="#newDateModal">Neuer Termin</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-
-            <div th:each="appointment: ${course.getAppointments()}">
-                <div class="modal fade" tabindex="-1" aria-hidden="true" th:id="'deleteAppointmentModal'+${appointment.getId()}">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Termin löschen?</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                                <form th:action="'/deleteCourseAppointment/'+${appointment.getId()}" method="post">
-                                    <button type="submit" class="btn btn-danger">Löschen</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" th:id="'updateAppointmentModal'+${appointment.getId()}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form th:action="'/updateCourseAppointment/'+${appointment.getId()}" method="post">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Termin bearbeiten</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Name</label>
-                                        <input type="text" class="form-control" th:value="${appointment.getName()}" name="name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Beschreibung</label>
-                                        <textarea class="form-control" rows="3"
-                                                  name="description" th:text="${appointment.getDescription()}"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Tag</label>
-                                        <input name="startDate" type="date" th:value="${appointment.getStartDate()}" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Startzeit</label>
-                                        <input name="startTime" type="time" th:value="${appointment.getStartTime()}" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Endzeit</label>
-                                        <input name="endTime" type="time" th:value="${appointment.getEndTime()}" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Wiederholungen</label>
-                                        <input name="repetitions" type="number" th:value="${appointment.getRepetitions()}" min="1" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                                    <button type="submit" class="btn btn-primary">Speichern</button>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -182,7 +112,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Wiederholungen</label>
-                                    <input name="repetitions" type="number" value="1" min="1" class="form-control">
+                                    <input name="repetitions" type="number" value="0" min="0" class="form-control">
                                 </div>
                             </div>
                             <div class="modal-footer">
