@@ -1,0 +1,96 @@
+<div th:fragment="appointmentModals">
+  <div class="modal fade modal-lg" id="newDateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/createAppointment" method="post">
+          <div class="modal-header">
+            <h5 class="modal-title">Neuer Termin</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-4">
+              <div class="mb-3">
+                <label for="nameLabel" class="form-label">Name</label>
+                <input type="text" class="form-control" id="nameLabel" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="descriptionLabel" class="form-label">Beschreibung</label>
+                <textarea class="form-control" id="descriptionLabel" rows="3"
+                          name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="startDate" class="form-label">Tag</label>
+                <input name="startDate" type="date" id="startDate" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="startTime" class="form-label">Startzeit</label>
+                <input name="startTime" type="time" id="startTime" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="endTime" class="form-label">Endzeit</label>
+                <input name="endTime" type="time" id="endTime" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="repetitions" class="form-label">Wiederholungen</label>
+                <input name="repetitions" type="number" value="1" min="1" id="repetitions"
+                       class="form-control">
+              </div>
+            </div>
+            <div class="col-8">
+              <div class="mb-3">
+                <label class="form-label">Adresse oder Ortsbeschreibung</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" name="address" id="addressInput">
+                  <button class="btn btn-outline-secondary" type="button" id="triggerLocationPreview">
+                    Vorschau
+                  </button>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Raum Nummer/Name</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" name="roomName" id="roomNameInput">
+                  <button class="btn btn-outline-secondary" type="button" id="triggerRoomPreview">
+                    Vorschau
+                  </button>
+                </div>
+              </div>
+              <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview"
+                      src="https://www.openstreetmap.org/export/embed.html">
+              </iframe>
+              <div class="position-relative w-100 d-none" id="roomImageDiv">
+                <img class="w-100" id="roomImage">
+                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+                     role="status" id="roomImageMarker"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+            <button type="submit" class="btn btn-primary">Speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteAppointmentModal" tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Termin Löschen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen
+          </button>
+          <form id="deleteAppointmentModalForm" action="[TODO]" method="post">
+            <button type="submit" class="btn btn-danger">Löschen</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
