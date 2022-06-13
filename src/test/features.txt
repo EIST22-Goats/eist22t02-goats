@@ -1,0 +1,13 @@
+Persons:
+   - register Person
+   - update Person
+   - update Password
+   - delete Person
+   (- update Icon)
+Courses:
+   - add Course
+   - update Course
+   - delete Course
+   - join Course
+   - leave Course
+   - Course access control
