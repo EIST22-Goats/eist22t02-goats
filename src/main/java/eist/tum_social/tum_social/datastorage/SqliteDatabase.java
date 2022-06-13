@@ -33,8 +33,11 @@ public class SqliteDatabase implements Database {
     private final SQLiteDataSource dataSource;
 
     public SqliteDatabase() {
+        this(URL);
+    }
+    public SqliteDatabase(String url) {
         dataSource = new SQLiteDataSource();
-        dataSource.setUrl(URL);
+        dataSource.setUrl(url);
     }
 
     public <T> T loadForeignTableObject(Field field, Map<String, Object> row) {
