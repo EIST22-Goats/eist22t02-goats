@@ -135,13 +135,22 @@
                                     </button>
                                     <button th:if="${appointment.getSubscribers().size() != 0 && appointment.getSubscribers().get(0).getId() == person.getId()}"
                                             type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            th:data-bs-target="'#changeDateModal'+${appointment.getId()}">Ändern
+                                            data-bs-target="#changeDateModal"
+                                            th:attr="data-bs-name=${appointment.getName()},
+                                                     data-bs-description=${appointment.getDescription()},
+                                                     data-bs-startdate=${appointment.getStartDate()},
+                                                     data-bs-starttime=${appointment.getStartTime()},
+                                                     data-bs-endtime=${appointment.getEndTime()},
+                                                     data-bs-repetitions=${appointment.getRepetitions()},
+                                                     data-bs-address=${appointment.getAddress()},
+                                                     data-bs-roomname=${appointment.getRoomName()}">Ändern
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!--
                     <div class="modal fade modal-lg" th:id="'changeDateModal'+${appointment.getId()}" tabindex="-1"
                          aria-hidden="true">
                         <div class="modal-dialog">
@@ -244,6 +253,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
 
                 </div>
             </div>
@@ -261,86 +271,112 @@
     function loadDeleteAppointmentModel(modal) {
         modal.addEventListener('show.bs.modal', function (event) {
             let appointmentId = event.relatedTarget.getAttribute('data-bs-appointment-id')
-            let form = deleteAppointmentModal.querySelector("#deleteAppointmentModalForm");
+            let form = modal.querySelector("#deleteAppointmentModalForm");
             form.action = "/deleteAppointment/" + appointmentId
+        })
+    }
+
+    function loadChangeAppointmentModel(modal) {
+        modal.addEventListener('show.bs.modal', function (event) {
+            let name = event.relatedTarget.getAttribute('data-bs-name')
+            $("#changeAppointmentModalNameInput").val(name);
+
+            let description = event.relatedTarget.getAttribute('data-bs-description')
+            $("#changeAppointmentModalDescriptionInput").val(description);
+
+            let startDate = event.relatedTarget.getAttribute('data-bs-startdate');
+            $("#changeAppointmentModalStartDateInput").val(startDate);
+
+            let startTime = event.relatedTarget.getAttribute('data-bs-starttime');
+            $("#changeAppointmentModalStartTimeInput").val(startTime);
+
+            let endTime = event.relatedTarget.getAttribute('data-bs-endtime');
+            $("#changeAppointmentModalEndTimeInput").val(endTime);
+
+            let repetitions = event.relatedTarget.getAttribute('data-bs-repetitions');
+            $("#changeAppointmentModalRepetitionsInput").val(repetitions);
+
+            let address = event.relatedTarget.getAttribute("data-bs-address");
+            let addressInput = $("#changeAppointmentModalAddressInput");
+            addressInput.val(address);
+
+            let roomName = event.relatedTarget.getAttribute("data-bs-roomname");
+            let roomNameInput = $("#changeAppointmentModalRoomNameInput");
+            roomNameInput.val(roomName);
+
+            let triggerLocationPreview = $('#triggerLocationPreview');
+            let triggerRoomPreview = $('#triggerRoomPreview');
+            let roomImageDiv = $('#roomImageDiv');
+            let roomImage = $('#roomImage');
+            let roomImageMarker = $('#roomImageMarker');
+            let locationPreviewIFrame = $("#locationPreviewIFrame");
+
+            triggerLocationPreview.on('click', () => {
+                if (addressInput.val().length >= 3) {
+                    $.ajax({
+                        url: "/getIframeUrl?location=" + addressInput.val(),
+                        success: function (data) {
+                            locationPreviewIFrame.attr("src", data["iframeUrl"]);
+                            if (!roomImageDiv.hasClass("d-none")) {
+                                roomImageDiv.addClass("d-none");
+                            }
+                        }
+                    })
+                }
+            })
+
+            triggerRoomPreview.on('click', () => {
+                if (roomNameInput.val().length >= 3) {
+                    $.ajax({
+                        url: "/getIframeUrl?roomName=" + roomNameInput.val(),
+                        success: function (data) {
+                            locationPreviewIFrame.attr("src", data["iframeUrl"]);
+                            roomNameInput.val(data["roomId"]);
+                            if ("roomImageUrl" in data) {
+                                if (roomImageDiv.hasClass("d-none")) {
+                                    roomImageDiv.removeClass("d-none");
+                                }
+                                roomImage.attr("src", data["roomImageUrl"]);
+                                if (roomImageMarker.hasClass("d-none")) {
+                                    roomImageMarker.removeClass("d-none");
+                                }
+                                roomImageMarker.css("left", data["markerX"] + "%");
+                                roomImageMarker.css("top", data["markerY"] + "%");
+                            } else {
+                                if (!roomImageDiv.hasClass("d-none")) {
+                                    roomImageDiv.addClass("d-none");
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+
+            addressInput.on('input', () => {
+                if (addressInput.val() !== "") {
+                    roomNameInput.attr("disabled", "");
+                } else {
+                    roomNameInput.removeAttr("disabled");
+                }
+            })
+
+            roomNameInput.on('input', () => {
+                if (roomNameInput.val() !== "") {
+                    addressInput.attr("disabled", "");
+                } else {
+                    addressInput.removeAttr("disabled");
+                }
+            })
         })
     }
 
     let deleteAppointmentModal = document.getElementById('deleteAppointmentModal')
     loadDeleteAppointmentModel(deleteAppointmentModal);
+    let changeAppointmentModal = document.getElementById('changeDateModal')
+    loadChangeAppointmentModel(changeAppointmentModal);
 </script>
 
 <script>
-    function locationPreview(addressInput, roomNameInput, locationPreview, triggerLocationPreview, triggerRoomPreview, roomImageDiv, roomImage, roomImageMarker) {
-        triggerLocationPreview.on('click', () => {
-            if (addressInput.val().length >= 3) {
-                $.ajax({
-                    url: "/getIframeUrl?location=" + addressInput.val(),
-                    success: function (data) {
-                        locationPreview.attr("src", data["iframeUrl"]);
-                        if (!roomImageDiv.hasClass("d-none")) {
-                            roomImageDiv.addClass("d-none");
-                        }
-                    }
-                })
-            }
-        })
-
-        triggerRoomPreview.on('click', () => {
-            if (roomNameInput.val().length >= 3) {
-                $.ajax({
-                    url: "/getIframeUrl?roomName=" + roomNameInput.val(),
-                    success: function (data) {
-                        locationPreview.attr("src", data["iframeUrl"]);
-                        roomNameInput.val(data["roomId"]);
-                        if ("roomImageUrl" in data) {
-                            if (roomImageDiv.hasClass("d-none")) {
-                                roomImageDiv.removeClass("d-none");
-                            }
-                            roomImage.attr("src", data["roomImageUrl"]);
-                            if (roomImageMarker.hasClass("d-none")) {
-                                roomImageMarker.removeClass("d-none");
-                            }
-                            roomImageMarker.css("left", data["markerX"] + "%");
-                            roomImageMarker.css("top", data["markerY"] + "%");
-                        } else {
-                            if (!roomImageDiv.hasClass("d-none")) {
-                                roomImageDiv.addClass("d-none");
-                            }
-                        }
-                    }
-                })
-            }
-        })
-
-        addressInput.on('input', () => {
-            if (addressInput.val() !== "") {
-                roomNameInput.attr("disabled", "");
-            } else {
-                roomNameInput.removeAttr("disabled");
-            }
-        })
-
-        roomNameInput.on('input', () => {
-            if (roomNameInput.val() !== "") {
-                addressInput.attr("disabled", "");
-            } else {
-                addressInput.removeAttr("disabled");
-            }
-        })
-    }
-
-    locationPreview(
-        $('#addressInput'),
-        $('#roomNameInput'),
-        $('#locationPreview'),
-        $('#triggerLocationPreview'),
-        $('#triggerRoomPreview'),
-        $('#roomImageDiv'),
-        $('#roomImage'),
-        $('#roomImageMarker')
-    );
-
     $('.showDateBtn').on('click', (e) => {
         e = $(e.target).parent().parent();
         let locationView = e.find('.locationView');
@@ -369,19 +405,5 @@
         }, 100);
     });
 </script>
-<div th:each="day: ${mappedAppointments.keySet()}">
-    <script th:inline="text" th:each="appointment: ${mappedAppointments.get(day)}">
-        locationPreview(
-            $('#addressInput[[${appointment.getId()}]]'),
-            $('#roomNameInput[[${appointment.getId()}]]'),
-            $('#locationPreview[[${appointment.getId()}]]'),
-            $('#triggerLocationPreview[[${appointment.getId()}]]'),
-            $('#triggerRoomPreview[[${appointment.getId()}]]'),
-            $('#roomImageDiv[[${appointment.getId()}]]'),
-            $('#roomImage[[${appointment.getId()}]]'),
-            $('#roomImageMarker[[${appointment.getId()}]]')
-        );
-    </script>
-</div>
 </body>
 </html>
