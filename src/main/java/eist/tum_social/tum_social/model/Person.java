@@ -32,8 +32,23 @@ public class Person extends UniquelyIdentifiable {
             foreignTableName = "DegreePrograms",
             ownColumnName = "degreeProgramId")
     private ForeignEntity<DegreeProgram> degreeProgramEntity = new ForeignEntity<>();
-    @IgnoreInDatabase
-    private List<Person> friends;
+    @BridgingTable(
+            bridgingTableName = "Friends",
+            ownForeignColumnName = "person1",
+            otherForeignColumnName = "person2",
+            bidirectional = true)
+    private BridgingEntities<Person> friendEntities;
+    @BridgingTable(
+            bridgingTableName = "FriendRequests",
+            ownForeignColumnName = "receiverId",
+            otherForeignColumnName = "senderId")
+    private BridgingEntities<Person> incomingFriendRequestEntities;
+
+    @BridgingTable(
+            bridgingTableName = "FriendRequests",
+            ownForeignColumnName = "senderId",
+            otherForeignColumnName = "receiverId")
+    private BridgingEntities<Person> outgoingFriendRequestEntities;
 
     public String getFirstname() {
         return firstname;
@@ -76,11 +91,11 @@ public class Person extends UniquelyIdentifiable {
     }
 
     public List<Person> getFriends() {
-        return friends;
+        return friendEntities.get();
     }
 
     public void setFriends(List<Person> friends) {
-        this.friends = friends;
+        friendEntities.set(friends);
     }
 
     public String getPassword() {
@@ -146,4 +161,45 @@ public class Person extends UniquelyIdentifiable {
     public void setAppointmentEntities(BridgingEntities<Appointment> appointmentEntities) {
         this.appointmentEntities = appointmentEntities;
     }
+
+    public BridgingEntities<Person> getFriendEntities() {
+        return friendEntities;
+    }
+
+    public void setFriendEntities(BridgingEntities<Person> friendEntities) {
+        this.friendEntities = friendEntities;
+    }
+
+    public BridgingEntities<Person> getIncomingFriendRequestEntities() {
+        return incomingFriendRequestEntities;
+    }
+
+    public void setIncomingFriendRequestEntities(BridgingEntities<Person> incomingFriendRequestEntities) {
+        this.incomingFriendRequestEntities = incomingFriendRequestEntities;
+    }
+
+    public List<Person> getIncomingFriendRequests() {
+        return incomingFriendRequestEntities.get();
+    }
+
+    public void setIncomingFriendRequests(List<Person> friendRequests) {
+        incomingFriendRequestEntities.set(friendRequests);
+    }
+
+    public BridgingEntities<Person> getOutgoingFriendRequestEntities() {
+        return outgoingFriendRequestEntities;
+    }
+
+    public void setOutgoingFriendRequestEntities(BridgingEntities<Person> outgoingFriendRequestEntities) {
+        this.outgoingFriendRequestEntities = outgoingFriendRequestEntities;
+    }
+
+    public List<Person> getOutgoingFriendRequests() {
+        return outgoingFriendRequestEntities.get();
+    }
+
+    public void setOutgoingFriendRequests(List<Person> friendRequests) {
+        outgoingFriendRequestEntities.set(friendRequests);
+    }
+
 }

@@ -9,5 +9,6 @@ public @interface BridgingTable {
     String bridgingTableName();
     String ownForeignColumnName();
     String otherForeignColumnName();
+    boolean bidirectional() default false;
 
 }

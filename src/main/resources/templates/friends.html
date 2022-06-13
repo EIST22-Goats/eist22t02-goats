@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mein Profil - Tum Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div class="container">
+    <h4 class="text-right display-4 mb-4">Freunde</h4>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">Meine Freunde</div>
+                <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+                    <li th:each="p: ${friends}" class="list-group-item">
+                        <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
+                             style="object-fit: cover">
+                        <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">Eingehende Freundschaftsanfragen</div>
+                <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+                    <li th:each="p: ${incomingFriendRequests}" class="list-group-item">
+                        <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
+                             style="object-fit: cover">
+                        <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">Ausgehende Freundschaftsanfragen</div>
+                <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+                    <li th:each="p: ${outgoingFriendRequests}" class="list-group-item">
+                        <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
+                             style="object-fit: cover">
+                        <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+</body>
+</html>

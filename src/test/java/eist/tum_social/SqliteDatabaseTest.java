@@ -32,7 +32,11 @@ public class SqliteDatabaseTest {
     }
 
     private static String getBaseDir() {
-        return System.getProperty("user.dir")+"/";
+        return System.getProperty("user.dir") + "/";
+    }
+
+    private static Database getDatabase() {
+        return new SqliteDatabase("jdbc:sqlite:test_copy.db");
     }
 
     @BeforeEach
@@ -58,16 +62,12 @@ public class SqliteDatabaseTest {
         }
     }
 
-    private static Database getDatabase() {
-        return new SqliteDatabase("jdbc:sqlite:test_copy.db");
-    }
-
     <T> void assertEqualLists(List<T> list1, List<T> list2) {
         assertEquals(list1.size(), list2.size());
-        for (var elem:list1) {
+        for (var elem : list1) {
             assertTrue(list2.contains(elem));
         }
-        for (var elem:list2) {
+        for (var elem : list2) {
             assertTrue(list1.contains(elem));
         }
     }
@@ -216,6 +216,17 @@ public class SqliteDatabaseTest {
     }
 
     @Test
+    void testSelectBridgingTableBidirectional() {
+        SqliteDatabase db = (SqliteDatabase) getDatabase();
+        List<Person> persons = db.select(Person.class, "id='17'");
+        assertEquals(1, persons.size());
+        Person person = persons.get(0);
+
+        System.out.println(person.getFriends());
+
+    }
+
+    @Test
     void testSelectBridgingTableEmpty() {
         SqliteDatabase db = (SqliteDatabase) getDatabase();
 
@@ -234,7 +245,7 @@ public class SqliteDatabaseTest {
         assertEquals(1, persons.size());
         Person person = persons.get(0);
 
-        for (int i = 0;i<5;i++) {
+        for (int i = 0; i < 5; i++) {
             List<Course> courses = person.getCourses();
             assertEquals(2, courses.size());
             courses = sortById(courses);
@@ -242,7 +253,7 @@ public class SqliteDatabaseTest {
             assertEquals(3, course.getAdmin().getId());
             List<Appointment> appointments = course.getAppointments();
 
-            System.out.println("appointments: "+appointments);
+            System.out.println("appointments: " + appointments);
 
             assertEquals(2, appointments.size());
             appointments = sortById(appointments);
@@ -255,4 +266,7 @@ public class SqliteDatabaseTest {
             person = participants.get(1);
         }
     }
+
+
+
 }

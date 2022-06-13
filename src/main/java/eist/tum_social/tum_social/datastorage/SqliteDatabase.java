@@ -74,6 +74,23 @@ public class SqliteDatabase implements Database {
             ret.add((T) instantiateBean(listClass, new_row));
         }
 
+        if (bridgingTable.bidirectional()) {
+            sql = String.format(
+                    "SELECT %s.* FROM %s INNER JOIN %s ON %s=%s WHERE %s=%s",
+                    otherTableName,
+                    bridgingTable.bridgingTableName(),
+                    otherTableName,
+                    row.get(ID_COLUMN_NAME),
+                    bridgingTable.otherForeignColumnName(),
+                    bridgingTable.ownForeignColumnName(),
+                    getTableName(listClass) + "." + ID_COLUMN_NAME
+            );
+
+            for (var new_row : executeQuery(sql)) {
+                ret.add((T) instantiateBean(listClass, new_row));
+            }
+        }
+
         return ret;
     }
 

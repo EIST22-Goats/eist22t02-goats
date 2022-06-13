@@ -1,6 +1,8 @@
 package eist.tum_social;
 
 import eist.tum_social.tum_social.controllers.IndexController;
+import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,7 +18,11 @@ class TestTest {
 
     @Test
     public void testSayHello() throws Exception {
-        assertEquals(42, 42);
+        Storage storage = new Storage();
+
+        Person person = storage.getPerson("ge47bit");
+        System.out.println(person);
+
     }
 
 }
