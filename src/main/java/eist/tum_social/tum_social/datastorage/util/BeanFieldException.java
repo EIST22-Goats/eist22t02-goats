@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.DataStorage.util;
+package eist.tum_social.tum_social.datastorage.util;
 
 public class BeanFieldException extends RuntimeException {
     public BeanFieldException(String message) {

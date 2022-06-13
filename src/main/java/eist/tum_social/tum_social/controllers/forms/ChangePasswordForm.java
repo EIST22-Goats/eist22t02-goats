@@ -3,7 +3,7 @@ package eist.tum_social.tum_social.controllers.forms;
 import eist.tum_social.tum_social.controllers.AuthenticationController;
 import eist.tum_social.tum_social.model.Person;
 
-public class ChangePasswordForm implements ProfileForm {
+public class ChangePasswordForm extends Form<Person> {
     private String password;
 
     public String getPassword() {

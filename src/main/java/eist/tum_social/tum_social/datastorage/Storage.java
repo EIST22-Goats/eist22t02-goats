@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.DataStorage;
+package eist.tum_social.tum_social.datastorage;
 
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
@@ -14,7 +14,6 @@ public class Storage implements StorageFacade {
     public Storage() {
         db = new SqliteDatabase();
     }
-
 
     @Override
     public Person getPerson(String tumId) {

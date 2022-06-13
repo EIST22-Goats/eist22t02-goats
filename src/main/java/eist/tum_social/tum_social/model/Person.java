@@ -1,8 +1,8 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.DataStorage.BridgingEntities;
-import eist.tum_social.tum_social.DataStorage.ForeignEntity;
-import eist.tum_social.tum_social.DataStorage.util.*;
+import eist.tum_social.tum_social.datastorage.BridgingEntities;
+import eist.tum_social.tum_social.datastorage.ForeignEntity;
+import eist.tum_social.tum_social.datastorage.util.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,22 +16,22 @@ public class Person extends UniquelyIdentifiable {
     private LocalDate birthdate;
     private String tumId;
     private String email;
+    private int semesterNr;
     private String password;
     @BridgingTable(
             bridgingTableName = "CourseParticipants",
             ownForeignColumnName = "personId",
             otherForeignColumnName = "courseId")
-    private BridgingEntities<Course> courseEntities;
+    private BridgingEntities<Course> courseEntities = new BridgingEntities<>();
     @BridgingTable(
             bridgingTableName = "PersonAppointments",
             ownForeignColumnName = "personId",
             otherForeignColumnName = "appointmentId")
-    private BridgingEntities<Appointment> appointmentEntities;
-    private int semesterNr;
+    private BridgingEntities<Appointment> appointmentEntities = new BridgingEntities<>();
     @ForeignTable(
             foreignTableName = "DegreePrograms",
             ownColumnName = "degreeProgramId")
-    private ForeignEntity<DegreeProgram> degreeProgramEntity;
+    private ForeignEntity<DegreeProgram> degreeProgramEntity = new ForeignEntity<>();
     @IgnoreInDatabase
     private List<Person> friends;
 

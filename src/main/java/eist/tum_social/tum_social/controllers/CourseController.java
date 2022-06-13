@@ -1,7 +1,8 @@
 package eist.tum_social.tum_social.controllers;
 
-import eist.tum_social.tum_social.DataStorage.Storage;
-import eist.tum_social.tum_social.DataStorage.StorageFacade;
+import eist.tum_social.tum_social.controllers.forms.CourseForm;
+import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
@@ -71,10 +72,13 @@ public class CourseController {
     }
 
     @PostMapping("/createCourse")
-    public String createCourse(Course course) {
+    public String createCourse(CourseForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
+
+        Course course = new Course();
+        form.apply(course);
 
         Storage storage = new Storage();
         Person p = getCurrentPerson(storage);
@@ -134,18 +138,16 @@ public class CourseController {
     }
 
     @PostMapping("/updateCourse/{courseId}")
-    public String updateCourse(@PathVariable int courseId, Course courseForm) {
+    public String updateCourse(@PathVariable int courseId, CourseForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
-
         Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
+
         if (course.getAdmin().getId() == getCurrentPerson().getId()) {
-            course.setName(courseForm.getName());
-            course.setAcronym(courseForm.getAcronym());
-            course.setDescription(courseForm.getDescription());
+            form.apply(course);
             storage.update(course);
         }
 

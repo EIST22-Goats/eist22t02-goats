@@ -1,9 +1,10 @@
 package eist.tum_social.tum_social.controllers;
 
+import eist.tum_social.tum_social.controllers.forms.AppointmentForm;
 import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
-import eist.tum_social.tum_social.DataStorage.Storage;
+import eist.tum_social.tum_social.datastorage.Storage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +32,6 @@ public class TimetableController {
         model.addAttribute(person);
 
         List<Appointment> appointments = findAllAppointmentsForPerson(person);
-
-        // TODO settings or dynamic calculation ?
 
         if (startDate == null) {
             startDate = LocalDate.now();
@@ -122,7 +121,7 @@ public class TimetableController {
     private List<Appointment> filterAppointments(List<Appointment> appointments, LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
         appointments = appointments.stream().filter(appointment ->
-                           appointment.getStartDate().plusWeeks(appointment.getRepetitions()).isAfter(startDate)
+                           appointment.getStartDate().plusWeeks(appointment.getRepetitions()-1).isAfter(startDate)
                         && appointment.getStartDate().isBefore(endDate)
         ).toList();
 
@@ -130,12 +129,20 @@ public class TimetableController {
     }
 
     @PostMapping("/createAppointment")
-    public String createAppointment(Appointment appointment) {
+    public String createAppointment(AppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = new Appointment();
+        System.out.println("form address: "+form.getAddress());
+        System.out.println("form room: "+form.getRoomName());
+
+        form.apply(appointment);
+
+        System.out.println("appointment address: " + appointment.getAddress());
+        System.out.println("appointment room: " + appointment.getRoomName());
 
         storage.update(appointment);
 
@@ -148,28 +155,32 @@ public class TimetableController {
     }
 
     @PostMapping("/createCourseAppointment/{courseId}")
-    public String createCourseAppointment(Appointment appointment, @PathVariable int courseId) {
+    public String createCourseAppointment(AppointmentForm form, @PathVariable int courseId) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = new Appointment();
+        form.apply(appointment);
 
         storage.update(appointment);
         Course course = storage.getCourse(courseId);
         course.getAppointments().add(appointment);
         storage.update(course);
 
-        return "redirect:/timetable";
+        return "redirect:/courses/"+course.getId();
     }
 
-    @PostMapping("/updateAppointment")
-    public String updateAppointment(Appointment appointment) {
+    @PostMapping("/updateAppointment/{appointmentId}")
+    public String updateAppointment(@PathVariable int appointmentId, AppointmentForm form) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
         Storage storage = new Storage();
+        Appointment appointment = storage.getAppointment(appointmentId);
+        form.apply(appointment);
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
 
         if (hasAccessRights) {
@@ -177,6 +188,24 @@ public class TimetableController {
         }
 
         return "redirect:/timetable";
+    }
+
+    @PostMapping("/updateCourseAppointment/{appointmentId}")
+    public String updateCourseAppointment(@PathVariable int appointmentId, AppointmentForm form) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Storage storage = new Storage();
+        Appointment appointment = storage.getAppointment(appointmentId);
+        form.apply(appointment);
+        Person person = getCurrentPerson(storage);
+        Course course = appointment.getCourses().get(0);
+        if (course.getAdmin().equals(person)) {
+            storage.update(appointment);
+        }
+
+        return "redirect:/courses/" + course.getId();
     }
 
     @PostMapping("/deleteAppointment/{appointmentId}")
@@ -205,10 +234,15 @@ public class TimetableController {
 
         Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
+        Person person = getCurrentPerson(storage);
 
-        storage.delete(appointment);
+        Course course = appointment.getCourses().get(0);
+        if (course.getAdmin().equals(person)) {
+            storage.delete(appointment);
+        }
 
-        return "redirect:/timetable";
+        return "redirect:/courses/" + course.getId();
+
     }
 
 }

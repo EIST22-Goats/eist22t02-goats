@@ -1,4 +1,4 @@
-package eist.tum_social.tum_social.DataStorage;
+package eist.tum_social.tum_social.datastorage;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -7,6 +7,10 @@ import java.util.Map;
 public class BridgingEntities<T> extends Entity {
 
     private List<T> values;
+
+    public BridgingEntities() {
+        super(null, null, null);
+    }
 
     public BridgingEntities(Database database, Field field, Map<String, Object> row) {
         super(database, field, row);
