@@ -73,7 +73,16 @@
                     <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
 
                     <a type="button" class="stretched-link showDateBtn" data-bs-toggle="modal"
-                       th:data-bs-target="'#timeslotModal'+${appointment.getId()}"></a>
+                       data-bs-target="#timeslotModal"
+                       th:attr="data-bs-appointment-id=${appointment.getId()},
+                                                     data-bs-name=${appointment.getName()},
+                                                     data-bs-description=${appointment.getDescription()},
+                                                     data-bs-startdate=${appointment.getStartDate()},
+                                                     data-bs-starttime=${appointment.getStartTime()},
+                                                     data-bs-endtime=${appointment.getEndTime()},
+                                                     data-bs-repetitions=${appointment.getRepetitions()},
+                                                     data-bs-address=${appointment.getAddress()},
+                                                     data-bs-roomname=${appointment.getRoomName()}"></a>
 
                     <div th:class="${appointment.getAddress() == '' && appointment.getRoomName() == ''}?'modal fade':'modal fade modal-lg'"
                          th:id="'timeslotModal'+${appointment.getId()}" tabindex="-1"
@@ -151,6 +160,63 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-lg"
+     id="timeslotModal" tabindex="-1"
+     aria-labelledby="timeslotModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    aria-labelledby="timeslotModalLabel">Termin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-4">
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Name</span><br><span id="appointmentName">[NAME]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Beschreibung</span><br><span id="appointmentDescription">[DESCRIPTION]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Tag</span><br><span id="appointmentStartDate">[DATE]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Startzeit</span><br><span id="appointmentStartTime">[STARTTIME]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Endzeit</span><br><span id="appointmentEndTime">[ENDTIME]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Wiederholungen</span><br><span id="appointmentRepetitions">[REPETITIONS]</span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Raum Name</span><br><span>[ROOMNAME]</span></p> <!-- TODO -->
+                    </div>
+                    <div class="mb-3">
+                        <p><span class="fw-bold">Addresse</span><br><span>[ADDRESS]</span></p> <!-- TODO -->
+                    </div>
+                </div>
+                <div class="col-8">
+                    <p class="fw-bold">Ort</p>
+                    <iframe class="w-100 locationView" src="[TODO]" style="height: 20em"></iframe>
+                    <img class="roomView">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Schließen
+                </button>
+                <button id="appointmentModalChangeBtn" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#changeDateModal">Ändern
+                </button>
             </div>
         </div>
     </div>
@@ -297,12 +363,53 @@
         })
     }
 
+    function loadAppointmentModel(modal) {
+        modal.addEventListener('show.bs.modal', function (event) {
+            let changeButton = $("#appointmentModalChangeBtn")
+
+            let appointmentId = event.relatedTarget.getAttribute('data-bs-appointment-id');
+            changeButton.attr('data-bs-appointment-id', appointmentId)
+
+            let name = event.relatedTarget.getAttribute('data-bs-name')
+            changeButton.attr('data-bs-name', name)
+            $("#appointmentName").text(name);
+
+            let description = event.relatedTarget.getAttribute('data-bs-description')
+            changeButton.attr('data-bs-description', description)
+            $("#appointmentDescription").text(description);
+
+            let startDate = event.relatedTarget.getAttribute('data-bs-startdate');
+            changeButton.attr('data-bs-startdate', startDate)
+            $("#appointmentStartDate").text(startDate);
+
+            let startTime = event.relatedTarget.getAttribute('data-bs-starttime');
+            changeButton.attr('data-bs-starttime', startTime)
+            $("#appointmentStartTime").text(startTime);
+
+            let endTime = event.relatedTarget.getAttribute('data-bs-endtime');
+            changeButton.attr('data-bs-endtime', endTime)
+            $("#appointmentEndTime").text(endTime);
+
+            let repetitions = event.relatedTarget.getAttribute('data-bs-repetitions');
+            changeButton.attr('data-bs-repetitions', repetitions)
+            $("#appointmentRepetitions").text(repetitions);
+
+            let address = event.relatedTarget.getAttribute('data-bs-address');
+            changeButton.attr('data-bs-address', address)
+
+            let roomName = event.relatedTarget.getAttribute('data-bs-roomname');
+            changeButton.attr('data-bs-roomname', roomName)
+        });
+    }
+
     let deleteAppointmentModal = document.getElementById('deleteAppointmentModal')
     loadDeleteAppointmentModel(deleteAppointmentModal);
     let changeAppointmentModal = document.getElementById('changeDateModal')
     loadChangeAppointmentModel(changeAppointmentModal);
     let createAppointmentModal = document.getElementById('newDateModal')
     loadLocationPreview(createAppointmentModal);
+    let appointmentModal = document.getElementById('timeslotModal')
+    loadAppointmentModel(appointmentModal);
 </script>
 
 <script>
