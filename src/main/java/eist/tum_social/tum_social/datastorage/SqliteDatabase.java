@@ -170,6 +170,15 @@ public class SqliteDatabase implements Database {
                 id
         );
         executeStatement(deleteSql);
+
+        if (bridgingTable.bidirectional()) {
+            deleteSql = String.format("DELETE FROM %s WHERE %s=%s",
+                    bridgingTable.bridgingTableName(),
+                    bridgingTable.otherForeignColumnName(),
+                    id
+            );
+            executeStatement(deleteSql);
+        }
     }
 
     private int updateQuery(String sql) {
@@ -206,6 +215,15 @@ public class SqliteDatabase implements Database {
                     bridgingTable.ownForeignColumnName(),
                     getIdOfBean(bean));
             executeStatement(clearStatement);
+
+            if (bridgingTable.bidirectional()) {
+                clearStatement = String.format(
+                        "DELETE FROM %s WHERE %s=%s",
+                        bridgingTableName,
+                        bridgingTable.otherForeignColumnName(),
+                        getIdOfBean(bean));
+                executeStatement(clearStatement);
+            }
 
             Object others = bridgingEntities.get();
             if (others instanceof List othersList) {

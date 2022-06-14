@@ -16,10 +16,13 @@
 <div class="container">
     <h4 class="text-right display-4 mb-4">Freunde</h4>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-lg-4">
             <div class="card mb-3">
                 <div class="card-header">Meine Freunde</div>
+                <p class="p-3" th:if="${friends.isEmpty()}">
+                    Du hast noch keine Freunde? Finde welche!
+                </p>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
                     <li th:each="p: ${friends}" class="list-group-item">
                         <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
@@ -29,17 +32,31 @@
                     </li>
                 </ul>
             </div>
+            <form action="/bringBalanceToYourLife" method="post">
+                <button class="w-100 btn btn-success">Bring Gleichgewicht in dein Leben!</button>
+            </form>
         </div>
 
         <div class="col-lg-4">
             <div class="card mb-3">
                 <div class="card-header">Eingehende Freundschaftsanfragen</div>
+                <p class="p-3" th:if="${incomingFriendRequests.isEmpty()}">
+                    Momentan nicht so beliebt?
+                </p>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
                     <li th:each="p: ${incomingFriendRequests}" class="list-group-item">
                         <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
                              alt="" class="rounded-circle float-start me-2" width="27" height="27"
                              style="object-fit: cover">
                         <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                        <div class="float-end">
+                            <form th:action="'/acceptFriendRequest/'+${p.getId()}" method="post" class="d-inline">
+                                <button class="btn btn-success btn-sm" type="submit">Annehmen</button>
+                            </form>
+                            <form th:action="'/deleteFriendRequest/'+${p.getId()}" method="post" class="d-inline">
+                                <button class="btn btn-danger btn-sm">Ablehnen</button>
+                            </form>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -47,13 +64,33 @@
 
         <div class="col-lg-4">
             <div class="card mb-3">
+                <div class="card-header">Nach Personen suchen</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="personSearch"
+                               placeholder="Suche nach TUM ID oder Namen">
+                    </div>
+                    <ul class="list-group list-group-flush p-0 overflow-auto" id="searchResult"
+                        style="max-height: 20em"></ul>
+                </div>
+            </div>
+
+            <div class="card mb-3">
                 <div class="card-header">Ausgehende Freundschaftsanfragen</div>
+                <p class="p-3" th:if="${outgoingFriendRequests.isEmpty()}">
+                    Nichts zu sehen hier.
+                </p>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
                     <li th:each="p: ${outgoingFriendRequests}" class="list-group-item">
                         <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
                              alt="" class="rounded-circle float-start me-2" width="27" height="27"
                              style="object-fit: cover">
                         <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                        <div class="float-end">
+                            <form th:action="'/deleteFriendRequest/'+${p.getId()}" method="post" class="d-inline">
+                                <button class="btn btn-danger btn-sm">Zurücknehmen</button>
+                            </form>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -64,6 +101,37 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script>
+    const personSearch = $('#personSearch');
+    const searchResult = $('#searchResult');
+
+    personSearch.on('change', () => {
+        let searchText = personSearch.val();
+        $.ajax({
+            type: "POST",
+            url: "/searchPersons",
+            data: 'searchText=' + searchText,
+            success: function (data) {
+                searchResult.empty();
+                for (let p of data) {
+                    searchResult.append($(`
+                    <li class="list-group-item">
+                        <img src="/profile_pictures/` + p.tumId + `.png"
+                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
+                             style="object-fit: cover">
+                        ` + p.firstname + ` ` + p.lastname + ` <small class="text-muted">` + p.tumId + `</small>
+                        <div class="float-end">
+                            <form action="/createFriendRequest/` + p.tumId + `" method="post" class="d-inline">
+                                <button class="btn btn-success btn-sm">Anfrage senden</button>
+                            </form>
+                        </div>
+                    </li>`));
+                }
+            }
+        });
+    })
+</script>
 
 </body>
 </html>
