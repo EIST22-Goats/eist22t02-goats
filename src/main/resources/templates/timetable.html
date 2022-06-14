@@ -170,6 +170,60 @@
         })
     }
 
+    function loadLocationPreview(modal) {
+        let jModal = $(modal);
+
+
+        let roomImageDiv = jModal.find('.room-image-div');
+        let roomImage = jModal.find('.room-image');
+        let roomImageMarker = jModal.find('.room-image-marker');
+
+
+        let locationPreviewIFrame = jModal.find(".location-preview-iframe");
+        let triggerLocationPreview = jModal.find('.trigger-location-preview');
+        let triggerRoomPreview = jModal.find('.trigger-room-preview');
+        triggerLocationPreview.on('click', () => {
+            if (addressInput.val().length >= 3) {
+                $.ajax({
+                    url: "/getIframeUrl?location=" + addressInput.val(),
+                    success: function (data) {
+                        locationPreviewIFrame.attr("src", data["iframeUrl"]);
+                        if (!roomImageDiv.hasClass("d-none")) {
+                            roomImageDiv.addClass("d-none");
+                        }
+                    }
+                })
+            }
+        })
+
+        triggerRoomPreview.on('click', () => {
+            if (roomNameInput.val().length >= 3) {
+                $.ajax({
+                    url: "/getIframeUrl?roomName=" + roomNameInput.val(),
+                    success: function (data) {
+                        locationPreviewIFrame.attr("src", data["iframeUrl"]);
+                        roomNameInput.val(data["roomId"]);
+                        if ("roomImageUrl" in data) {
+                            if (roomImageDiv.hasClass("d-none")) {
+                                roomImageDiv.removeClass("d-none");
+                            }
+                            roomImage.attr("src", data["roomImageUrl"]);
+                            if (roomImageMarker.hasClass("d-none")) {
+                                roomImageMarker.removeClass("d-none");
+                            }
+                            roomImageMarker.css("left", data["markerX"] + "%");
+                            roomImageMarker.css("top", data["markerY"] + "%");
+                        } else {
+                            if (!roomImageDiv.hasClass("d-none")) {
+                                roomImageDiv.addClass("d-none");
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    }
+
     function loadChangeAppointmentModel(modal) {
         modal.addEventListener('show.bs.modal', function (event) {
             let name = event.relatedTarget.getAttribute('data-bs-name')
@@ -198,53 +252,7 @@
             let roomNameInput = $("#changeAppointmentModalRoomNameInput");
             roomNameInput.val(roomName);
 
-            let triggerLocationPreview = $('#triggerLocationPreview');
-            let triggerRoomPreview = $('#triggerRoomPreview');
-            let roomImageDiv = $('#roomImageDiv');
-            let roomImage = $('#roomImage');
-            let roomImageMarker = $('#roomImageMarker');
-            let locationPreviewIFrame = $("#locationPreviewIFrame");
-
-            triggerLocationPreview.on('click', () => {
-                if (addressInput.val().length >= 3) {
-                    $.ajax({
-                        url: "/getIframeUrl?location=" + addressInput.val(),
-                        success: function (data) {
-                            locationPreviewIFrame.attr("src", data["iframeUrl"]);
-                            if (!roomImageDiv.hasClass("d-none")) {
-                                roomImageDiv.addClass("d-none");
-                            }
-                        }
-                    })
-                }
-            })
-
-            triggerRoomPreview.on('click', () => {
-                if (roomNameInput.val().length >= 3) {
-                    $.ajax({
-                        url: "/getIframeUrl?roomName=" + roomNameInput.val(),
-                        success: function (data) {
-                            locationPreviewIFrame.attr("src", data["iframeUrl"]);
-                            roomNameInput.val(data["roomId"]);
-                            if ("roomImageUrl" in data) {
-                                if (roomImageDiv.hasClass("d-none")) {
-                                    roomImageDiv.removeClass("d-none");
-                                }
-                                roomImage.attr("src", data["roomImageUrl"]);
-                                if (roomImageMarker.hasClass("d-none")) {
-                                    roomImageMarker.removeClass("d-none");
-                                }
-                                roomImageMarker.css("left", data["markerX"] + "%");
-                                roomImageMarker.css("top", data["markerY"] + "%");
-                            } else {
-                                if (!roomImageDiv.hasClass("d-none")) {
-                                    roomImageDiv.addClass("d-none");
-                                }
-                            }
-                        }
-                    })
-                }
-            })
+            loadLocationPreview(modal);
 
             addressInput.on('input', () => {
                 if (addressInput.val() !== "") {

@@ -139,7 +139,7 @@
                 <label class="form-label">Adresse oder Ortsbeschreibung</label>
                 <div class="input-group mb-3">
                   <input id="changeAppointmentModalAddressInput" type="text" class="form-control" name="address">
-                  <button class="btn btn-outline-secondary" type="button"
+                  <button class="trigger-location-preview btn btn-outline-secondary" type="button"
                           id="triggerLocationPreview">
                     Vorschau
                   </button>
@@ -149,18 +149,18 @@
                 <label class="form-label">Raum Nummer/Name</label>
                 <div class="input-group mb-3">
                   <input id="changeAppointmentModalRoomNameInput" type="text" class="form-control" name="roomName">
-                  <button class="btn btn-outline-secondary" type="button"
+                  <button class="trigger-room-preview btn btn-outline-secondary" type="button"
                           id="triggerRoomPreview">
                     Vorschau
                   </button>
                 </div>
               </div>
-              <iframe class="w-100 mb-3" style="height: 25em" id="locationPreviewIFrame"
+              <iframe class="location-preview-iframe w-100 mb-3" style="height: 25em" id="locationPreviewIFrame"
                       src="https://www.openstreetmap.org/export/embed.html">
               </iframe>
-              <div class="position-relative w-100 d-none" id="roomImageDiv">
-                <img class="w-100" id="roomImage">
-                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+              <div class="room-image-div position-relative w-100 d-none" id="roomImageDiv">
+                <img class="room-image w-100" id="roomImage">
+                <div class="room-image-marker spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
                      role="status"
                      id="roomImageMarker"></div>
               </div>
