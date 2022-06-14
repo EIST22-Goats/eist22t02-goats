@@ -228,6 +228,22 @@
                 })
             }
         })
+
+        addressInput.on('input', () => {
+            if (addressInput.val() !== "") {
+                roomNameInput.attr("disabled", "");
+            } else {
+                roomNameInput.removeAttr("disabled");
+            }
+        })
+
+        roomNameInput.on('input', () => {
+            if (roomNameInput.val() !== "") {
+                addressInput.attr("disabled", "");
+            } else {
+                addressInput.removeAttr("disabled");
+            }
+        })
     }
 
     function loadChangeAppointmentModel(modal) {
@@ -258,30 +274,26 @@
             let roomNameInput = $(modal).find(".room-name-input");
             roomNameInput.val(roomName);
 
-            loadLocationPreview(modal);
-
-            addressInput.on('input', () => {
-                if (addressInput.val() !== "") {
-                    roomNameInput.attr("disabled", "");
-                } else {
-                    roomNameInput.removeAttr("disabled");
-                }
-            })
-
-            roomNameInput.on('input', () => {
-                if (roomNameInput.val() !== "") {
-                    addressInput.attr("disabled", "");
-                } else {
-                    addressInput.removeAttr("disabled");
-                }
-            })
-
             let appointmentId = event.relatedTarget.getAttribute("data-bs-appointment-id");
             let deleteButton = $(modal).find("#changeAppointmentModalDeleteBtn");
             deleteButton.attr("data-bs-appointment-id", appointmentId)
 
             let form = $(modal).find("#changeDateModalForm");
             form.attr('action', "/updateAppointment/" + appointmentId);
+
+            if (addressInput.val() !== "") {
+                roomNameInput.attr("disabled", "");
+            } else {
+                roomNameInput.removeAttr("disabled");
+            }
+
+            if (roomNameInput.val() !== "") {
+                addressInput.attr("disabled", "");
+            } else {
+                addressInput.removeAttr("disabled");
+            }
+
+            loadLocationPreview(modal);
         })
     }
 
