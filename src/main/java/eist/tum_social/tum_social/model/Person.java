@@ -3,6 +3,7 @@ package eist.tum_social.tum_social.model;
 import eist.tum_social.tum_social.datastorage.BridgingEntities;
 import eist.tum_social.tum_social.datastorage.ForeignEntity;
 import eist.tum_social.tum_social.datastorage.util.*;
+import org.mockito.internal.matchers.Not;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +50,11 @@ public class Person extends UniquelyIdentifiable {
             ownForeignColumnName = "senderId",
             otherForeignColumnName = "receiverId")
     private BridgingEntities<Person> outgoingFriendRequestEntities;
+    @BridgingTable(
+            bridgingTableName = "PersonNotifications",
+            ownForeignColumnName = "personId",
+            otherForeignColumnName = "notificationId")
+    private BridgingEntities<Notification> notificationEntities;
 
     public String getFirstname() {
         return firstname;
@@ -202,4 +208,19 @@ public class Person extends UniquelyIdentifiable {
         outgoingFriendRequestEntities.set(friendRequests);
     }
 
+    public BridgingEntities<Notification> getNotificationEntities() {
+        return notificationEntities;
+    }
+
+    public void setNotificationEntities(BridgingEntities<Notification> notificationEntities) {
+        this.notificationEntities = notificationEntities;
+    }
+
+    public List<Notification> getNotifications() {
+        return notificationEntities.get();
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        notificationEntities.set(notifications);
+    }
 }
