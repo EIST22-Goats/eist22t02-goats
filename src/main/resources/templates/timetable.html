@@ -136,7 +136,8 @@
                                     <button th:if="${appointment.getSubscribers().size() != 0 && appointment.getSubscribers().get(0).getId() == person.getId()}"
                                             type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#changeDateModal"
-                                            th:attr="data-bs-name=${appointment.getName()},
+                                            th:attr="data-bs-appointment-id=${appointment.getId()},
+                                                     data-bs-name=${appointment.getName()},
                                                      data-bs-description=${appointment.getDescription()},
                                                      data-bs-startdate=${appointment.getStartDate()},
                                                      data-bs-starttime=${appointment.getStartTime()},
@@ -164,7 +165,9 @@
 <script>
     function loadDeleteAppointmentModel(modal) {
         modal.addEventListener('show.bs.modal', function (event) {
+            console.log("creating delete appointment modal")
             let appointmentId = event.relatedTarget.getAttribute('data-bs-appointment-id')
+            console.log("appointmentid: ", appointmentId);
             let form = modal.querySelector("#deleteAppointmentModalForm");
             form.action = "/deleteAppointment/" + appointmentId
         })
@@ -182,6 +185,8 @@
         let locationPreviewIFrame = jModal.find(".location-preview-iframe");
         let triggerLocationPreview = jModal.find('.trigger-location-preview');
         let triggerRoomPreview = jModal.find('.trigger-room-preview');
+
+        let addressInput = jModal.find(".address-input");
         triggerLocationPreview.on('click', () => {
             if (addressInput.val().length >= 3) {
                 $.ajax({
@@ -196,6 +201,7 @@
             }
         })
 
+        let roomNameInput = jModal.find(".room-name-input");
         triggerRoomPreview.on('click', () => {
             if (roomNameInput.val().length >= 3) {
                 $.ajax({
@@ -245,11 +251,11 @@
             $("#changeAppointmentModalRepetitionsInput").val(repetitions);
 
             let address = event.relatedTarget.getAttribute("data-bs-address");
-            let addressInput = $("#changeAppointmentModalAddressInput");
+            let addressInput = $(modal).find(".address-input");
             addressInput.val(address);
 
             let roomName = event.relatedTarget.getAttribute("data-bs-roomname");
-            let roomNameInput = $("#changeAppointmentModalRoomNameInput");
+            let roomNameInput = $(modal).find(".room-name-input");
             roomNameInput.val(roomName);
 
             loadLocationPreview(modal);
@@ -269,6 +275,10 @@
                     addressInput.removeAttr("disabled");
                 }
             })
+
+            let appointmentId = event.relatedTarget.getAttribute("data-bs-appointment-id");
+            let deleteButton = $(modal).find("#changeAppointmentModalDeleteBtn");
+            deleteButton.attr("data-bs-appointment-id", appointmentId)
         })
     }
 
@@ -276,6 +286,8 @@
     loadDeleteAppointmentModel(deleteAppointmentModal);
     let changeAppointmentModal = document.getElementById('changeDateModal')
     loadChangeAppointmentModel(changeAppointmentModal);
+    let createAppointmentModal = document.getElementById('newDateModal')
+    loadLocationPreview(createAppointmentModal);
 </script>
 
 <script>

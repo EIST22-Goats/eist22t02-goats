@@ -40,8 +40,8 @@
               <div class="mb-3">
                 <label class="form-label">Adresse oder Ortsbeschreibung</label>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control" name="address" id="addressInput">
-                  <button class="btn btn-outline-secondary" type="button" id="triggerLocationPreview1">
+                  <input type="text" class="address-input form-control" name="address" id="addressInput">
+                  <button class="trigger-location-preview btn btn-outline-secondary" type="button" id="triggerLocationPreview1">
                     Vorschau
                   </button>
                 </div>
@@ -49,18 +49,18 @@
               <div class="mb-3">
                 <label class="form-label">Raum Nummer/Name</label>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control" name="roomName" id="roomNameInput">
-                  <button class="btn btn-outline-secondary" type="button" id="triggerRoomPreview1">
+                  <input type="text" class="room-name-input form-control" name="roomName" id="roomNameInput">
+                  <button class="trigger-room-preview btn btn-outline-secondary" type="button" id="triggerRoomPreview1">
                     Vorschau
                   </button>
                 </div>
               </div>
-              <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview"
+              <iframe class="location-preview-iframe w-100 mb-3" style="height: 25em" id="locationPreview"
                       src="https://www.openstreetmap.org/export/embed.html">
               </iframe>
-              <div class="position-relative w-100 d-none" id="roomImageDiv1">
-                <img class="w-100" id="roomImage1">
-                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+              <div class="room-image-div position-relative w-100 d-none" id="roomImageDiv1">
+                <img class="room-image w-100" id="roomImage1">
+                <div class="room-image-marker spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
                      role="status" id="roomImageMarker1"></div>
               </div>
             </div>
@@ -138,7 +138,7 @@
               <div class="mb-3">
                 <label class="form-label">Adresse oder Ortsbeschreibung</label>
                 <div class="input-group mb-3">
-                  <input id="changeAppointmentModalAddressInput" type="text" class="form-control" name="address">
+                  <input id="changeAppointmentModalAddressInput" type="text" class="address-input form-control" name="address">
                   <button class="trigger-location-preview btn btn-outline-secondary" type="button"
                           id="triggerLocationPreview">
                     Vorschau
@@ -148,7 +148,7 @@
               <div class="mb-3">
                 <label class="form-label">Raum Nummer/Name</label>
                 <div class="input-group mb-3">
-                  <input id="changeAppointmentModalRoomNameInput" type="text" class="form-control" name="roomName">
+                  <input id="changeAppointmentModalRoomNameInput" type="text" class="room-name-input form-control" name="roomName">
                   <button class="trigger-room-preview btn btn-outline-secondary" type="button"
                           id="triggerRoomPreview">
                     Vorschau
@@ -170,7 +170,7 @@
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Abbrechen
             </button>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+            <button id="changeAppointmentModalDeleteBtn" type="button" class="btn btn-danger" data-bs-toggle="modal"
                     data-bs-target="#deleteAppointmentModal"
                     data-bs-appointment-id="[TODO]">
               Löschen
