@@ -11,9 +11,11 @@ function loadNotifications() {
         url: "/getNotifications",
         success: function (data) {
             if (data.length === 0) {
-                notificationCountBadge.fadeOut();
+                notificationCountBadge.addClass("d-none")
             } else {
-                notificationCountBadge.fadeIn();
+                if (notificationCountBadge.hasClass("d-none")) {
+                    notificationCountBadge.removeClass("d-none")
+                }
                 notificationCountBadge.text(data.length);
             }
 
