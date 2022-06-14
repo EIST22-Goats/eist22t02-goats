@@ -34,6 +34,8 @@ public class FriendController {
         return "friends";
     }
 
+    // TODO person profile page (with friend delete)
+
     @PostMapping("/createFriendRequest/{tumId}")
     public String createFriendRequest(@PathVariable String tumId) {
         if (!isLoggedIn()) {
