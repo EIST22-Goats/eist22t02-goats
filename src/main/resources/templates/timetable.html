@@ -279,6 +279,9 @@
             let appointmentId = event.relatedTarget.getAttribute("data-bs-appointment-id");
             let deleteButton = $(modal).find("#changeAppointmentModalDeleteBtn");
             deleteButton.attr("data-bs-appointment-id", appointmentId)
+
+            let form = $(modal).find("#changeDateModalForm");
+            form.attr('action', "/updateAppointment/" + appointmentId);
         })
     }
 
