@@ -234,7 +234,8 @@
                                             Abbrechen
                                         </button>
                                         <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                th:data-bs-target="'#deleteAppointmentModal'+${appointment.getId()}">
+                                                data-bs-target="#deleteAppointmentModal"
+                                                th:attr="data-bs-appointment-id=${appointment.getId()}">
                                             Löschen
                                         </button>
                                         <button type="submit" class="btn btn-primary">Speichern</button>
@@ -244,25 +245,26 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" th:id="'deleteAppointmentModal'+${appointment.getId()}" tabindex="-1"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Termin Löschen</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen
-                                    </button>
-                                    <form th:action="'/deleteAppointment/'+${appointment.getId()}" method="post">
-                                        <button type="submit" class="btn btn-danger">Löschen</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteAppointmentModal" tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Termin Löschen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen
+                    </button>
+                    <form id="deleteAppointmentModalForm" action="[TODO]" method="post">
+                        <button type="submit" class="btn btn-danger">Löschen</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -348,6 +350,19 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script>
+    function loadDeleteAppointmentModel(modal) {
+        modal.addEventListener('show.bs.modal', function (event) {
+            let appointmentId = event.relatedTarget.getAttribute('data-bs-appointment-id')
+            let form = deleteAppointmentModal.querySelector("#deleteAppointmentModalForm");
+            form.action = "/deleteAppointment/" + appointmentId
+        })
+    }
+
+    let deleteAppointmentModal = document.getElementById('deleteAppointmentModal')
+    loadDeleteAppointmentModel(deleteAppointmentModal);
+</script>
 
 <script>
     function locationPreview(addressInput, roomNameInput, locationPreview, triggerLocationPreview, triggerRoomPreview, roomImageDiv, roomImage, roomImageMarker) {
