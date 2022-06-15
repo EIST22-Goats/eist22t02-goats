@@ -41,46 +41,53 @@ public class NotificationController {
         List<Map<String, String>> result = new ArrayList<>();
 
         for (Notification notification:notifications) {
-            String dateString = "";
-
-            if (notification.getTime().isAfter(LocalTime.now().minusHours(1))) {
-                long minDelta = notification.getTime().until(LocalTime.now(), ChronoUnit.MINUTES);
-                if (minDelta <= 1) {
-                    dateString += "Gerade eben";
-                } else {
-                    dateString += "Vor " + minDelta + " Minuten";
-                }
-            } else {
-                dateString += notification.getTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                if (notification.getDate().isEqual(LocalDate.now())) {
-                    dateString += ", Heute";
-                } else if (notification.getDate().isEqual(LocalDate.now().minusDays(1))) {
-                    dateString +=  ", Gestern";
-                } else {
-                    dateString += ", " + notification.getDate().format(DateTimeFormatter.ofPattern("dd.MM."));
-                }
-                if (LocalDate.now().getYear() != notification.getDate().getYear()) {
-                    dateString += notification.getDate().format(DateTimeFormatter.ofPattern("yyyy"));
-                }
-            }
-
             result.add(Map.of(
                 "title", notification.getTitle(),
                 "description", notification.getDescription(),
                 "link", notification.getLink(),
-                "date", dateString
+                "date", formatNotificationTimestamp(notification.getDate(), notification.getTime())
             ));
         }
         return result;
     }
 
+    private static String formatNotificationTimestamp(LocalDate date, LocalTime time) {
+        String dateString = "";
+
+        if (time.isAfter(LocalTime.now().minusHours(1))) {
+            long minDelta = time.until(LocalTime.now(), ChronoUnit.MINUTES);
+            if (minDelta <= 1) {
+                dateString += "Gerade eben";
+            } else {
+                dateString += "Vor " + minDelta + " Minuten";
+            }
+        } else if (time.isAfter(LocalTime.now().minusHours(12))) {
+            dateString += "Vor " + time.until(LocalTime.now(), ChronoUnit.HOURS) + " Stunden";
+        } else {
+            dateString += time.format(DateTimeFormatter.ofPattern("HH:mm"));
+            if (date.isEqual(LocalDate.now())) {
+                dateString += ", Heute";
+            } else if (date.isEqual(LocalDate.now().minusDays(1))) {
+                dateString +=  ", Gestern";
+            } else {
+                dateString += ", " + date.format(DateTimeFormatter.ofPattern("dd.MM."));
+            }
+            if (LocalDate.now().getYear() != date.getYear()) {
+                dateString += date.format(DateTimeFormatter.ofPattern("yyyy"));
+            }
+        }
+
+        return dateString;
+    }
+
     @PostMapping("/clearNotifications")
     public void clearNotifications() {
-        Person person = getCurrentPerson();
-        person.setNotifications(new ArrayList<>());
-
         Storage storage = new Storage();
-        storage.update(person);
+        Person person = getCurrentPerson(storage);
+
+        for (Notification notification:person.getNotifications()) {
+            storage.delete(notification);
+        }
     }
 
     public static void sendNotification(Person person, String title, String description, String link, NotificationType notificationType) {
