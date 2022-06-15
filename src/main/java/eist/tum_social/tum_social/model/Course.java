@@ -30,8 +30,11 @@ public class Course extends UniquelyIdentifiable {
             ownForeignColumnName = "courseId",
             otherForeignColumnName = "appointmentId")
     private BridgingEntities<Appointment> appointmentEntities = new BridgingEntities<>();
-    @IgnoreInDatabase
-    private List<Comment> comments;
+    @BridgingTable(
+            bridgingTableName = "CourseAnnouncements",
+            ownForeignColumnName = "courseId",
+            otherForeignColumnName = "announcementId")
+    private BridgingEntities<Announcement> announcementEntities;
 
     public int getId() {
         return id;
@@ -104,4 +107,21 @@ public class Course extends UniquelyIdentifiable {
     public void setAppointmentEntities(BridgingEntities<Appointment> appointmentEntities) {
         this.appointmentEntities = appointmentEntities;
     }
+
+    public BridgingEntities<Announcement> getAnnouncementEntities() {
+        return announcementEntities;
+    }
+
+    public void setAnnouncementEntities(BridgingEntities<Announcement> announcementEntities) {
+        this.announcementEntities = announcementEntities;
+    }
+
+    public List<Announcement> getAnnouncements() {
+        return announcementEntities.get();
+    }
+
+    public void setAnnouncements(List<Announcement> announcements) {
+        announcementEntities.set(announcements);
+    }
+
 }

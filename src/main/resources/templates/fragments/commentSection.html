@@ -1,0 +1,13 @@
+<section th:fragment="commentSection">
+    <div class="d-flex" th:each="c: ${comments}">
+        <div class="flex-shrink-0">
+            <!--<img th:src="'/profile_pictures/'+${c.getAuthor().getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                 alt="" class="rounded-circle"
+                 width="32" height="32" style="object-fit: cover">-->
+        </div>
+        <div class="flex-grow-1 ms-3">
+            <p th:text="${c.getText()}"></p>
+            <div th:with="comments=${c.getChildComments()}" th:include="fragments/commentSection :: commentSection"></div>
+        </div>
+    </div>
+</section>
