@@ -316,24 +316,16 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
+            <h5 class="display-6 mb-3">Ankündigungen</h5>
 
-                </div>
-            </div>
+            <p th:if="${announcements.isEmpty()}">Noch keine Ankündigungen!</p>
 
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
+            <div th:each="a: ${announcements}" class="card mb-3">
+                <h5 class="card-header" th:text="${a.getTitle()}"></h5>
+                <div class="card-body" th:with="comments = ${a.getComments()}">
+                    <p th:text="${a.getDescription()}" class="mb-3"></p>
 
-                </div>
-            </div>
-
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
-
+                    <section th:include="fragments/commentSection :: commentSection" th:with="comments=${a.getComments()}"></section>
                 </div>
             </div>
         </div>

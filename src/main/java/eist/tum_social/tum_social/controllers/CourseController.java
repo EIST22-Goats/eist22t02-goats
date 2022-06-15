@@ -3,6 +3,7 @@ package eist.tum_social.tum_social.controllers;
 import eist.tum_social.tum_social.controllers.forms.CourseForm;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.datastorage.StorageFacade;
+import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
@@ -67,6 +68,9 @@ public class CourseController {
         StorageFacade db = new Storage();
         Course course = db.getCourse(courseId);
         model.addAttribute(course);
+
+        List<Announcement> announcements = course.getAnnouncements();
+        model.addAttribute("announcements", announcements);
 
         return "course_view";
     }
