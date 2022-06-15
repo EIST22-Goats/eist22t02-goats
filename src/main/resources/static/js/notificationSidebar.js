@@ -12,6 +12,7 @@ function loadNotifications() {
         url: "/getNotifications",
         success: function (data) {
             if (data.length === 0) {
+                clearNotificationsBtn.addClass("d-none");
                 notificationCountBadge.addClass("d-none");
                 notificationList.append($(`
                 <div class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true">
@@ -22,6 +23,9 @@ function loadNotifications() {
             } else {
                 if (notificationCountBadge.hasClass("d-none")) {
                     notificationCountBadge.removeClass("d-none")
+                }
+                if (clearNotificationsBtn.hasClass("d-none")) {
+                    clearNotificationsBtn.removeClass("d-none")
                 }
                 notificationCountBadge.text(data.length);
             }
