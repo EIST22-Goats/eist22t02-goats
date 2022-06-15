@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
+import static eist.tum_social.tum_social.controllers.util.NotificationType.*;
 import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
@@ -52,6 +53,13 @@ public class FriendController {
         ) {
             person.getOutgoingFriendRequests().add(receiver);
             storage.update(person);
+
+            NotificationController.sendNotification(
+                    receiver,
+                    "Neue Freundschaftsanfrage",
+                    person.getFirstname() + " " + person.getLastname() + " hat dir eine Freundschaftsanfrage gesendet",
+                    "/friends",
+                    NEW_FRIEND_REQUEST);
         }
 
         return "redirect:/friends";
@@ -72,7 +80,12 @@ public class FriendController {
         if (outgoing.isPresent()) {
             outgoingFriendRequests.remove(outgoing.get());
         } else if (incoming.isPresent()) {
-            // TODO add notification that friend request was denied
+            NotificationController.sendNotification(
+                    incoming.get(),
+                    "Freundschaftsanfrage abgelehnt",
+                    person.getFirstname() + " " + person.getLastname() + " hat deine Freundschaftsanfrage abgelehnt",
+                    "/friends",
+                    FRIEND_REQUEST_DENIED);
             incomingFriendRequests.remove(incoming.get());
         }
 
@@ -94,6 +107,13 @@ public class FriendController {
         if (incoming.isPresent()) {
             incomingFriendRequests.remove(incoming.get());
             person.getFriends().add(incoming.get());
+
+            NotificationController.sendNotification(
+                    incoming.get(),
+                    "Freundschaftsanfrage angenommen",
+                    person.getFirstname() + " " + person.getLastname() + " hat deine Freundschaftsanfrage angenommen!",
+                    "/friends",
+                    FRIEND_REQUEST_ACCEPTED);
         }
 
         new Storage().update(person);

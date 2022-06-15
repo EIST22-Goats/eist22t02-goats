@@ -1,18 +1,17 @@
 package eist.tum_social.tum_social.model;
 
-import eist.tum_social.tum_social.datastorage.BridgingEntities;
 import eist.tum_social.tum_social.datastorage.util.DatabaseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @DatabaseEntity(tableName = "Notifications")
-public class Notification {
+public class Notification extends UniquelyIdentifiable {
 
-    private int id;
+    private int id = -1;
     private String title;
     private String description;
-    private LocalDate day;
+    private LocalDate date;
     private LocalTime time;
     private String link;
 
@@ -40,12 +39,12 @@ public class Notification {
         this.description = description;
     }
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getTime() {
