@@ -16,17 +16,21 @@ public class Comment extends UniquelyIdentifiable {
 
     private int id = -1;
     private String text;
-    private Person author;
     private LocalDate date;
     private LocalTime time;
     @BridgingTable(
             bridgingTableName = "CommentChildren",
             ownForeignColumnName = "parentId",
             otherForeignColumnName = "childId")
-    private BridgingEntities<Comment> childCommentEntities;
+    private BridgingEntities<Comment> childCommentEntities = new BridgingEntities<>();
+    @ForeignTable(
+            foreignTableName = "Persons",
+            ownColumnName = "authorId")
+    public ForeignEntity<Person> authorForeignEntity = new ForeignEntity<>();
+
     @Override
     public int getId() {
-        return 0;
+        return id;
     }
 
     public void setId(int id) {
@@ -39,14 +43,6 @@ public class Comment extends UniquelyIdentifiable {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Person getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Person author) {
-        this.author = author;
     }
 
     public LocalDate getDate() {
@@ -80,4 +76,21 @@ public class Comment extends UniquelyIdentifiable {
     public void setChildComments(List<Comment> comments) {
         childCommentEntities.set(comments);
     }
+
+    public ForeignEntity<Person> getAuthorForeignEntity() {
+        return authorForeignEntity;
+    }
+
+    public void setAuthorForeignEntity(ForeignEntity<Person> authorForeignEntity) {
+        this.authorForeignEntity = authorForeignEntity;
+    }
+
+    public Person getAuthor() {
+        return authorForeignEntity.get();
+    }
+
+    public void setAuthor(Person p) {
+        authorForeignEntity.set(p);
+    }
+
 }

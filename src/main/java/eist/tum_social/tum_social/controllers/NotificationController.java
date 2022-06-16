@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
+import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
 import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @RestController
@@ -37,47 +38,18 @@ public class NotificationController {
                         .comparing(Notification::getDate)
                         .thenComparing(Notification::getTime))
                 .toList();
-        
+
         List<Map<String, String>> result = new ArrayList<>();
 
-        for (Notification notification:notifications) {
+        for (Notification notification : notifications) {
             result.add(Map.of(
-                "title", notification.getTitle(),
-                "description", notification.getDescription(),
-                "link", notification.getLink(),
-                "date", formatNotificationTimestamp(notification.getDate(), notification.getTime())
+                    "title", notification.getTitle(),
+                    "description", notification.getDescription(),
+                    "link", notification.getLink(),
+                    "date", formatTimestamp(notification.getDate(), notification.getTime())
             ));
         }
         return result;
-    }
-
-    private static String formatNotificationTimestamp(LocalDate date, LocalTime time) {
-        String dateString = "";
-
-        if (time.isAfter(LocalTime.now().minusHours(1))) {
-            long minDelta = time.until(LocalTime.now(), ChronoUnit.MINUTES);
-            if (minDelta <= 1) {
-                dateString += "Gerade eben";
-            } else {
-                dateString += "Vor " + minDelta + " Minuten";
-            }
-        } else if (time.isAfter(LocalTime.now().minusHours(12))) {
-            dateString += "Vor " + time.until(LocalTime.now(), ChronoUnit.HOURS) + " Stunden";
-        } else {
-            dateString += time.format(DateTimeFormatter.ofPattern("HH:mm"));
-            if (date.isEqual(LocalDate.now())) {
-                dateString += ", Heute";
-            } else if (date.isEqual(LocalDate.now().minusDays(1))) {
-                dateString +=  ", Gestern";
-            } else {
-                dateString += ", " + date.format(DateTimeFormatter.ofPattern("dd.MM."));
-            }
-            if (LocalDate.now().getYear() != date.getYear()) {
-                dateString += date.format(DateTimeFormatter.ofPattern("yyyy"));
-            }
-        }
-
-        return dateString;
     }
 
     @PostMapping("/clearNotifications")

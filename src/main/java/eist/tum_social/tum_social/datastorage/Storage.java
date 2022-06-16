@@ -1,9 +1,6 @@
 package eist.tum_social.tum_social.datastorage;
 
-import eist.tum_social.tum_social.model.Appointment;
-import eist.tum_social.tum_social.model.Course;
-import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.Person;
+import eist.tum_social.tum_social.model.*;
 
 import java.util.List;
 
@@ -49,6 +46,15 @@ public class Storage implements StorageFacade {
     public Appointment getAppointment(int id) {
         return firstOrNull(db.select(Appointment.class, "id=" + id));
     }
+
+    public Comment getComment(int id) {
+        return firstOrNull(db.select(Comment.class, "id="+id));
+    }
+
+    public Announcement getAnnouncement(int id) {
+        return firstOrNull(db.select(Announcement.class, "id="+id));
+    }
+
 
     @Override
     public void update(Object object) {
