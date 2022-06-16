@@ -325,6 +325,7 @@
                     <input type="hidden" name="courseId" th:value="${course.getId()}">
                     <div class="card-header clearfix">
                         <h5 th:text="${a.getTitle()}" class="float-start"></h5>
+                        <small class="float-start ms-3 text-muted lh-lg" th:text="${a.getFormattedTimestamp()}"></small>
                         <button type="submit" class="btn btn-sm btn-danger float-end"
                                 th:if="${course.getAdmin().getId() == person.getId()}">
                             Löschen

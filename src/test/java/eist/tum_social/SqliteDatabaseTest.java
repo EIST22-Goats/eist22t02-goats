@@ -221,9 +221,6 @@ public class SqliteDatabaseTest {
         List<Person> persons = db.select(Person.class, "id='17'");
         assertEquals(1, persons.size());
         Person person = persons.get(0);
-
-        System.out.println(person.getFriends());
-
     }
 
     @Test
@@ -252,8 +249,6 @@ public class SqliteDatabaseTest {
             Course course = courses.get(0);
             assertEquals(3, course.getAdmin().getId());
             List<Appointment> appointments = course.getAppointments();
-
-            System.out.println("appointments: " + appointments);
 
             assertEquals(2, appointments.size());
             appointments = sortById(appointments);

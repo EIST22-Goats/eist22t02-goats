@@ -5,13 +5,12 @@ import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Notification;
 import eist.tum_social.tum_social.model.Person;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Array;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,10 +55,11 @@ public class NotificationController {
     public void clearNotifications() {
         Storage storage = new Storage();
         Person person = getCurrentPerson(storage);
-
         for (Notification notification:person.getNotifications()) {
             storage.delete(notification);
         }
+        person.setNotifications(new ArrayList<>());
+        storage.update(person);
     }
 
     public static void sendNotification(Person person, String title, String description, String link, NotificationType notificationType) {

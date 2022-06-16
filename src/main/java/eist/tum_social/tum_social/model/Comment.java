@@ -11,6 +11,8 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
+import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
+
 @DatabaseEntity(tableName = "Comments")
 public class Comment extends UniquelyIdentifiable {
 
@@ -26,7 +28,12 @@ public class Comment extends UniquelyIdentifiable {
     @ForeignTable(
             foreignTableName = "Persons",
             ownColumnName = "authorId")
-    public ForeignEntity<Person> authorForeignEntity = new ForeignEntity<>();
+    private ForeignEntity<Person> authorForeignEntity = new ForeignEntity<>();
+    @BridgingTable(
+            bridgingTableName = "PersonLikes",
+            ownForeignColumnName = "commentId",
+            otherForeignColumnName = "personId")
+    private BridgingEntities<Person> likeEntities = new BridgingEntities<>();
 
     @Override
     public int getId() {
@@ -93,4 +100,23 @@ public class Comment extends UniquelyIdentifiable {
         authorForeignEntity.set(p);
     }
 
+    public String getFormattedTimestamp() {
+        return formatTimestamp(date, time);
+    }
+
+    public BridgingEntities<Person> getLikeEntities() {
+        return likeEntities;
+    }
+
+    public List<Person> getLikes() {
+        return likeEntities.get();
+    }
+
+    public void setLikeEntities(BridgingEntities<Person> likeEntities) {
+        this.likeEntities = likeEntities;
+    }
+
+    public void setLikes(List<Person> likes) {
+       likeEntities.set(likes);
+    }
 }

@@ -255,6 +255,34 @@ public class CourseController {
         return "redirect:/courses/" + courseId;
     }
 
+    // TODO: post + dynamic loading
+    /*
+     *    _______ ____  _____   ____
+     *   |__   __/ __ \|  __ \ / __ \
+     *      | | | |  | | |  | | |  | |
+     *      | | | |  | | |  | | |  | |
+     *      | | | |__| | |__| | |__| |
+     *      |_|  \____/|_____/ \____/
+     *
+     */
+    @GetMapping("/toggleLikeComment/{commentId}/{courseId}")
+    public String toggleLikeComment(@PathVariable int commentId, @PathVariable("courseId") int courseId) {
+        Storage storage = new Storage();
+
+        Person person = getCurrentPerson(storage);
+
+        Comment comment = storage.getComment(commentId);
+        List<Person> likes = comment.getLikes();
+        if (likes.contains(person)) {
+            likes.remove(person);
+        } else {
+            likes.add(person);
+        }
+        storage.update(comment);
+
+        return "redirect:/courses/" + courseId;
+    }
+
     private void deleteAnnouncement(Announcement announcement, Storage storage) {
         for (Comment comment:announcement.getComments()) {
             deleteCommentTree(comment, storage);
