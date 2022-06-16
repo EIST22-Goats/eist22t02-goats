@@ -13,6 +13,10 @@
 
 <header th:replace="fragments/header :: header"></header>
 
+<div th:replace="fragments/notificationSidebar :: notificationSidebar"></div>
+
+<div id="outDiv" class="collapse opacity-50 bg-dark w-100 h-100 position-absolute top-0 start-0" style="z-index: 10000"></div>
+
 <div class="container">
     <h4 class="text-right display-4 mb-4" th:text="${course.getName()}"></h4>
 
@@ -312,26 +316,70 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
+            <h5 class="display-6 mb-3">Ankündigungen</h5>
 
+            <p th:if="${announcements.isEmpty()}">Noch keine Ankündigungen!</p>
+
+            <div th:each="a: ${announcements}" class="card mb-3">
+                <form th:action="'/deleteAnnouncement/'+${a.getId()}" method="post">
+                    <input type="hidden" name="courseId" th:value="${course.getId()}">
+                    <div class="card-header clearfix">
+                        <h5 th:text="${a.getTitle()}" class="float-start"></h5>
+                        <small class="float-start ms-3 text-muted lh-lg" th:text="${a.getFormattedTimestamp()}"></small>
+                        <button type="submit" class="btn btn-sm btn-danger float-end"
+                                th:if="${course.getAdmin().getId() == person.getId()}">
+                            Löschen
+                        </button>
+                    </div>
+                </form>
+                <div class="card-body" th:with="comments = ${a.getComments()}">
+                    <p class="mb-3">
+                        <span th:text="${a.getDescription()}"></span>
+                        <br>
+                        <a data-bs-toggle="collapse" th:href="'#newRootComment'+${a.getId()}" aria-expanded="false"
+                           class="text-decoration-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply" viewBox="0 0 16 16">
+                                <path d="M6.598 5.013a.144.144 0 0 1 .202.134V6.3a.5.5 0 0 0 .5.5c.667 0 2.013.005 3.3.822.984.624 1.99 1.76 2.595 3.876-1.02-.983-2.185-1.516-3.205-1.799a8.74 8.74 0 0 0-1.921-.306 7.404 7.404 0 0 0-.798.008h-.013l-.005.001h-.001L7.3 9.9l-.05-.498a.5.5 0 0 0-.45.498v1.153c0 .108-.11.176-.202.134L2.614 8.254a.503.503 0 0 0-.042-.028.147.147 0 0 1 0-.252.499.499 0 0 0 .042-.028l3.984-2.933zM7.8 10.386c.068 0 .143.003.223.006.434.02 1.034.086 1.7.271 1.326.368 2.896 1.202 3.94 3.08a.5.5 0 0 0 .933-.305c-.464-3.71-1.886-5.662-3.46-6.66-1.245-.79-2.527-.942-3.336-.971v-.66a1.144 1.144 0 0 0-1.767-.96l-3.994 2.94a1.147 1.147 0 0 0 0 1.946l3.994 2.94a1.144 1.144 0 0 0 1.767-.96v-.667z"/>
+                            </svg>
+                            Antworten
+                        </a>
+                        &nbsp;&nbsp;
+                        <a data-bs-toggle="collapse" th:href="'#rootComments'+${a.getId()}" aria-expanded="false"
+                           th:if="${!a.getComments().isEmpty()}" th:text="${a.getComments().size()}+' Kommentare anzeigen'"
+                           class="text-decoration-none"></a>
+                    </p>
+
+                    <form class="collapse" th:id="'newRootComment'+${a.getId()}" th:action="'/addRootComment/'+${a.getId()}" method="post">
+                        <input type="hidden" name="courseId" th:value="${course.getId()}">
+                        <div class="mb-3 row">
+                            <div class="col-10">
+                                <textarea name="text" class="form-control" rows="1" placeholder="Neuer Kommentar"></textarea>
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-primary">Senden</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div th:if="${!a.getComments().isEmpty()}" class="collapse" th:id="'rootComments'+${a.getId()}">
+                        <section th:include="fragments/commentSection :: commentSection" th:with="comments=${a.getComments()}"></section>
+                    </div>
                 </div>
             </div>
 
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
-
+            <form th:if="${course.getAdmin().getId() == person.getId()}" th:action="'/addAnnouncement/'+${course.getId()}"
+                  method="post" class="card card-body">
+                <h5>Neue Ankündigung</h5>
+                <div class="mb-3">
+                    <label class="form-label">Titel</label>
+                    <input type="text" class="form-control" name="title">
                 </div>
-            </div>
-
-            <div class="card mb-3">
-                <h5 class="card-header">Ankündigungen</h5>
-                <div class="card-body">
-
+                <div class="mb-3">
+                    <label class="form-label">Text</label>
+                    <textarea class="form-control" name="text" rows="3"></textarea>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
         </div>
     </div>
 

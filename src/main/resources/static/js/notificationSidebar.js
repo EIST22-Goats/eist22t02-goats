@@ -3,6 +3,7 @@ const notificationBtn = $('#notificationBtn');
 const outDiv = $('#outDiv');
 const notificationList = $('#notificationList');
 const notificationCountBadge = $('#notificationCountBadge');
+const clearNotificationsBtn = $('#clearNotifications');
 
 function loadNotifications() {
     notificationList.empty();
@@ -11,10 +12,20 @@ function loadNotifications() {
         url: "/getNotifications",
         success: function (data) {
             if (data.length === 0) {
-                notificationCountBadge.addClass("d-none")
+                clearNotificationsBtn.addClass("d-none");
+                notificationCountBadge.addClass("d-none");
+                notificationList.append($(`
+                <div class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <strong class="mb-1">Du hast gerade keine Benachrichtigungen</strong>
+                    </div>
+                </div>`));
             } else {
                 if (notificationCountBadge.hasClass("d-none")) {
                     notificationCountBadge.removeClass("d-none")
+                }
+                if (clearNotificationsBtn.hasClass("d-none")) {
+                    clearNotificationsBtn.removeClass("d-none")
                 }
                 notificationCountBadge.text(data.length);
             }
@@ -24,9 +35,10 @@ function loadNotifications() {
                 <div class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true">
                     <div class="d-flex w-100 align-items-center justify-content-between">
                         <strong class="mb-1">` + n.title + `</strong>
-                        <small>TODO</small>
+                        <small class="text-secondary">` + n.date + `</small>
                     </div>
                     <div class="col-10 mb-1 small">` + n.description + `</div>
+                    <a class="stretched-link" href="` + n.link + `"></a>
                 </div>`));
             }
         }
@@ -35,16 +47,29 @@ function loadNotifications() {
 
 notificationBtn.on('click', () => {
     outDiv.toggle('fade');
-    sidebar.toggle("'slide', {direction: 'left' }, 500");
+    sidebar.toggle("'slide', {direction: 'left'}, 500");
 });
 
 outDiv.on('click', () => {
-    sidebar.toggle("'slide', {direction: 'left' }, 500");
-    outDiv.toggle('fade');
+    sidebar.fadeOut();
+    outDiv.fadeOut();
 });
 
-loadNotifications();
+clearNotificationsBtn.on('click', () => {
+    $.ajax({
+        type: "POST",
+        url: "/clearNotifications",
+        success: function () {
+            loadNotifications();
+        }
+    });
+});
 
-setTimeout(() => {
+function notificationUpdateLoop() {
     loadNotifications();
-}, 10000);
+    setTimeout(() => {
+        notificationUpdateLoop();
+    }, 6000);
+}
+
+notificationUpdateLoop();

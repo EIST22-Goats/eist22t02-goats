@@ -39,8 +39,6 @@ public class Requests {
         try {
             url_object = new URL(url);
 
-            System.out.println(">>>>> "+url);
-
             URLConnection request = url_object.openConnection();
             request.connect();
 

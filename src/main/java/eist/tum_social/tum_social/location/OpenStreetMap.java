@@ -10,14 +10,6 @@ import static eist.tum_social.tum_social.location.util.Requests.escapeQueryValue
 import static eist.tum_social.tum_social.location.util.Requests.getRequest;
 
 public class OpenStreetMap {
-    public static void main(String[] args) {
-        List<OpenStreetmapLocation> locations = findLocation("forschungszentrum garching");
-
-        for (OpenStreetmapLocation location : locations) {
-            System.out.println(location.getCoords() + bboxString(location.getBbox()));
-        }
-
-    }
 
     public static List<OpenStreetmapLocation> findLocation(String query) {
         String sURL = "https://nominatim.openstreetmap.org/search.php?format=json&q=" + escapeQueryValue(query);

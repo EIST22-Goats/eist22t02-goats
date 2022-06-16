@@ -38,23 +38,27 @@ public class Person extends UniquelyIdentifiable {
             ownForeignColumnName = "person1",
             otherForeignColumnName = "person2",
             bidirectional = true)
-    private BridgingEntities<Person> friendEntities;
+    private BridgingEntities<Person> friendEntities = new BridgingEntities<>();
     @BridgingTable(
             bridgingTableName = "FriendRequests",
             ownForeignColumnName = "receiverId",
             otherForeignColumnName = "senderId")
-    private BridgingEntities<Person> incomingFriendRequestEntities;
-
+    private BridgingEntities<Person> incomingFriendRequestEntities = new BridgingEntities<>();
     @BridgingTable(
             bridgingTableName = "FriendRequests",
             ownForeignColumnName = "senderId",
             otherForeignColumnName = "receiverId")
-    private BridgingEntities<Person> outgoingFriendRequestEntities;
+    private BridgingEntities<Person> outgoingFriendRequestEntities = new BridgingEntities<>();
     @BridgingTable(
             bridgingTableName = "PersonNotifications",
             ownForeignColumnName = "personId",
             otherForeignColumnName = "notificationId")
-    private BridgingEntities<Notification> notificationEntities;
+    private BridgingEntities<Notification> notificationEntities = new BridgingEntities<>();
+    @BridgingTable(
+            bridgingTableName = "PersonLikes",
+            ownForeignColumnName = "personId",
+            otherForeignColumnName = "commentId")
+    private BridgingEntities<Comment> likedCommentEntities = new BridgingEntities<>();
 
     public String getFirstname() {
         return firstname;
@@ -222,5 +226,21 @@ public class Person extends UniquelyIdentifiable {
 
     public void setNotifications(List<Notification> notifications) {
         notificationEntities.set(notifications);
+    }
+
+    public BridgingEntities<Comment> getLikedCommentEntities() {
+        return likedCommentEntities;
+    }
+
+    public List<Comment> getLikedComments() {
+        return likedCommentEntities.get();
+    }
+
+    public void setLikedCommentEntities(BridgingEntities<Comment> likedCommentEntities) {
+        this.likedCommentEntities = likedCommentEntities;
+    }
+
+    public void setLikedComments(List<Comment> likedComments) {
+        likedCommentEntities.set(likedComments);
     }
 }

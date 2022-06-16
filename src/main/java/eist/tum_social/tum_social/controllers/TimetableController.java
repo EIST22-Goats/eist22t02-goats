@@ -137,13 +137,8 @@ public class TimetableController {
 
         Storage storage = new Storage();
         Appointment appointment = new Appointment();
-        System.out.println("form address: "+form.getAddress());
-        System.out.println("form room: "+form.getRoomName());
 
         form.apply(appointment);
-
-        System.out.println("appointment address: " + appointment.getAddress());
-        System.out.println("appointment room: " + appointment.getRoomName());
 
         storage.update(appointment);
 

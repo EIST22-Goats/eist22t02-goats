@@ -1,10 +1,7 @@
 package eist.tum_social.tum_social.datastorage;
 
 
-import eist.tum_social.tum_social.model.Appointment;
-import eist.tum_social.tum_social.model.Course;
-import eist.tum_social.tum_social.model.DegreeProgram;
-import eist.tum_social.tum_social.model.Person;
+import eist.tum_social.tum_social.model.*;
 
 import java.util.List;
 
@@ -20,6 +17,10 @@ public interface StorageFacade {
     List<Course> getCourses();
 
     Appointment getAppointment(int id);
+
+    Announcement getAnnouncement(int id);
+
+    Comment getComment(int commentId);
 
     void update(Object object);
 

@@ -2,6 +2,8 @@ package eist.tum_social;
 
 import eist.tum_social.tum_social.controllers.IndexController;
 import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.model.Comment;
+import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +22,19 @@ class TestTest {
     public void testSayHello() throws Exception {
         Storage storage = new Storage();
 
-        Person person = storage.getPerson("ge47bit");
-        System.out.println(person);
+        Course c = storage.getCourse(18);
 
+        for (var it : c.getAnnouncements()) {
+            for (var co : it.getComments()) {
+                traverse(co, 0);
+            }
+        }
+    }
+
+    void traverse(Comment comment, int indentation) {
+        for (var c : comment.getChildComments()) {
+            traverse(c, indentation + 3);
+        }
     }
 
 }

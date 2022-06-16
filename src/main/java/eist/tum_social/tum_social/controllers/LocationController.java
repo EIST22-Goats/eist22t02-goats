@@ -26,7 +26,6 @@ public class LocationController {
                 ret.put("iframeUrl", OpenStreetMap.getBaseUrl());
             } else {
                 OpenStreetmapLocation loc = locations.get(0);
-                System.out.println("found location: " + loc.getName());
                 ret.put("iframeUrl", OpenStreetMap.createUrl(loc));
             }
         } else if (roomName != null) {
@@ -35,7 +34,6 @@ public class LocationController {
                 ret.put("iframeUrl", OpenStreetMap.getBaseUrl());
             } else {
                 Room room = rooms.get(0);
-                System.out.println("found room: " + room.getName());
                 ret.put("roomId", room.getRoomId());
                 ret.put("iframeUrl", OpenStreetMap.createUrl(room));
 
@@ -50,8 +48,6 @@ public class LocationController {
                 }
             }
         }
-
-        System.out.println(">>>> iFrameUrl: "+ret.get("iframeUrl"));
 
         return ret;
     }

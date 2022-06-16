@@ -26,7 +26,6 @@ public class PersonSearchController {
 
     @PostMapping("/searchPersons")
     public List<Map<String, String>> searchPersons(@RequestParam("searchText") String searchText) {
-        System.out.println("searching persons");
 
         if (searchText.isBlank()) {
             return new ArrayList<>();

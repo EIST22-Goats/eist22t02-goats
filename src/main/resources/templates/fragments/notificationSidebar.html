@@ -1,6 +1,6 @@
 <div th:fragment="notificationSidebar" id="notificationSidebar"
      class="collapse flex-column align-items-stretch flex-shrink-0 bg-white position-absolute end-0 top-0 h-100 overflow-auto w-100"
-     style="max-width: 380px; z-index: 100000">
+     style="max-width: 30em; z-index: 100000">
     <p class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-bell" viewBox="0 0 16 16">
@@ -8,5 +8,6 @@
         </svg>
         <span class="fs-5 fw-semibold ms-3">Benachrichtigungen</span>
     </p>
+    <button id="clearNotifications" class="btn btn-secondary btn-sm mx-3 mb-3">Benachrichtigungen löschen</button>
     <div class="list-group list-group-flush border-bottom scrollarea" id="notificationList"></div>
 </div>
