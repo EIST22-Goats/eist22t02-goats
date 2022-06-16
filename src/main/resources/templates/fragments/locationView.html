@@ -1,0 +1,10 @@
+<div th:fragment="locationView">
+    <iframe class="w-100 mb-3 locationView" style="height: 25em"
+            src="https://www.openstreetmap.org/export/embed.html">
+    </iframe>
+    <div class="roomViewDiv position-relative w-100 d-none">
+        <img class="roomView w-100">
+        <div class="roomMarker spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
+             role="status"></div>
+    </div>
+</div>

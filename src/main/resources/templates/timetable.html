@@ -77,7 +77,7 @@
                     <span th:text="${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
 
                     <a type="button" class="stretched-link showDateBtn" data-bs-toggle="modal"
-                       data-bs-target="#timeslotModal"
+                       data-bs-target="#appointmentModal"
                        th:attr="data-bs-appointment-id=${appointment.getId()},
                                 data-bs-name=${appointment.getName()},
                                 data-bs-description=${appointment.getDescription()},

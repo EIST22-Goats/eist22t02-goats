@@ -55,14 +55,7 @@
                   </button>
                 </div>
               </div>
-              <iframe class="location-preview-iframe w-100 mb-3" style="height: 25em" id="locationPreview"
-                      src="https://www.openstreetmap.org/export/embed.html">
-              </iframe>
-              <div class="room-image-div position-relative w-100 d-none" id="roomImageDiv1">
-                <img class="room-image w-100" id="roomImage1">
-                <div class="room-image-marker spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
-                     role="status" id="roomImageMarker1"></div>
-              </div>
+              <div th:replace="fragments/locationView :: locationView"></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -155,15 +148,7 @@
                   </button>
                 </div>
               </div>
-              <iframe class="location-preview-iframe w-100 mb-3" style="height: 25em" id="locationPreviewIFrame"
-                      src="https://www.openstreetmap.org/export/embed.html">
-              </iframe>
-              <div class="room-image-div position-relative w-100 d-none" id="roomImageDiv">
-                <img class="room-image w-100" id="roomImage">
-                <div class="room-image-marker spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
-                     role="status"
-                     id="roomImageMarker"></div>
-              </div>
+              <div th:replace="fragments/locationView :: locationView"></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -223,10 +208,9 @@
               <!-- TODO -->
             </div>
           </div>
-          <div class="col-8" id="locationViewDiv">
+          <div class="col-8 locationViewDiv">
             <p class="fw-bold">Ort</p>
-            <iframe class="w-100 locationView" id="locationView" style="height: 20em"></iframe>
-            <img class="roomView" id="roomView">
+            <div th:replace="fragments/locationView :: locationView"></div>
           </div>
         </div>
         <div class="modal-footer">

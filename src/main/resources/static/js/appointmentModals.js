@@ -11,9 +11,6 @@ const changeAppointmentModalEndTimeInput = $("#changeAppointmentModalEndTimeInpu
 const changeAppointmentModalRepetitionsInput = $("#changeAppointmentModalRepetitionsInput")
 const changeAppointmentModalDeleteBtn = $("#changeAppointmentModalDeleteBtn")
 
-const locationView = $("#locationView");
-const locationViewDiv = $("#locationViewDiv");
-const roomView = $("#roomView");
 const appointmentName = $("#appointmentName");
 const appointmentDescription = $("#appointmentDescription")
 const appointmentStartDate = $("#appointmentStartDate")
@@ -37,57 +34,19 @@ function loadDeleteAppointmentModal(modal) {
     })
 }
 
-function loadLocationPreview(modal) {
-
-    let roomImageDiv = modal.find('.room-image-div');
-    let roomImage = modal.find('.room-image');
-    let roomImageMarker = modal.find('.room-image-marker');
-
-
-    let locationPreviewIFrame = modal.find(".location-preview-iframe");
-    let triggerLocationPreview = modal.find('.trigger-location-preview');
-    let triggerRoomPreview = modal.find('.trigger-room-preview');
-
+function loadLocationInputs(modal) {
     let addressInput = modal.find(".address-input");
-    triggerLocationPreview.on('click', () => {
+    let roomNameInput = modal.find(".room-name-input");
+
+    modal.find('.trigger-location-preview').on('click', () => {
         if (addressInput.val().length >= 3) {
-            $.ajax({
-                url: "/getIframeUrl?location=" + addressInput.val(),
-                success: function (data) {
-                    locationPreviewIFrame.attr("src", data["iframeUrl"]);
-                    if (!roomImageDiv.hasClass("d-none")) {
-                        roomImageDiv.addClass("d-none");
-                    }
-                }
-            })
+            showLocation(modal, addressInput.val())
         }
     })
 
-    let roomNameInput = modal.find(".room-name-input");
-    triggerRoomPreview.on('click', () => {
+    modal.find('.trigger-room-preview').on('click', () => {
         if (roomNameInput.val().length >= 3) {
-            $.ajax({
-                url: "/getIframeUrl?roomName=" + roomNameInput.val(),
-                success: function (data) {
-                    locationPreviewIFrame.attr("src", data["iframeUrl"]);
-                    roomNameInput.val(data["roomId"]);
-                    if ("roomImageUrl" in data) {
-                        if (roomImageDiv.hasClass("d-none")) {
-                            roomImageDiv.removeClass("d-none");
-                        }
-                        roomImage.attr("src", data["roomImageUrl"]);
-                        if (roomImageMarker.hasClass("d-none")) {
-                            roomImageMarker.removeClass("d-none");
-                        }
-                        roomImageMarker.css("left", data["markerX"] + "%");
-                        roomImageMarker.css("top", data["markerY"] + "%");
-                    } else {
-                        if (!roomImageDiv.hasClass("d-none")) {
-                            roomImageDiv.addClass("d-none");
-                        }
-                    }
-                }
-            })
+            showRoom(modal, roomNameInput.val())
         }
     })
 
@@ -141,23 +100,20 @@ function loadChangeAppointmentModal(modal) {
 
         changeDateModalForm.attr('action', "/updateAppointment/" + appointmentId);
 
-        if (addressInput.val() !== "") {
-            roomNameInput.attr("disabled", "");
-        } else {
+        if (roomName !== null) {
             roomNameInput.removeAttr("disabled");
-        }
-
-        if (roomNameInput.val() !== "") {
             addressInput.attr("disabled", "");
         } else {
             addressInput.removeAttr("disabled");
+            roomNameInput.attr("disabled", "");
         }
 
+        showLocation(modal, address, roomName);
         setTimeout(() => {
-            showLocation(address, roomName, locationView, roomView);
+            showLocation(modal, address, roomName);
         }, 100);
 
-        loadLocationPreview(modal);
+        loadLocationInputs(modal);
     })
 }
 
@@ -202,22 +158,23 @@ function loadAppointmentModal(modal) {
         changeButton.attr('data-bs-roomname', roomName)
         appointmentRoomName.text(roomName);
 
-        if (roomName === null) {
-            appointmentRoomNameDiv.addClass("d-none");
-            roomView.addClass("d-none");
-        } else {
-            appointmentRoomNameDiv.removeClass("d-none");
-            roomView.removeClass("d-none");
-        }
-
         let address = event.relatedTarget.getAttribute('data-bs-address');
         changeButton.attr('data-bs-address', address)
         appointmentAddress.text(address);
-        if (address === null) {
+
+        let roomViewDiv = modal.find(".roomViewDiv")
+        let locationViewDiv = modal.find(".locationViewDiv")
+
+        if (roomName !== null) {
+            appointmentRoomNameDiv.removeClass("d-none");
             appointmentAddressDiv.addClass("d-none");
+            roomViewDiv.removeClass("d-none");
         } else {
+            appointmentRoomNameDiv.addClass("d-none");
             appointmentAddressDiv.removeClass("d-none");
+            roomViewDiv.addClass("d-none");
         }
+
 
         if (address !== null || roomName !== null) {
             appointmentModal.addClass("modal-lg");
@@ -229,32 +186,65 @@ function loadAppointmentModal(modal) {
             locationViewDiv.addClass("d-none");
         }
 
+        showLocation(modal, address, roomName);
         setTimeout(() => {
-            showLocation(address, roomName, locationView, roomView);
+            showLocation(modal, address, roomName);
         }, 100);
     })
 }
 
-function showLocation(address, roomName, locationView, roomView) {
+function showLocation(modal, address, roomName) {
+    let roomImageDiv = modal.find('.roomViewDiv');
     if (address !== null) {
-        $.ajax({
-            url: "/getIframeUrl?location=" + address,
-            success: function (data) {
-                locationView.attr("src", data["iframeUrl"]);
-            }
-        })
+        if (!roomImageDiv.hasClass("d-none")) {
+            roomImageDiv.addClass("d-none");
+        }
+        showAddress(modal, address)
     } else if (roomName !== null) {
-        $.ajax({
-            url: "/getIframeUrl?roomName=" + roomName,
-            success: function (data) {
-                roomView.attr("src", data["roomImageUrl"]);
-                locationView.attr("src", data["iframeUrl"]);
-            }
-        })
+        showRoom(modal, roomName)
     }
+}
+
+function showAddress(modal, address) {
+    let locationView = modal.find(".locationView")
+    $.ajax({
+        url: "/getIframeUrl?location=" + address,
+        success: function (data) {
+            locationView.attr("src", data["iframeUrl"]);
+        }
+    })
+}
+
+function showRoom(modal, roomName) {
+    let roomImageDiv = modal.find('.roomViewDiv');
+    let roomImage = modal.find('.roomView');
+    let roomImageMarker = modal.find('.roomMarker');
+    let locationPreviewIFrame = modal.find(".locationView");
+
+    $.ajax({
+        url: "/getIframeUrl?roomName=" + roomName,
+        success: function (data) {
+            locationPreviewIFrame.attr("src", data["iframeUrl"]);
+            if ("roomImageUrl" in data) {
+                if (roomImageDiv.hasClass("d-none")) {
+                    roomImageDiv.removeClass("d-none");
+                }
+                roomImage.attr("src", data["roomImageUrl"]);
+                if (roomImageMarker.hasClass("d-none")) {
+                    roomImageMarker.removeClass("d-none");
+                }
+                roomImageMarker.css("left", data["markerX"] + "%");
+                roomImageMarker.css("top", data["markerY"] + "%");
+            } else {
+                if (!roomImageDiv.hasClass("d-none")) {
+                    roomImageDiv.addClass("d-none");
+                }
+            }
+        }
+    })
 }
 
 loadDeleteAppointmentModal(deleteAppointmentModal);
 loadChangeAppointmentModal(changeAppointmentModal);
-loadLocationPreview(createAppointmentModal);
+loadLocationInputs(createAppointmentModal);
 loadAppointmentModal(appointmentModal);
