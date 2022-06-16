@@ -20,7 +20,7 @@ public class Announcement extends UniquelyIdentifiable {
             bridgingTableName = "AnnouncementComments",
             ownForeignColumnName = "announcementId",
             otherForeignColumnName = "rootCommentId")
-    private BridgingEntities<Comment> commentBridgingEntities;
+    private BridgingEntities<Comment> commentBridgingEntities = new BridgingEntities<>();
 
     @Override
     public int getId() {
