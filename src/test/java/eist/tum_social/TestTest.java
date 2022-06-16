@@ -25,7 +25,6 @@ class TestTest {
         Course c = storage.getCourse(18);
 
         for (var it : c.getAnnouncements()) {
-            System.out.println("announcement: " + it.getTitle());
             for (var co : it.getComments()) {
                 traverse(co, 0);
             }
@@ -33,7 +32,6 @@ class TestTest {
     }
 
     void traverse(Comment comment, int indentation) {
-        System.out.println(" ".repeat(indentation)+comment.getText());
         for (var c : comment.getChildComments()) {
             traverse(c, indentation + 3);
         }

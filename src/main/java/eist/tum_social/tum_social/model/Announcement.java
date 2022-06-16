@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
+
 @DatabaseEntity(tableName = "Announcements")
 public class Announcement extends UniquelyIdentifiable {
 
@@ -77,5 +79,9 @@ public class Announcement extends UniquelyIdentifiable {
 
     public void setCommentBridgingEntities(BridgingEntities<Comment> commentBridgingEntities) {
         this.commentBridgingEntities = commentBridgingEntities;
+    }
+
+    public String getFormattedTimestamp() {
+        return formatTimestamp(date, time);
     }
 }
