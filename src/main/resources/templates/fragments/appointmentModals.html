@@ -40,8 +40,8 @@
               <div class="mb-3">
                 <label class="form-label">Adresse oder Ortsbeschreibung</label>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control" name="address" id="addressInput">
-                  <button class="btn btn-outline-secondary" type="button" id="triggerLocationPreview">
+                  <input type="text" class="address-input form-control" name="address" id="addressInput">
+                  <button class="trigger-location-preview btn btn-outline-secondary" type="button" id="triggerLocationPreview1">
                     Vorschau
                   </button>
                 </div>
@@ -49,20 +49,13 @@
               <div class="mb-3">
                 <label class="form-label">Raum Nummer/Name</label>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control" name="roomName" id="roomNameInput">
-                  <button class="btn btn-outline-secondary" type="button" id="triggerRoomPreview">
+                  <input type="text" class="room-name-input form-control" name="roomName" id="roomNameInput">
+                  <button class="trigger-room-preview btn btn-outline-secondary" type="button" id="triggerRoomPreview1">
                     Vorschau
                   </button>
                 </div>
               </div>
-              <iframe class="w-100 mb-3" style="height: 25em" id="locationPreview"
-                      src="https://www.openstreetmap.org/export/embed.html">
-              </iframe>
-              <div class="position-relative w-100 d-none" id="roomImageDiv">
-                <img class="w-100" id="roomImage">
-                <div class="spinner-grow position-absolute translate-middle text-danger spinner-grow-sm"
-                     role="status" id="roomImageMarker"></div>
-              </div>
+              <div th:replace="fragments/locationView :: locationView"></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -93,4 +86,143 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade modal-lg" id="changeDateModal" tabindex="-1"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="changeDateModalForm" action="[TODO]" method="post">
+          <div class="modal-header">
+            <h5 class="modal-title">Termin bearbeiten</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body row">
+            <div class="col-4">
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input id="changeAppointmentModalNameInput" type="text" class="form-control"
+                       value="[NAME]"
+                       name="name" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Beschreibung</label>
+                <textarea id="changeAppointmentModalDescriptionInput" class="form-control" rows="3" name="description">[DESCRIPTION]</textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tag</label>
+                <input id="changeAppointmentModalStartDateInput" name="startDate" type="date" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Startzeit</label>
+                <input id="changeAppointmentModalStartTimeInput" name="startTime" type="time" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Endzeit</label>
+                <input id="changeAppointmentModalEndTimeInput" name="endTime" type="time" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Wiederholungen</label>
+                <input id="changeAppointmentModalRepetitionsInput" name="repetitions" type="number" min="0" class="form-control">
+              </div>
+            </div>
+            <div class="col-8">
+              <div class="mb-3">
+                <label class="form-label">Adresse oder Ortsbeschreibung</label>
+                <div class="input-group mb-3">
+                  <input id="changeAppointmentModalAddressInput" type="text" class="address-input form-control" name="address">
+                  <button class="trigger-location-preview btn btn-outline-secondary" type="button"
+                          id="triggerLocationPreview">
+                    Vorschau
+                  </button>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Raum Nummer/Name</label>
+                <div class="input-group mb-3">
+                  <input id="changeAppointmentModalRoomNameInput" type="text" class="room-name-input form-control" name="roomName">
+                  <button class="trigger-room-preview btn btn-outline-secondary" type="button"
+                          id="triggerRoomPreview">
+                    Vorschau
+                  </button>
+                </div>
+              </div>
+              <div th:replace="fragments/locationView :: locationView"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Abbrechen
+            </button>
+            <button id="changeAppointmentModalDeleteBtn" type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#deleteAppointmentModal"
+                    data-bs-appointment-id="[TODO]">
+              Löschen
+            </button>
+            <button type="submit" class="btn btn-primary">Speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"
+              aria-labelledby="appointmentModalLabel">Termin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body row">
+          <div class="col-4" id="appointmentDataColumn">
+            <div class="mb-3">
+              <p><span class="fw-bold">Name</span><br><span id="appointmentName">[NAME]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Beschreibung</span><br><span
+                      id="appointmentDescription">[DESCRIPTION]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Tag</span><br><span id="appointmentStartDate">[DATE]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Startzeit</span><br><span id="appointmentStartTime">[STARTTIME]</span>
+              </p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Endzeit</span><br><span id="appointmentEndTime">[ENDTIME]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Wiederholungen</span><br><span id="appointmentRepetitions">[REPETITIONS]</span>
+              </p>
+            </div>
+            <div class="mb-3" id="appointmentRoomNameDiv">
+              <p><span class="fw-bold">Raum Name</span><br><span id="appointmentRoomName">[ROOMNAME]</span>
+              </p> <!-- TODO -->
+            </div>
+            <div class="mb-3" id="appointmentAddressDiv">
+              <p><span class="fw-bold">Addresse</span><br><span id="appointmentAddress">[ADDRESS]</span></p>
+              <!-- TODO -->
+            </div>
+          </div>
+          <div class="col-8 locationViewDiv">
+            <p class="fw-bold">Ort</p>
+            <div th:replace="fragments/locationView :: locationView"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Schließen
+          </button>
+          <button id="appointmentModalChangeBtn" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#changeDateModal">Ändern
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
