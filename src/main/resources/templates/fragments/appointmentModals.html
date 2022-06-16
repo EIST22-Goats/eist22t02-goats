@@ -182,4 +182,63 @@
     </div>
   </div>
 
+  <div class="modal fade" id="timeslotModal" tabindex="-1" aria-labelledby="timeslotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"
+              aria-labelledby="timeslotModalLabel">Termin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body row">
+          <div class="col-4" id="appointmentDataColumn">
+            <div class="mb-3">
+              <p><span class="fw-bold">Name</span><br><span id="appointmentName">[NAME]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Beschreibung</span><br><span
+                      id="appointmentDescription">[DESCRIPTION]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Tag</span><br><span id="appointmentStartDate">[DATE]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Startzeit</span><br><span id="appointmentStartTime">[STARTTIME]</span>
+              </p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Endzeit</span><br><span id="appointmentEndTime">[ENDTIME]</span></p>
+            </div>
+            <div class="mb-3">
+              <p><span class="fw-bold">Wiederholungen</span><br><span id="appointmentRepetitions">[REPETITIONS]</span>
+              </p>
+            </div>
+            <div class="mb-3" id="appointmentRoomNameDiv">
+              <p><span class="fw-bold">Raum Name</span><br><span id="appointmentRoomName">[ROOMNAME]</span>
+              </p> <!-- TODO -->
+            </div>
+            <div class="mb-3" id="appointmentAddressDiv">
+              <p><span class="fw-bold">Addresse</span><br><span id="appointmentAddress">[ADDRESS]</span></p>
+              <!-- TODO -->
+            </div>
+          </div>
+          <div class="col-8" id="locationViewDiv">
+            <p class="fw-bold">Ort</p>
+            <iframe class="w-100 locationView" id="locationView" style="height: 20em"></iframe>
+            <img class="roomView" id="roomView">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Schließen
+          </button>
+          <button id="appointmentModalChangeBtn" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#changeDateModal">Ändern
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
