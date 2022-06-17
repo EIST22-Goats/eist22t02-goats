@@ -120,10 +120,9 @@ public class TimetableController {
 
     private List<Appointment> filterAppointments(List<Appointment> appointments, LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
-        appointments = appointments.stream().filter(appointment ->
-                (appointment.getStartDate().plusWeeks(appointment.getRepetitions()-1).isAfter(startDate) ||
-                appointment.getStartDate().plusWeeks(appointment.getRepetitions()-1).isEqual(startDate)
-                ) && appointment.getStartDate().isBefore(endDate)
+        appointments = appointments.stream().filter(appointment -> (
+                appointment.getStartDate().plusWeeks(appointment.getRepetitions()-1).plusDays(1).isAfter(startDate))
+                && appointment.getStartDate().minusDays(1).isBefore(endDate)
         ).toList();
 
         return appointments;
