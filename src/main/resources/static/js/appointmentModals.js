@@ -31,8 +31,15 @@ const appointmentModal = $('#appointmentModal')
 
 function loadDeleteAppointmentModal(modal) {
     modal.on('show.bs.modal', function (event) {
-        deleteAppointmentModalForm.action = "/deleteAppointment/" +
-            event.relatedTarget.getAttribute('data-bs-appointment-id')
+        console.log("loadDeleteAppointmentModal")
+        let appointmentId = event.relatedTarget.getAttribute('data-bs-appointment-id')
+
+        let course_id = event.relatedTarget.getAttribute('data-bs-course')
+        if (course_id === "-1") {
+            deleteAppointmentModalForm.attr("action", "/deleteAppointment/" + appointmentId)
+        } else {
+            deleteAppointmentModalForm.attr("action", "/deleteCourseAppointment/" + appointmentId)
+        }
     })
 }
 
@@ -71,6 +78,8 @@ function loadLocationInputs(modal) {
 
 function loadChangeAppointmentModal(modal) {
     modal.on('show.bs.modal', function (event) {
+        console.log("show change modal")
+
         let name = event.relatedTarget.getAttribute('data-bs-name')
         changeAppointmentModalNameInput.val(name);
 
@@ -100,7 +109,12 @@ function loadChangeAppointmentModal(modal) {
         let appointmentId = event.relatedTarget.getAttribute("data-bs-appointment-id");
         changeAppointmentModalDeleteBtn.attr("data-bs-appointment-id", appointmentId)
 
-        changeDateModalForm.attr('action', "/updateAppointment/" + appointmentId);
+        let course_id = event.relatedTarget.getAttribute('data-bs-course')
+        if (course_id === "-1") {
+            changeDateModalForm.attr('action', "/updateAppointment/" + appointmentId);
+        } else {
+            changeDateModalForm.attr('action', "/updateCourseAppointment/" + appointmentId);
+        }
 
         if (roomName !== null) {
             roomNameInput.removeAttr("disabled");
@@ -126,13 +140,10 @@ function loadCreateAppointmentModal(modal) {
         console.log("show creation modal")
 
         let course_id = event.relatedTarget.getAttribute('data-bs-course')
-        console.log("course_id",course_id,course_id==="-1",course_id===-1)
         if (course_id === "-1") {
-            console.log(createAppointmentModalForm.attr("action"))
             createAppointmentModalForm.attr("action", "/createAppointment")
         } else {
             createAppointmentModalForm.attr("action", "/createCourseAppointment/"+course_id)
-            console.log(">>>>", createAppointmentModalForm)
         }
     })
 }
