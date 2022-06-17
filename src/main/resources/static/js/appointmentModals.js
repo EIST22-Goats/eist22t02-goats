@@ -1,5 +1,7 @@
 const deleteAppointmentModalForm = $("#deleteAppointmentModalForm");
 
+const createAppointmentModalForm = $("#createAppointmentModalForm");
+
 const changeDateModalForm = $("#changeDateModalForm");
 const changeButton = $("#appointmentModalChangeBtn")
 const appointmentDataColumn = $("#appointmentDataColumn")
@@ -114,6 +116,24 @@ function loadChangeAppointmentModal(modal) {
         }, 100);
 
         loadLocationInputs(modal);
+    })
+}
+
+function loadCreateAppointmentModal(modal) {
+    loadLocationInputs(modal)
+
+    modal.on('show.bs.modal', function (event) {
+        console.log("show creation modal")
+
+        let course_id = event.relatedTarget.getAttribute('data-bs-course')
+        console.log("course_id",course_id,course_id==="-1",course_id===-1)
+        if (course_id === "-1") {
+            console.log(createAppointmentModalForm.attr("action"))
+            createAppointmentModalForm.attr("action", "/createAppointment")
+        } else {
+            createAppointmentModalForm.attr("action", "/createCourseAppointment/"+course_id)
+            console.log(">>>>", createAppointmentModalForm)
+        }
     })
 }
 
@@ -246,5 +266,5 @@ function showRoom(modal, roomName) {
 
 loadDeleteAppointmentModal(deleteAppointmentModal);
 loadChangeAppointmentModal(changeAppointmentModal);
-loadLocationInputs(createAppointmentModal);
+loadCreateAppointmentModal(createAppointmentModal);
 loadAppointmentModal(appointmentModal);
