@@ -111,10 +111,7 @@
                 <div class="card-header">Mitglieder</div>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
                     <li th:each="participant: ${course.getParticipants()}" class="list-group-item">
-                        <img th:src="'/profile_pictures/'+${participant.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
-                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
-                             style="object-fit: cover">
-                        <span th:text="${participant.getFirstname()}+' '+${participant.getLastname()}"></span>
+                        <div th:replace="fragments/personView :: personView (${participant})"></div>
                     </li>
                 </ul>
             </div>

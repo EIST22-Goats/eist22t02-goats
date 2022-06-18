@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Profil von '+${viewedPerson.getTumId()}+' - Tum Social'"></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div th:replace="fragments/notificationSidebar :: notificationSidebar"></div>
+
+<div id="outDiv" class="collapse opacity-50 bg-dark w-100 h-100 position-absolute top-0 start-0" style="z-index: 10000"></div>
+
+<div class="container mb-4">
+  <h4 class="text-right display-4 mb-4">Profil von <span th:text="${viewedPerson.getFirstname()}+' '+${viewedPerson.getLastname()}"></span></h4>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="d-flex flex-column align-items-center text-center px-3 pt-5 mb-3">
+        <img th:src="'/profile_pictures/'+${viewedPerson.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ssSS')}"
+             class="rounded-circle mb-3" width="150px" height="150px" alt="Profilbild"
+             style="object-fit: cover">
+        <span th:text="${viewedPerson.getFirstname()}+' '+${viewedPerson.getLastname()}" class="font-weight-bold"></span>
+        <span th:text="${viewedPerson.getTumId()}" class="text-black-50"></span>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">Kurse von <span th:text="${viewedPerson.getFirstname()}"></span></div>
+        <p class="p-3" th:if="${viewedPerson.getCourses().isEmpty()}">
+          <span th:text="${viewedPerson.getCourses()()}"></span> hat keine Kurse.
+        </p>
+        <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+          <li th:each="c: ${viewedPerson.getCourses()}" class="list-group-item position-relative">
+            <span th:text="${c.getName()}"></span>
+            <a th:href="'/courses/'+${c.getId()}" class="stretched-link"></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 py-3">
+        <h5 class="fs-6">Biographie</h5>
+        <p th:text="${viewedPerson.getBiography()}"></p>
+
+        <h5 class="fs-6">Studiengang</h5>
+        <p th:text="${viewedPerson.getDegreeProgram().getName()}"></p>
+
+        <h5 class="fs-6">Semester</h5>
+        <p th:text="${viewedPerson.getSemesterNr()}"></p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-3">
+        <div class="card-header">Freunde von <span th:text="${viewedPerson.getFirstname()}"></span></div>
+        <p class="p-3" th:if="${viewedPerson.getFriends().isEmpty()}">
+          <span th:text="${viewedPerson.getFirstname()}"></span> hat keine Freunde.
+        </p>
+        <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+          <li th:each="p: ${viewedPerson.getFriends()}" class="list-group-item position-relative">
+            <div th:replace="fragments/personView :: personView (${p})"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/checkSecondPassword.js"></script>
+
+</body>
+</html>

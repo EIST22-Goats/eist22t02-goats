@@ -9,6 +9,7 @@ import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,28 @@ public class ProfileController {
         model.addAttribute("degreePrograms", degreePrograms);
 
         return "profile";
+    }
+
+    @GetMapping("/profile/{tumId}")
+    public String profilePage(Model model, @PathVariable String tumId) {
+        if (!isLoggedIn()) {
+            return "redirect:/login";
+        }
+
+        Storage storage = new Storage();
+        Person person = getCurrentPerson(storage);
+        Person viewedPerson = storage.getPerson(tumId);
+
+        System.out.println(">>> person "+viewedPerson.getFirstname());
+
+        if (person.equals(viewedPerson)) {
+            return "redirect:/profile";
+        }
+
+        model.addAttribute("person", person);
+        model.addAttribute("viewedPerson", viewedPerson);
+
+        return "profile_view";
     }
 
     @PostMapping("/updateProfile")

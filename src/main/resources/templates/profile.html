@@ -59,6 +59,14 @@
                         </div>
                     </div>
 
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <label for="firstname" class="form-label">Biografie</label>
+                            <textarea class="form-control" name="biography" wrap="soft" rows="3"
+                                      style="border: 1px solid #ced4da;" th:text="${person.getBiography}"></textarea>
+                        </div>
+                    </div>
+
                     <div class="row mt-3">
                         <div class="col-md-12">
                             <label for="email" class="form-label">E-Mail</label>

@@ -198,12 +198,16 @@ function loadAppointmentModal(modal) {
 
         if (roomName !== null) {
             appointmentRoomNameDiv.removeClass("d-none");
-            appointmentAddressDiv.addClass("d-none");
             roomViewDiv.removeClass("d-none");
         } else {
             appointmentRoomNameDiv.addClass("d-none");
-            appointmentAddressDiv.removeClass("d-none");
             roomViewDiv.addClass("d-none");
+        }
+
+        if (address !== null) {
+            appointmentAddressDiv.removeClass("d-none");
+        } else {
+            appointmentAddressDiv.addClass("d-none");
         }
 
 

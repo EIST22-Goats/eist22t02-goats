@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 public class UpdateProfileForm extends Form<Person> {
     private String firstname;
     private String lastname;
+
+    private String biography;
     private String birthdate;
     private String email;
     private int semesterNr;
@@ -64,9 +66,17 @@ public class UpdateProfileForm extends Form<Person> {
         this.degreeProgramName = degreeProgramName;
     }
 
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
     public void apply(Person person) {
         person.setFirstname(firstname);
         person.setLastname(lastname);
+        person.setBiography(biography);
 
         if (!birthdate.isBlank()) {
             person.setBirthdate(LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -84,5 +94,4 @@ public class UpdateProfileForm extends Form<Person> {
             }
         }
     }
-
 }

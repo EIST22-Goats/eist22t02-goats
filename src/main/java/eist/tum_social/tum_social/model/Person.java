@@ -14,6 +14,8 @@ public class Person extends UniquelyIdentifiable {
     private int id = -1;
     private String firstname;
     private String lastname;
+
+    private String biography;
     private LocalDate birthdate;
     private String tumId;
     private String email;
@@ -242,5 +244,13 @@ public class Person extends UniquelyIdentifiable {
 
     public void setLikedComments(List<Comment> likedComments) {
         likedCommentEntities.set(likedComments);
+    }
+
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
     }
 }

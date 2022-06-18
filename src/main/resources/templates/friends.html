@@ -28,11 +28,8 @@
                     Du hast noch keine Freunde? Finde welche!
                 </p>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
-                    <li th:each="p: ${friends}" class="list-group-item">
-                        <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
-                             alt="" class="rounded-circle float-start me-2" width="27" height="27"
-                             style="object-fit: cover">
-                        <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+                    <li th:each="p: ${friends}" class="list-group-item position-relative">
+                        <div th:replace="fragments/personView :: personView (${p})"></div>
                     </li>
                 </ul>
             </div>

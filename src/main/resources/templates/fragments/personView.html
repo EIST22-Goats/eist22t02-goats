@@ -1,0 +1,7 @@
+<div th:fragment="personView (p)">
+    <img th:src="'/profile_pictures/'+${p.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+         alt="" class="rounded-circle float-start me-2" width="27" height="27"
+         style="object-fit: cover">
+    <span th:text="${p.getFirstname()}+' '+${p.getLastname()}"></span>
+    <a th:href="'/profile/'+${p.getTumId()}" class="stretched-link"></a>
+</div>
