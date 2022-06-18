@@ -142,6 +142,8 @@ public class SqliteDatabase implements Database {
                 String.join(", ", values)
         );
 
+        System.out.println(sql);
+
         int key = updateQuery(sql);
         setIdOfBean(bean, key);
     }

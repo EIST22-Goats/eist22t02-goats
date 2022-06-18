@@ -1,10 +1,21 @@
 <div th:fragment="footer" class="border-top">
   <footer class="container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 ">
-    <p class="col-md-6 mb-0 text-muted">© 2022 Tum Social</p>
+    <p class="col-md-6 mb-0 text-muted" id="rick">© 2022 Tum Social</p>
 
     <a href="/"
        class="col-md-6 d-flex align-items-center justify-content-end mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
       <img src="/logo.svg" alt="logo" height="20">
     </a>
   </footer>
+
+  <div class="modal fade" id="rickModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          <iframe class="w-100 h-100" allow='autoplay; encrypted-media' id="rickVideo" src="https://www.youtube.com/embed/QtBDL8EiNZo?autoplay=1" allowfullscreen style="pointer-events: none;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
