@@ -11,6 +11,7 @@ public class TumSocialApplication {
     }
 
     /*
+     * - TODO better appointment date format
      * - TODO profile view page
      * - TODO chat system
      * - TODO (location) refactoring (+ course location)
