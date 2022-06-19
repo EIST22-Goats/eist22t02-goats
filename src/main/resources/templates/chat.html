@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chat - Tum Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div th:replace="fragments/notificationSidebar :: notificationSidebar"></div>
+
+<div id="outDiv" class="collapse opacity-50 bg-dark w-100 h-100 position-absolute top-0 start-0"
+     style="z-index: 10000"></div>
+
+<div class="vh-100">
+    <header th:replace="fragments/header :: header"></header>
+
+    <div class="container mb-3" style="height: 70%">
+        <div class="row">
+            <div class="col-md-3 vh-100">
+                <div class="card" style="height: 70%">
+                    <div class="card-header">
+                        Chats
+                    </div>
+
+                    <div class="list-group overflow-scroll">
+
+                        <a th:each="c: ${currentChats}"
+                           href="#" class="list-group-item list-group-item-action rounded-0 border-0 border-bottom"
+                           aria-current="true">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    <div class="d-flex">
+                                        <div class="align-self-center">
+                                            <img th:src="'/profile_pictures/'+${c.tumId}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                                                 alt="" class="rounded-circle"
+                                                 width="32" height="32" style="object-fit: cover">
+                                        </div>
+
+                                        <div class="align-self-center p-1" th:text="${c.name}"></div>
+                                    </div>
+                                </h5>
+                            </div>
+                            <small class="text-muted" th:text="${c.time}"></small>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 ps-1 vh-100">
+                <div class="card" style="height: 70%">
+                    <div class="card-header">
+                        <div class="d-flex">
+
+                            <div class="align-self-center">
+                                <img th:src="'/profile_pictures/'+${person.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                                     alt="" class="rounded-circle"
+                                     width="48" height="48" style="object-fit: cover">
+                            </div>
+
+                            <div class="align-self-center p-3">
+                                Kilian Northoff
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body overflow-auto">
+                        <div class="d-flex align-items-baseline text-end justify-content-end mb-4">
+                            <div class="pe-2">
+                                <div>
+                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
+                                         style="border: 2px solid #0065bd">Chuck Norris checks under his
+                                        bed for Fedor Emelianenko because he takes Fedor to the vet regularly.
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
+                                         style="border: 2px solid #0065bd">"The Big Chuck Norris
+                                        Roundhouse-Kick Theory"
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small">01:13PM</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex align-items-baseline mb-1">
+                            <div class="pe-2">
+                                <div>
+                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
+                                         style="border: 2px solid #d3d3d3"> LMAO!
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small">01:15PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <input type="text" class="form-control"
+                                   placeholder="Bereichere jemanden mit deinen Worten!">
+                            <button class="btn btn-primary" type="button">Senden</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/jsImports :: jsImports"></div>
+
+</body>
+</html>

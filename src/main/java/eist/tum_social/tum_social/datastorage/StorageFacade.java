@@ -22,6 +22,10 @@ public interface StorageFacade {
 
     Comment getComment(int commentId);
 
+    List<ChatMessage> getChatMessages(int person1Id, int person2Id);
+
+    public List<ChatMessage> getChatMessages(int personId);
+
     void update(Object object);
 
     void delete(Object object);
