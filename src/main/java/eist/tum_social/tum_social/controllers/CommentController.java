@@ -90,12 +90,26 @@ public class CommentController {
     }
 
     @PostMapping("/NaddComment/{parentId}")
-    public void addComment(@PathVariable int parentId, String text, @RequestParam("courseId") int courseId) {
+    public void addComment(@PathVariable int parentId, String text) {
+        Storage storage = new Storage();
+
+        Person person = getCurrentPerson(storage);
+
+        Comment parentComment = storage.getComment(parentId);
+
+        Comment comment = createComment(text);
+        comment.setAuthor(person);
+
+        storage.update(comment);
+
+        parentComment.getChildComments().add(comment);
+
+        storage.update(parentComment);
 
     }
 
     @PostMapping("/NaddRootComment/{announcementId}")
-    public void addRootComment(@PathVariable int announcementId, String text, @RequestParam("courseId") int courseId) {
+    public void addRootComment(@PathVariable int announcementId, String text) {
         Storage storage = new Storage();
 
         Person person = getCurrentPerson(storage);
@@ -113,8 +127,15 @@ public class CommentController {
     }
 
     @PostMapping("/NdeleteComment/{commentId}")
-    public void deleteComment(@PathVariable int commentId, @RequestParam("courseId") int courseId) {
+    public void deleteComment(@PathVariable int commentId) {
+        Storage storage = new Storage();
+        Comment comment = storage.getComment(commentId);
 
+
+
+        if (comment.getAuthor().equals(getCurrentPerson(storage))) {
+            deleteCommentTree(comment, storage);
+        }
     }
 
     @GetMapping("/NtoggleLikeComment/{commentId}/{courseId}")
@@ -128,5 +149,18 @@ public class CommentController {
         comment.setDate(LocalDate.now());
         comment.setTime(LocalTime.now());
         return comment;
+    }
+
+    private void deleteAnnouncement(Announcement announcement, Storage storage) {
+        for (Comment comment:announcement.getComments()) {
+            deleteCommentTree(comment, storage);
+        }
+        storage.delete(announcement);
+    }
+    private void deleteCommentTree(Comment comment, Storage storage) {
+        for (Comment childComment:comment.getChildComments()) {
+            deleteCommentTree(childComment, storage);
+        }
+        storage.delete(comment);
     }
 }

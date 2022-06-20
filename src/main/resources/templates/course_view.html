@@ -266,7 +266,7 @@
                                           placeholder="Neuer Kommentar"></textarea>
                             </div>
                             <div class="col-2">
-                                <button th:attr="data-announcement-id=${a.getId()}, data-course-id=${course.getId()}" class="newRootCommentBtn btn btn-primary">Senden</button>
+                                <button th:attr="data-announcement-id=${a.getId()}" class="newRootCommentBtn btn btn-primary">Senden</button>
                             </div>
                         </div>
                     </div>
@@ -312,9 +312,37 @@
 <script>
 const newRootCommentBtn = $(".newRootCommentBtn");
 
+function registerNewCommandHandler(button) {
+    button.on('click', (event) => {
+        console.log(">>>> create new command")
+
+        let commentId = event.target.getAttribute('data-comment-id')
+        let textarea = $("#NCreateCommentTextarea"+commentId);
+
+        $.ajax({
+            type: "POST",
+            url: "/NaddComment/"+commentId,
+            data:{
+                text: textarea.val(),
+            },
+            success: function () {
+                $("#Ncomments"+commentId).empty()
+                $("#Ncomments"+commentId).collapse("show");
+
+                loadChildComments(commentId);
+
+                if (commentData["numComments"] === "0") {
+                    $("#NcommentsShowBtn"+commentData["commentId"]).addClass("d-none");
+                } else {
+                    $("#NcommentsShowBtn"+commentData["commentId"]).removeClass("d-none");
+                }
+            }
+        });
+    })
+}
+
 newRootCommentBtn.on('click', (event) => {
     let announcementId = event.target.getAttribute('data-announcement-id');
-    let courseId = event.target.getAttribute('data-course-id')
     let commentEntry = $('#newRootComment'+announcementId);
     let textEntry = commentEntry.find(".newRootCommentTextarea");
 
@@ -323,13 +351,31 @@ newRootCommentBtn.on('click', (event) => {
          url: "/NaddRootComment/"+announcementId,
          data:{
              text: textEntry.val(),
-             courseId: courseId,
          },
          success: function () {
              console.log("success");
          }
     });
 })
+
+function registerDeleteHandler(button, parentCommentId) {
+    button.on('click', (event) => {
+        let commentId = event.target.getAttribute('data-comment-id')
+
+        console.log(">>>> delete comment: ",commentId);
+
+        $.ajax({
+            type: "POST",
+            url: "/NdeleteComment/"+commentId,
+            success: function () {
+                if (parentCommentId !== -1) {
+                    $("#Ncomments"+parentCommentId).empty()
+                    loadChildComments(parentCommentId);
+                }
+            }
+        });
+    })
+}
 
 const Comment = ({commentId,
                   authorTumId,
@@ -348,14 +394,12 @@ const Comment = ({commentId,
   </div>
   <div class="flex-grow-1 ms-3">
     <div class="mb-3">
-      <form method="post">
         <span class="fw-bold">${authorFirstname} ${authorLastname}</span>
         <small class="text-muted ms-2" >${date}</small>
         <br>
         <span>${text}</span>
         <br>
-        <a data-bs-toggle="collapse" aria-expanded="false"
-           class="text-decoration-none">
+        <a data-bs-toggle="collapse" aria-expanded="false" href="#NnewComment${commentId}" class="text-decoration-none">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                class="bi bi-reply" viewBox="0 0 16 16">
             <path d="M6.598 5.013a.144.144 0 0 1 .202.134V6.3a.5.5 0 0 0 .5.5c.667 0 2.013.005 3.3.822.984.624 1.99 1.76 2.595 3.876-1.02-.983-2.185-1.516-3.205-1.799a8.74 8.74 0 0 0-1.921-.306 7.404 7.404 0 0 0-.798.008h-.013l-.005.001h-.001L7.3 9.9l-.05-.498a.5.5 0 0 0-.45.498v1.153c0 .108-.11.176-.202.134L2.614 8.254a.503.503 0 0 0-.042-.028.147.147 0 0 1 0-.252.499.499 0 0 0 .042-.028l3.984-2.933zM7.8 10.386c.068 0 .143.003.223.006.434.02 1.034.086 1.7.271 1.326.368 2.896 1.202 3.94 3.08a.5.5 0 0 0 .933-.305c-.464-3.71-1.886-5.662-3.46-6.66-1.245-.79-2.527-.942-3.336-.971v-.66a1.144 1.144 0 0 0-1.767-.96l-3.994 2.94a1.147 1.147 0 0 0 0 1.946l3.994 2.94a1.144 1.144 0 0 0 1.767-.96v-.667z"/>
@@ -363,7 +407,7 @@ const Comment = ({commentId,
           Antworten
         </a>
         &nbsp;&nbsp;
-        ${numComments !== "0" ? `<a data-bs-toggle="collapse" href="#Ncomments${commentId}" aria-expanded="false" class="text-decoration-none">${numComments} Antworten ansehen</a>` : ""}
+        <a data-bs-toggle="collapse" id="NcommentsShowBtn${commentId}" href="#Ncomments${commentId}" aria-expanded="false" class="text-decoration-none">${numComments} Antworten ansehen</a>
         &nbsp;&nbsp;
         <a class="text-decoration-none">
           <span>${likes}</span>
@@ -375,24 +419,38 @@ const Comment = ({commentId,
           </svg>
         </a>
         &nbsp;&nbsp;
-        ${deletable === "true" ? `<button type="submit" class="text-decoration-none link-danger btn btn-link d-inline px-0">Löschen</button>` : ""}
-      </form>
+        ${deletable === "true" ? `<button type="submit" class="text-decoration-none link-danger btn btn-link d-inline px-0" id="NDeleteCommentBtn${commentId}" data-comment-id="${commentId}">Löschen</button>` : ""}
     </div>
 
-    <form class="collapse"
-          method="post">
+    <div class="collapse" id="NnewComment${commentId}">
       <div class="mb-3 row">
         <div class="col-10">
-          <textarea name="text" class="form-control" rows="1" placeholder="Neuer Kommentar"></textarea>
+          <textarea name="text" id="NCreateCommentTextarea${commentId}" class="form-control" rows="1" placeholder="Neuer Kommentar"></textarea>
         </div>
         <div class="col-2">
-          <button type="submit" class="btn btn-primary">Senden</button>
+          <button class="btn btn-primary" data-comment-id="${commentId}" id="NCreateCommentBtn${commentId}">Senden</button>
         </div>
       </div>
-    </form>
+    </div>
     <div class="collapse" id="Ncomments${commentId}"></div>
   </div>
 </div>`
+
+function loadSingleComment(commentSection, commentData, parentCommentId) {
+    commentSection.append($(Comment(commentData)));
+
+    let deleteBtn = $("#NDeleteCommentBtn"+commentData["commentId"]);
+    registerDeleteHandler(deleteBtn, parentCommentId);
+    let createCommentBtn = $("#NCreateCommentBtn"+commentData["commentId"]);
+    registerNewCommandHandler(createCommentBtn);
+
+    console.log("numComments: ",commentData["numComments"], commentData["numComments"]==="0")
+    if (commentData["numComments"] === "0") {
+        $("#NcommentsShowBtn"+commentData["commentId"]).addClass("d-none");
+    } else {
+        $("#NcommentsShowBtn"+commentData["commentId"]).removeClass("d-none");
+    }
+}
 
 function loadRootComments(announcementId) {
 
@@ -406,7 +464,7 @@ function loadRootComments(announcementId) {
         success: function (data) {
 
             for (let n of data) {
-                commentSection.append($(Comment(n)));
+                loadSingleComment(commentSection, n, -1);
 
                 let childComments = loadChildComments(n["commentId"])
 
@@ -432,7 +490,7 @@ function loadChildComments(commentId) {
         success: function (data) {
 
             for (let n of data) {
-                commentSection.append($(Comment(n)));
+                loadSingleComment(commentSection, n, commentId);
 
                 let childComments = loadChildComments(n["commentId"])
 
