@@ -7,6 +7,8 @@ import eist.tum_social.tum_social.model.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.processing.Messager;
@@ -23,8 +25,8 @@ import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
 @Controller
 public class ChatController {
 
-    @GetMapping("/chat")
-    public String chatPage(Model model) {
+    @GetMapping(value = {"/chat", "/chat/{tumId}"})
+    public String chatPage(Model model, @PathVariable(required = false) String tumId) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
@@ -63,9 +65,25 @@ public class ChatController {
             ));
         }
 
+        String currentName;
+
+        if (tumId == null) {
+            currentName = currentChats.get(0).get("name");
+            tumId = currentChats.get(0).get("tumId");
+        } else {
+            Person otherPerson = storage.getPerson(tumId);
+            if (otherPerson == null) {
+                return "redirect:/chat";
+            }
+
+            currentName = otherPerson.getFirstname()+" "+otherPerson.getLastname();
+        }
+
         model.addAttribute("person", person);
         model.addAttribute("currentChats", currentChats);
-        model.addAttribute("currentChat", currentChats.get(0));
+
+        model.addAttribute("currentName", currentName);
+        model.addAttribute("currentTumId", tumId);
 
         return "chat";
     }

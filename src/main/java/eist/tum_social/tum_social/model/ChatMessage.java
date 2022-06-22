@@ -14,11 +14,11 @@ public class ChatMessage extends UniquelyIdentifiable {
     @ForeignTable(
             foreignTableName = "Persons",
             ownColumnName = "senderId")
-    private ForeignEntity<Person> senderEntity;
+    private ForeignEntity<Person> senderEntity = new ForeignEntity<>();
     @ForeignTable(
             foreignTableName = "Persons",
-            ownColumnName = "senderId")
-    private ForeignEntity<Person> receiverEntity;
+            ownColumnName = "receiverId")
+    private ForeignEntity<Person> receiverEntity = new ForeignEntity<>();
     private String message;
     private LocalDate date;
     private LocalTime time;
@@ -68,12 +68,20 @@ public class ChatMessage extends UniquelyIdentifiable {
         this.receiverEntity = receiverEntity;
     }
 
+    public void setReceiver(Person receiver) {
+        receiverEntity.set(receiver);
+    }
+
     public ForeignEntity<Person> getSenderEntity() {
         return senderEntity;
     }
 
     public Person getSender() {
         return senderEntity.get();
+    }
+
+    public void setSender(Person sender) {
+        senderEntity.set(sender);
     }
 
     public void setSenderEntity(ForeignEntity<Person> senderEntity) {
