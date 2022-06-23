@@ -32,7 +32,6 @@ public class ChatController {
         }
 
         Storage storage = new Storage();
-
         Person person = getCurrentPerson(storage);
 
         List<ChatMessage> messages = storage.getChatMessages(person.getId());
@@ -40,7 +39,7 @@ public class ChatController {
         Map<String, ChatMessage> latestMessages = new HashMap<>();
 
         for (ChatMessage message : messages) {
-            Person otherPerson = (message.getReceiver().equals(person) ? message.getReceiver() : message.getSender());
+            Person otherPerson = (message.getReceiver().equals(person) ? message.getSender() : message.getReceiver());
 
             ChatMessage currentLastMessage = latestMessages.getOrDefault(otherPerson.getTumId(), null);
             if (currentLastMessage == null ||
@@ -55,13 +54,24 @@ public class ChatController {
 
         List<Map<String, String>> currentChats = new ArrayList<>();
 
+        List<Person> friends = person.getFriends();
+
         for (ChatMessage message : latestMessagesList) {
-            Person otherPerson = (message.getReceiver().equals(person) ? message.getReceiver() : message.getSender());
+            Person otherPerson = (message.getReceiver().equals(person) ? message.getSender() : message.getReceiver());
+            friends.remove(otherPerson);
 
             currentChats.add(Map.of(
                     "name", otherPerson.getFirstname() + " " + otherPerson.getLastname(),
                     "tumId", otherPerson.getTumId(),
                     "time", formatTimestamp(message.getDate(), message.getTime())
+            ));
+        }
+
+        for (Person friend : friends) {
+            currentChats.add(Map.of(
+                    "name", friend.getFirstname() + " " + friend.getLastname(),
+                    "tumId", friend.getTumId(),
+                    "time", "Fange einen neuen Chat an"
             ));
         }
 

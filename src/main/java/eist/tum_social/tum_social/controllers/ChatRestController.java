@@ -16,6 +16,8 @@ import java.util.Map;
 
 import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
 import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
+import static eist.tum_social.tum_social.controllers.util.NotificationType.NEW_FRIEND_REQUEST;
+import static eist.tum_social.tum_social.controllers.util.NotificationType.NEW_MESSAGE;
 import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @RestController
@@ -26,6 +28,8 @@ public class ChatRestController {
         if (!isLoggedIn()) {
             return null;
         }
+        
+        System.out.println("get messages");
 
         Storage storage = new Storage();
         Person person = getCurrentPerson(storage);
@@ -36,7 +40,8 @@ public class ChatRestController {
 
         for (ChatMessage message : messages) {
             result.add(Map.of(
-                    "reciever", message.getReceiver().getTumId(),
+                    "id", String.valueOf(message.getId()),
+                    "receiver", message.getReceiver().getTumId(),
                     "sender", message.getSender().getTumId(),
                     "message", message.getMessage(),
                     "time", formatTimestamp(message.getDate(), message.getTime())
@@ -55,6 +60,14 @@ public class ChatRestController {
         Person person = getCurrentPerson(storage);
         Person otherPerson = storage.getPerson(tumId);
 
+/*        NotificationController.sendNotification(
+                otherPerson,
+                "Nachricht von " + person.getFirstname() + " " + person.getLastname(),
+                text,
+                "/chat/" + person.getTumId(),
+                NEW_MESSAGE
+        );
+*/
         ChatMessage chatMessage = new ChatMessage();
 
         chatMessage.setTime(LocalTime.now());
@@ -66,6 +79,7 @@ public class ChatRestController {
         storage.update(chatMessage);
 
         return Map.of(
+                "id", String.valueOf(chatMessage.getId()),
                 "message", text,
                 "time", formatTimestamp(chatMessage.getDate(), chatMessage.getTime())
         );

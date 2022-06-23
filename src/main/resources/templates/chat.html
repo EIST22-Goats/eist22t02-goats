@@ -29,7 +29,12 @@
 
                     <div class="list-group overflow-scroll" id="chats" th:tumid="${currentTumId}">
 
+                        <span class="list-group-item list-group-item-action rounded-0 border-0 border-bottom">
+                            <input class="form-control" type="text" placeholder="Suche..." id="chatSearchInput">
+                        </span>
+
                         <a th:each="c: ${currentChats}" th:href="'/chat/'+${c.tumId}" th:data-tumid="${c.tumId}"
+                           th:data-name="${c.name}"
                            class="list-group-item list-group-item-action rounded-0 border-0 border-bottom"
                            aria-current="true">
                             <div class="d-flex w-100 justify-content-between">
@@ -54,7 +59,7 @@
             <div class="col-md-9 ps-1 h-100">
                 <div class="card h-100">
                     <div class="card-header">
-                        <div class="d-flex">
+                        <div class="d-flex position-relative">
                             <div class="align-self-center">
                                 <img th:src="'/profile_pictures/'+${currentTumId}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
                                      alt="" class="rounded-circle"
@@ -62,6 +67,7 @@
                             </div>
 
                             <div class="align-self-center p-3" th:text="${currentName}"></div>
+                            <a th:href="'/profile/'+${currentTumId}" class="stretched-link"></a>
                         </div>
                     </div>
 

@@ -23,7 +23,7 @@ public class DateUtils {
             if (date.isEqual(LocalDate.now())) {
                 dateString += ", Heute";
             } else if (date.isEqual(LocalDate.now().minusDays(1))) {
-                dateString +=  ", Gestern";
+                dateString += ", Gestern";
             } else {
                 dateString += ", " + date.format(DateTimeFormatter.ofPattern("dd.MM."));
             }
@@ -33,5 +33,9 @@ public class DateUtils {
         }
 
         return dateString;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

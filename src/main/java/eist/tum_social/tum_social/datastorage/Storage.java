@@ -48,21 +48,21 @@ public class Storage implements StorageFacade {
     }
 
     public Comment getComment(int id) {
-        return firstOrNull(db.select(Comment.class, "id="+id));
+        return firstOrNull(db.select(Comment.class, "id=" + id));
     }
 
     public Announcement getAnnouncement(int id) {
-        return firstOrNull(db.select(Announcement.class, "id="+id));
+        return firstOrNull(db.select(Announcement.class, "id=" + id));
     }
 
     public List<ChatMessage> getChatMessages(int person1Id, int person2Id) {
         return db.select(ChatMessage.class,
-                "(receiverId="+person1Id+" AND senderId="+person2Id+") OR ("
-                            +"receiverId="+person2Id+" AND senderId="+person1Id+")");
+                "(receiverId=" + person1Id + " AND senderId=" + person2Id + ") OR ("
+                        + "receiverId=" + person2Id + " AND senderId=" + person1Id + ")");
     }
 
     public List<ChatMessage> getChatMessages(int personId) {
-        return db.select(ChatMessage.class, "receiverId="+personId+" OR senderId="+personId);
+        return db.select(ChatMessage.class, "receiverId=" + personId + " OR senderId=" + personId);
     }
 
     @Override
