@@ -21,9 +21,8 @@
     <div class="row">
         <div class="col-lg col-6-lg">
             <p class="display-5">Meine Kurse</p>
-
-            <div th:if="${person.getCourses().size()!=0}" class="row row-cols-1 g-4 mb-4">
-                <div class="col" th:each="course: ${person.getCourses()}">
+            <div th:if="${myCoursesList.size() != 0}" class="row row-cols-1 g-4 mb-4">
+                <div class="col" th:each="course: ${myCoursesList}">
                     <div class="card">
                         <h5 class="card-header">
                             <p class="float-start lead mb-0 pb-0" th:text="${course.getAcronym()}"></p>
@@ -34,8 +33,8 @@
                                 <p th:text="${course.getDescription()}"></p>
                             </li>
                             <li class="list-group-item">
-                                <span class="badge text-bg-primary">Mo 7:00 - 9:00</span>
-                                <span class="badge text-bg-primary">TODO</span>
+                        <span th:each="appointment: ${course.getAppointments()}"
+                              class="badge text-bg-primary me-2" th:text="${#temporals.format(appointment.getStartDate(), 'EEE')}+' '+${appointment.getStartTime()}+' - '+${appointment.getEndTime()}"></span>
                             </li>
                         </ul>
                         <a th:href="'/courses/'+${course.getId()}" class="dark-link stretched-link"></a>
@@ -45,10 +44,23 @@
         </div>
         <div class="col-lg col-6-lg">
             <p class="display-5">Meine Freunde</p>
-            keine
+            <div class="card mb-3">
+                <div class="card-header">Meine Freunde</div>
+                <p class="p-3" th:if="${person.getFriends().isEmpty()}">
+                    <span th:text="${person.getFirstname()}"></span> hat keine Freunde.
+                </p>
+                <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
+                    <li th:each="p: ${person.getFriends()}" class="list-group-item position-relative">
+                        <div th:replace="fragments/personView :: personView (${p})"></div>
+                    </li>
+                </ul>
+            </div>
 
-            <p class="display-5 mt-4">Keine Ahnung</p>
-            keine
+            <p class="display-5 mt-4">Ankündigungen</p>
+            <div class="card mb-3" th:each="a: ${myAnnouncements}">
+                <div class="card-header"><span th:text="${a.second.getTitle()}"></span> <span th:text="${a.first}" class="text-muted"></span></div>
+                <div class="card-body" th:text="${a.second.getDescription()}"></div>
+            </div>
         </div>
     </div>
 </div>

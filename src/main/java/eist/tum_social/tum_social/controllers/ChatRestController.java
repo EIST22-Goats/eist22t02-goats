@@ -28,7 +28,7 @@ public class ChatRestController {
         if (!isLoggedIn()) {
             return null;
         }
-        
+
         System.out.println("get messages");
 
         Storage storage = new Storage();
