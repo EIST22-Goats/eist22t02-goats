@@ -3,6 +3,7 @@ package eist.tum_social.tum_social.controllers;
 import eist.tum_social.tum_social.controllers.forms.ChangePasswordForm;
 import eist.tum_social.tum_social.controllers.forms.Form;
 import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
+import eist.tum_social.tum_social.controllers.util.Util;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
@@ -32,8 +33,7 @@ public class ProfileController {
     public ProfileController(@Autowired Storage storage) {
         this.storage = storage;
     }
-    public final static String PROFILE_PICTURE_LOCATION =
-            new File("src/main/resources/static/profile_pictures/").getAbsolutePath();
+    public final static String PROFILE_PICTURE_LOCATION = Storage.getResourcePath()+"/profile_pictures/";
 
     @GetMapping("/profile")
     public String profilePage(Model model) {

@@ -101,7 +101,7 @@ public class AuthenticationController {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    private Status registerPerson(Person person) {
+    public Status registerPerson(Person person) {
         if (isTumIDInvalid(person.getTumId())) {
             return ERROR("Tum ID ist ungültig");
         }
@@ -120,14 +120,10 @@ public class AuthenticationController {
         return SUCCESS;
     }
 
-    private void createDefaultProfilePicture(String tumId) {
-        try {
-            Path copied = Paths.get(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png");
-            Path defaultProfile = Paths.get(PROFILE_PICTURE_LOCATION + "/default.png");
-            Files.copy(defaultProfile, copied, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void createDefaultProfilePicture(String tumId) {
+        String copied = PROFILE_PICTURE_LOCATION + tumId + ".png";
+        String defaultProfile = PROFILE_PICTURE_LOCATION + "default.png";
+        storage.copyFile(defaultProfile, copied);
     }
 
     public boolean isLoginValid(String tumId, String password) {
@@ -165,5 +161,4 @@ public class AuthenticationController {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         return attr.getRequest().getSession(true);
     }
-
 }

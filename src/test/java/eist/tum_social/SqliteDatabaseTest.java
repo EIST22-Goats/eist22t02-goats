@@ -22,44 +22,20 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+import static eist.tum_social.Util.getDatabase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SqliteDatabaseTest {
 
-    public SqliteDatabaseTest() {
-
-    }
-
-    private static String getBaseDir() {
-        return System.getProperty("user.dir") + "/";
-    }
-
-    private static Database getDatabase() {
-        return new SqliteDatabase("jdbc:sqlite:test_copy.db");
-    }
-
     @BeforeEach
     void copyTestDatabase() {
-        String workingDir = getBaseDir();
-        Path srcPath = Paths.get(workingDir + "test.db");
-        Path dstPath = Paths.get(workingDir + "test_copy.db");
-        try {
-            Files.copy(srcPath, dstPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Util.copyTestDatabase();
     }
 
     @AfterEach
     void removeTestDatabase() {
-        String workingDir = getBaseDir();
-        Path dbPath = Paths.get(workingDir + "test_copy.db");
-        try {
-            Files.delete(dbPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Util.removeTestDatabase();
     }
 
     <T> void assertEqualLists(List<T> list1, List<T> list2) {
@@ -104,9 +80,9 @@ public class SqliteDatabaseTest {
     private void assertEqualsTestPerson1(Person person) {
         assertEqualPersons(createTestPerson(
                         3,
-                        "Willi",
+                        "Florian",
                         "Adam",
-                        null,
+                        LocalDate.of(2022, 6, 28),
                         "ge47son",
                         "test@flo.de",
                         "$2a$10$eyY0nGcLudwhsUnH2W.d8.BguraenRP7hBN7cHt9ETkxSXcnLBVES"),
@@ -205,14 +181,14 @@ public class SqliteDatabaseTest {
         List<Course> courses = person.getCourses();
         courses = sortById(courses);
         assertEquals(2, courses.size());
-        assertEquals(11, courses.get(0).getId());
-        assertEquals("TestKurs 2", courses.get(0).getName());
-        assertEquals("dsdsd", courses.get(0).getAcronym());
-        assertEquals("vfvfvf", courses.get(0).getDescription());
-        assertEquals(18, courses.get(1).getId());
-        assertEquals("Praktikum Grundlagen der Programmierung", courses.get(1).getName());
-        assertEquals("PGdP", courses.get(1).getAcronym());
-        assertEquals("Geilomat", courses.get(1).getDescription());
+        assertEquals(18, courses.get(0).getId());
+        assertEquals("Fortgeschrittene Grundlagen der Programmierung", courses.get(0).getName());
+        assertEquals("PGdP", courses.get(0).getAcronym());
+        assertEquals("Geilomat!", courses.get(0).getDescription());
+        assertEquals(20, courses.get(1).getId());
+        assertEquals("Diskrete Strukturen", courses.get(1).getName());
+        assertEquals("DS", courses.get(1).getAcronym());
+        assertEquals("Moonaaaa", courses.get(1).getDescription());
     }
 
     @Test

@@ -4,6 +4,11 @@ import eist.tum_social.tum_social.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Component
@@ -82,6 +87,17 @@ public class Storage implements StorageFacade {
             return null;
         } else {
             return list.get(0);
+        }
+    }
+
+    public static String getResourcePath() {
+        return new File("src/main/resources/static/").getAbsolutePath();
+    }
+    public void copyFile(String src, String dst) {
+        try {
+            Files.copy(Paths.get(src), Paths.get(dst), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
