@@ -1,4 +1,4 @@
-package eist.tum_social;
+package eist.tum_social.TestClasses;
 
 import eist.tum_social.tum_social.datastorage.SqliteDatabase;
 

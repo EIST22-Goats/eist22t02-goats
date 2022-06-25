@@ -1,12 +1,18 @@
 package eist.tum_social;
 
+import eist.tum_social.TestClasses.TestDatabase;
+import eist.tum_social.TestClasses.TestModel;
+import eist.tum_social.TestClasses.TestStorage;
 import eist.tum_social.tum_social.controllers.AuthenticationController;
+import eist.tum_social.tum_social.controllers.forms.RegistrationForm;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -16,25 +22,8 @@ import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 import static eist.tum_social.tum_social.controllers.ProfileController.PROFILE_PICTURE_LOCATION;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AuthenticationTest {
+public class AuthenticationTest extends SessionBasedTest {
     private AuthenticationController authenticationController;
-
-    @BeforeEach
-    void copyTestDatabase() {
-        Util.copyTestDatabase();
-    }
-
-    @AfterEach
-    void removeTestDatabase() {
-        Util.removeTestDatabase();
-    }
-    @BeforeEach
-    void setupMockSession() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        ServletRequestAttributes attr = new ServletRequestAttributes(request);
-        RequestContextHolder.setRequestAttributes(attr);
-    }
-
     @BeforeEach
     void setupAuthenticationControllern() {
         Storage storage = getStorage();
@@ -155,4 +144,23 @@ public class AuthenticationTest {
         assertEquals( PROFILE_PICTURE_LOCATION+tumId+".png", storage.copyDst);
     }
 
+    @Test
+    void registrationPageGetTest() {
+        assertEquals("register", authenticationController.registrationPage());
+        login("ge47son");
+        assertEquals("redirect:/", authenticationController.registrationPage());
+    }
+
+    @Disabled
+    @Test
+    void registrationPagePostTest() {
+        // TODO
+    }
+    @Test
+    void registrationPagePostLoggedInTest() {
+        Model model = new TestModel();
+        RegistrationForm registrationForm = new RegistrationForm();
+        login("go42tum");
+        assertEquals("redirect:/", authenticationController.registrationPage(model, registrationForm));
+    }
 }

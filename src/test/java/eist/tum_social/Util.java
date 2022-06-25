@@ -4,6 +4,9 @@ import eist.tum_social.tum_social.datastorage.Database;
 import eist.tum_social.tum_social.datastorage.SqliteDatabase;
 import eist.tum_social.tum_social.datastorage.Storage;
 import org.junit.jupiter.api.AfterEach;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +15,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class Util {
+
+    public static void setupMockSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        ServletRequestAttributes attr = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attr);
+    }
 
     private static String getBaseDir() {
         return System.getProperty("user.dir") + "/";
