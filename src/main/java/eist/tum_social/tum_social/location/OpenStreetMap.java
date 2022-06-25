@@ -42,7 +42,7 @@ public class OpenStreetMap {
         return new OpenStreetmapLocation(name, boundingBox, coords);
     }
 
-    public static BoundingBox jsonToBoundingBox(JsonArray json) {
+    private static BoundingBox jsonToBoundingBox(JsonArray json) {
         return new BoundingBox(
                 json.get(2).getAsString(),
                 json.get(0).getAsString(),
@@ -68,7 +68,7 @@ public class OpenStreetMap {
         return "https://www.openstreetmap.org/export/embed.html";
     }
 
-    public static BoundingBox boundingBoxFromCoordinate(Coordinate coords) {
+    private static BoundingBox boundingBoxFromCoordinate(Coordinate coords) {
         double latitude = Double.parseDouble(coords.getLatitude());
         double longitude = Double.parseDouble(coords.getLongitude());
 
@@ -80,14 +80,14 @@ public class OpenStreetMap {
         return new BoundingBox(left, top, right, bottom);
     }
 
-    public static String bboxString(BoundingBox boundingBox) {
+    private static String bboxString(BoundingBox boundingBox) {
         return "bbox=" + boundingBox.getLeft() + "%2C" +
                 boundingBox.getTop() + "%2C" +
                 boundingBox.getRight() + "%2C" +
                 boundingBox.getBottom();
     }
 
-    public static String coordinateString(Coordinate coordinate) {
+    private static String coordinateString(Coordinate coordinate) {
         return coordinate.getLatitude() + "%2C" + coordinate.getLongitude();
     }
 }

@@ -71,7 +71,7 @@ public class Navigatum {
         }
     }
 
-    public static JsonObject getJsonFacet(JsonArray array, String name) {
+    private static JsonObject getJsonFacet(JsonArray array, String name) {
         for (var section:array) {
             var sectionObject = section.getAsJsonObject();
             if (sectionObject.get("facet").getAsString().equals(name)) {
@@ -81,7 +81,7 @@ public class Navigatum {
         return null;
     }
 
-    public static List<Room> jsonToRooms(JsonArray json) {
+    private static List<Room> jsonToRooms(JsonArray json) {
         List<Room> rooms = new ArrayList<>();
         for (var entry:json) {
             rooms.add(jsonToRoom(entry.getAsJsonObject()));
@@ -89,7 +89,7 @@ public class Navigatum {
         return rooms;
     }
 
-    public static Room jsonToRoom(JsonObject json) {
+    private static Room jsonToRoom(JsonObject json) {
         String id = json.get("id").getAsString();
         String name = json.get("name").getAsString();
         String room = json.get("subtext").getAsString();
