@@ -1,8 +1,12 @@
 package eist.tum_social;
 
 import eist.tum_social.tum_social.controllers.AuthenticationController;
+import eist.tum_social.tum_social.datastorage.SqliteDatabase;
+import eist.tum_social.tum_social.datastorage.Storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -13,11 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuthenticationTest {
 
+    private AuthenticationController authenticationController;
+
     @BeforeEach
     void setupMockSession() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         ServletRequestAttributes attr = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attr);
+    }
+
+    @BeforeEach
+    void setupAuthenticationControllern() {
+        Storage storage = new Storage(new SqliteDatabase("jdbc:sqlite:tum_social.db"));
+        authenticationController = new AuthenticationController(storage);
     }
 
     @Test
@@ -45,19 +57,16 @@ public class AuthenticationTest {
 
     @Test
     void isLoginValidCorrectTest() {
-        AuthenticationController authenticationController = new AuthenticationController();
         assertTrue(authenticationController.isLoginValid("ge47son", "12345"));
     }
 
     @Test
     void isLoginValidWrongPasswordTest() {
-        AuthenticationController authenticationController = new AuthenticationController();
         assertFalse(authenticationController.isLoginValid("ge47son", "123456"));
     }
 
     @Test
     void isLoginValidUnknownUsernameTest() {
-        AuthenticationController authenticationController = new AuthenticationController();
         assertFalse(authenticationController.isLoginValid("ge50son", "12345"));
     }
 

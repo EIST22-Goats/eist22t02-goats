@@ -9,8 +9,10 @@ import java.util.List;
 @Component
 public class Storage implements StorageFacade {
 
-    @Autowired
-    private Database db;
+    private final Database db;
+    public Storage(@Autowired Database db) {
+        this.db = db;
+    }
 
     @Override
     public Person getPerson(String tumId) {
