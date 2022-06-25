@@ -4,6 +4,7 @@ import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.ChatMessage;
 import eist.tum_social.tum_social.model.Notification;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +26,18 @@ import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
 @Controller
 public class ChatController {
 
+    private final Storage storage;
+    public ChatController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
+
     @GetMapping(value = {"/chat", "/chat/{tumId}"})
     public String chatPage(Model model, @PathVariable(required = false) String tumId) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         List<ChatMessage> messages = storage.getChatMessages(person.getId());
 

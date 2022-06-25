@@ -3,6 +3,7 @@ package eist.tum_social.tum_social.datastorage;
 import eist.tum_social.tum_social.datastorage.util.*;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteDataSource;
 
 import java.beans.IntrospectionException;
@@ -24,6 +25,7 @@ import static eist.tum_social.tum_social.datastorage.util.BeanUtil.getValueOfFie
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.setValueOfField;
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.hasAnnotation;
 
+@Component
 public class SqliteDatabase implements Database {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");

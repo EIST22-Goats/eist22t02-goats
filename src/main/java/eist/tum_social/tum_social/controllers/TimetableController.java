@@ -5,6 +5,7 @@ import eist.tum_social.tum_social.model.Appointment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import eist.tum_social.tum_social.datastorage.Storage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,11 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
 public class TimetableController {
+
+    private final Storage storage;
+    public TimetableController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
 
     @GetMapping("/timetable")
     public String timetablePage(Model model, @RequestParam(value = "startDate", required = false) LocalDate startDate) {
@@ -134,7 +140,6 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = new Appointment();
 
         form.apply(appointment);
@@ -155,7 +160,6 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = new Appointment();
         form.apply(appointment);
 
@@ -173,7 +177,6 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
         form.apply(appointment);
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
@@ -191,10 +194,9 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
         form.apply(appointment);
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
         Course course = appointment.getCourses().get(0);
         if (course.getAdmin().equals(person)) {
             storage.update(appointment);
@@ -209,7 +211,6 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
 
         boolean hasAccessRights = appointment.getSubscribers().contains(getCurrentPerson());
@@ -227,9 +228,8 @@ public class TimetableController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Appointment appointment = storage.getAppointment(appointmentId);
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Course course = appointment.getCourses().get(0);
         if (course.getAdmin().equals(person)) {

@@ -6,6 +6,7 @@ import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
 import net.bytebuddy.description.method.ParameterList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +23,17 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 @Controller
 public class IndexController {
 
+    private final Storage storage;
+    public IndexController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     @GetMapping("/")
     public String index(Model model) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
-        Storage db = new Storage();
-
-        Person person = getCurrentPerson(db);
+        Person person = getCurrentPerson();
 
         List<Course> myCourses = person.getCourses();
 

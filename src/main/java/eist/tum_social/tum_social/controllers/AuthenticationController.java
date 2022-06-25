@@ -6,6 +6,7 @@ import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.controllers.util.Status;
 import eist.tum_social.tum_social.model.Person;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,10 @@ import static eist.tum_social.tum_social.controllers.util.Status.SUCCESS;
 @Controller
 public class AuthenticationController {
 
+    private final Storage storage;
+    public AuthenticationController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     public static final String TUM_ID_REGEX =
             "^[^aeiouAEIOU\\d\\W][aeiou]\\d\\d[^aeiouAEIOU\\d\\W][aeiou][^aeiouAEIOU\\d\\W]$";
 
@@ -101,15 +106,14 @@ public class AuthenticationController {
             return ERROR("Tum ID ist ungültig");
         }
 
-        StorageFacade db = new Storage();
-        if (db.getPerson(person.getTumId()) != null) {
+        if (storage.getPerson(person.getTumId()) != null) {
             return ERROR("Account für " + person.getTumId() + " existiert bereits");
         }
 
         String hashedPassword = hashPassword(person.getPassword());
         person.setPassword(hashedPassword);
 
-        db.update(person);
+        storage.update(person);
 
         createDefaultProfilePicture(person.getTumId());
 
@@ -131,8 +135,7 @@ public class AuthenticationController {
             return false;
         }
 
-        StorageFacade db = new Storage();
-        Person person = db.getPerson(tumId);
+        Person person = storage.getPerson(tumId);
         return person != null && BCrypt.checkpw(password, person.getPassword());
     }
 

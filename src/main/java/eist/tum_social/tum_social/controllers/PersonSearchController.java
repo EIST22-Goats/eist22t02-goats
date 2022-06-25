@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,10 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @RestController
 public class PersonSearchController {
-
+    private final Storage storage;
+    public PersonSearchController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     private int similarity(Person a, String searchText) {
         return Collections.min(
                 List.of(
@@ -31,11 +35,9 @@ public class PersonSearchController {
             return new ArrayList<>();
         }
 
-        Storage storage = new Storage();
-
         List<Person> persons = storage.getPersons();
 
-        Person currentPerson = getCurrentPerson(storage);
+        Person currentPerson = getCurrentPerson();
 
         persons = persons.stream().filter(person ->
                 !person.getTumId().equals(currentPerson.getTumId()) &&

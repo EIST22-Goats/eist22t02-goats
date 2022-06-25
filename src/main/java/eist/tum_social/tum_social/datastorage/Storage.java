@@ -1,16 +1,16 @@
 package eist.tum_social.tum_social.datastorage;
 
 import eist.tum_social.tum_social.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class Storage implements StorageFacade {
 
-    private final Database db;
-
-    public Storage() {
-        db = new SqliteDatabase();
-    }
+    @Autowired
+    private Database db;
 
     @Override
     public Person getPerson(String tumId) {

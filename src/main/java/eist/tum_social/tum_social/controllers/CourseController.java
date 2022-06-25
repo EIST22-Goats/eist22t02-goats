@@ -7,6 +7,7 @@ import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Comment;
 import eist.tum_social.tum_social.model.Course;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,20 +26,21 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
 public class CourseController {
-
+    private final Storage storage;
+    public CourseController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     @GetMapping("/courses")
     public String coursesPage(Model model, @RequestParam(value = "searchText", required = false) String searchText) {
         if (!isLoggedIn()) {
             return "redirect:/login";
         }
 
-        Storage db = new Storage();
-
-        Person person = getCurrentPerson(db);
+        Person person = getCurrentPerson();
         model.addAttribute(person);
 
         List<Course> myCourses = person.getCourses();
-        List<Course> courses = db.getCourses();
+        List<Course> courses = storage.getCourses();
 
         courses.removeAll(myCourses);
 
@@ -68,8 +70,7 @@ public class CourseController {
 
         addPersonToModel(model);
 
-        StorageFacade db = new Storage();
-        Course course = db.getCourse(courseId);
+        Course course = storage.getCourse(courseId);
         model.addAttribute(course);
 
         List<Announcement> announcements = course.getAnnouncements();
@@ -87,8 +88,7 @@ public class CourseController {
         Course course = new Course();
         form.apply(course);
 
-        Storage storage = new Storage();
-        Person p = getCurrentPerson(storage);
+        Person p = getCurrentPerson();
         course.setAdmin(p);
 
         storage.update(course);
@@ -102,8 +102,7 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
-        Person p = getCurrentPerson(storage);
+        Person p = getCurrentPerson();
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().add(c);
@@ -118,8 +117,7 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
-        Person p = getCurrentPerson(storage);
+        Person p = getCurrentPerson();
         Course c = new Course();
         c.setId(courseId);
         p.getCourses().remove(c);
@@ -134,7 +132,6 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
 
         if (course.getAdmin().getId() == getCurrentPerson().getId()) {
@@ -150,7 +147,6 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
 
         if (course.getAdmin().getId() == getCurrentPerson().getId()) {
@@ -165,11 +161,9 @@ public class CourseController {
     public String addAnnouncement(@PathVariable("courseId") int courseId,
                                   @RequestParam("title") String title,
                                   @RequestParam("text") String text) {
-        Storage storage = new Storage();
-
         Course course = storage.getCourse(courseId);
 
-        if (course.getAdmin().equals(getCurrentPerson(storage))) {
+        if (course.getAdmin().equals(getCurrentPerson())) {
             Announcement announcement = new Announcement();
             announcement.setTitle(title);
             announcement.setDescription(text);
@@ -188,9 +182,7 @@ public class CourseController {
 
     @PostMapping("/addComment/{parentId}")
     public String addComment(@PathVariable int parentId, String text, @RequestParam("courseId") int courseId) {
-        Storage storage = new Storage();
-
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Comment parentComment = storage.getComment(parentId);
         if (parentComment == null) {
@@ -211,9 +203,7 @@ public class CourseController {
 
     @PostMapping("/addRootComment/{announcementId}")
     public String addRootComment(@PathVariable int announcementId, String text, @RequestParam("courseId") int courseId) {
-        Storage storage = new Storage();
-
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Announcement announcement = storage.getAnnouncement(announcementId);
 
@@ -231,10 +221,9 @@ public class CourseController {
 
     @PostMapping("/deleteComment/{commentId}")
     public String deleteComment(@PathVariable int commentId, @RequestParam("courseId") int courseId) {
-        Storage storage = new Storage();
         Comment comment = storage.getComment(commentId);
 
-        if (comment.getAuthor().equals(getCurrentPerson(storage))) {
+        if (comment.getAuthor().equals(getCurrentPerson())) {
             deleteCommentTree(comment, storage);
         }
 
@@ -243,12 +232,11 @@ public class CourseController {
 
     @PostMapping("/deleteAnnouncement/{announcementId}")
     public String deleteAnnouncement(@PathVariable int announcementId, @RequestParam("courseId") int courseId) {
-        Storage storage = new Storage();
 
         Announcement announcement = storage.getAnnouncement(announcementId);
         Course course = storage.getCourse(courseId);
 
-        if (course.getAdmin().equals(getCurrentPerson(storage))) {
+        if (course.getAdmin().equals(getCurrentPerson())) {
             deleteAnnouncement(announcement, storage);
         }
 
@@ -267,9 +255,8 @@ public class CourseController {
      */
     @GetMapping("/toggleLikeComment/{commentId}/{courseId}")
     public String toggleLikeComment(@PathVariable int commentId, @PathVariable("courseId") int courseId) {
-        Storage storage = new Storage();
 
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Comment comment = storage.getComment(commentId);
         List<Person> likes = comment.getLikes();

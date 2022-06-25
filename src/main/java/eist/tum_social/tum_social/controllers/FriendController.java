@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,13 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 
 @Controller
 public class FriendController {
+    private final Storage storage;
 
+    private final NotificationController notificationController;
+    public FriendController(@Autowired Storage storage, @Autowired NotificationController notificationController) {
+        this.storage = storage;
+        this.notificationController = notificationController;
+    }
     @GetMapping("/friends")
     public String friendsPage(Model model) {
         if (!isLoggedIn()) {
@@ -43,8 +50,7 @@ public class FriendController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
         Person receiver = storage.getPerson(tumId);
 
         if (!receiver.getTumId().equals(person.getTumId()) &&
@@ -54,7 +60,7 @@ public class FriendController {
             person.getOutgoingFriendRequests().add(receiver);
             storage.update(person);
 
-            NotificationController.sendNotification(
+            notificationController.sendNotification(
                     receiver,
                     "Neue Freundschaftsanfrage",
                     person.getFirstname() + " " + person.getLastname() + " hat dir eine Freundschaftsanfrage gesendet",
@@ -80,7 +86,7 @@ public class FriendController {
         if (outgoing.isPresent()) {
             outgoingFriendRequests.remove(outgoing.get());
         } else if (incoming.isPresent()) {
-            NotificationController.sendNotification(
+            notificationController.sendNotification(
                     incoming.get(),
                     "Freundschaftsanfrage abgelehnt",
                     person.getFirstname() + " " + person.getLastname() + " hat deine Freundschaftsanfrage abgelehnt",
@@ -89,7 +95,7 @@ public class FriendController {
             incomingFriendRequests.remove(incoming.get());
         }
 
-        new Storage().update(person);
+        storage.update(person);
 
         return "redirect:/friends";
     }
@@ -108,7 +114,7 @@ public class FriendController {
             incomingFriendRequests.remove(incoming.get());
             person.getFriends().add(incoming.get());
 
-            NotificationController.sendNotification(
+            notificationController.sendNotification(
                     incoming.get(),
                     "Freundschaftsanfrage angenommen",
                     person.getFirstname() + " " + person.getLastname() + " hat deine Freundschaftsanfrage angenommen!",
@@ -116,7 +122,7 @@ public class FriendController {
                     FRIEND_REQUEST_ACCEPTED);
         }
 
-        new Storage().update(person);
+        storage.update(person);
 
         return "redirect:/friends";
     }
@@ -135,7 +141,7 @@ public class FriendController {
             friends.remove(friends.get(index));
         }
 
-        new Storage().update(person);
+        storage.update(person);
 
         return "redirect:/friends";
     }

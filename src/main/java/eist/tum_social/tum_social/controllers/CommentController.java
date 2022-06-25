@@ -2,6 +2,7 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,10 +17,13 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 @RestController
 public class CommentController {
 
+    private final Storage storage;
+    public CommentController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
+
     @PostMapping("getAnnouncements/{courseId}")
     public List<Map<String, String>> getAnnouncements(@PathVariable int courseId) {
-
-        Storage storage = new Storage();
         Course course = storage.getCourse(courseId);
         List<Announcement> announcements = course.getAnnouncements();
 
@@ -37,13 +41,12 @@ public class CommentController {
 
     @PostMapping("getRootComments/{announcementId}")
     public List<Map<String, String>> getRootComments(@PathVariable int announcementId){
-        Storage storage = new Storage();
         Announcement announcement = storage.getAnnouncement(announcementId);
         List<Comment> comments = announcement.getComments();
 
         List<Map<String, String>> result = new ArrayList<>();
 
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         for (Comment comment:comments) {
             result.add(Map.of(
@@ -64,13 +67,12 @@ public class CommentController {
 
     @PostMapping("getComments/{commentId}")
     public List<Map<String, String>> getComments(@PathVariable int commentId){
-        Storage storage = new Storage();
         Comment parentComment = storage.getComment(commentId);
         List<Comment> comments = parentComment.getChildComments();
 
         List<Map<String, String>> result = new ArrayList<>();
 
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         for (Comment comment:comments) {
             result.add(Map.of(
@@ -91,9 +93,7 @@ public class CommentController {
 
     @PostMapping("/NaddComment/{parentId}")
     public void addComment(@PathVariable int parentId, String text) {
-        Storage storage = new Storage();
-
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Comment parentComment = storage.getComment(parentId);
 
@@ -110,9 +110,7 @@ public class CommentController {
 
     @PostMapping("/NaddRootComment/{announcementId}")
     public void addRootComment(@PathVariable int announcementId, String text) {
-        Storage storage = new Storage();
-
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Announcement announcement = storage.getAnnouncement(announcementId);
 
@@ -128,21 +126,18 @@ public class CommentController {
 
     @PostMapping("/NdeleteComment/{commentId}")
     public void deleteComment(@PathVariable int commentId) {
-        Storage storage = new Storage();
         Comment comment = storage.getComment(commentId);
 
 
 
-        if (comment.getAuthor().equals(getCurrentPerson(storage))) {
+        if (comment.getAuthor().equals(getCurrentPerson())) {
             deleteCommentTree(comment, storage);
         }
     }
 
     @PostMapping("/NtoggleLikeComment/{commentId}")
     public int toggleLikeComment(@PathVariable int commentId) {
-        Storage storage = new Storage();
-
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
 
         Comment comment = storage.getComment(commentId);
         List<Person> likes = comment.getLikes();

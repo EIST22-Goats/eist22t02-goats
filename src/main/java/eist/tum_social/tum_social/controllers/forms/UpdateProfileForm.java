@@ -1,9 +1,12 @@
 package eist.tum_social.tum_social.controllers.forms;
 
+import eist.tum_social.tum_social.controllers.ProfileController;
+import eist.tum_social.tum_social.controllers.util.Util;
 import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -85,10 +88,9 @@ public class UpdateProfileForm extends Form<Person> {
         person.setEmail(email);
         person.setSemesterNr(semesterNr);
 
-        StorageFacade db = new Storage();
         if (!degreeProgramName.isBlank()) {
 
-            DegreeProgram degreeProgram = db.getDegreeProgram(degreeProgramName);
+            DegreeProgram degreeProgram = Util.storage.getDegreeProgram(degreeProgramName);
             if (degreeProgram != null) {
                 person.setDegreeProgram(degreeProgram);
             }

@@ -4,6 +4,7 @@ import eist.tum_social.tum_social.controllers.util.NotificationType;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Notification;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,14 +24,17 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 @RestController
 public class NotificationController {
 
+    private final Storage storage;
+    public NotificationController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     @PostMapping("/getNotifications")
     public List<Map<String, String>> getNotifications() {
         if (!isLoggedIn()) {
             return new ArrayList<>();
         }
 
-        Storage storage = new Storage();
-        Person currentPerson = getCurrentPerson(storage);
+        Person currentPerson = getCurrentPerson();
         List<Notification> notifications = currentPerson.getNotifications();
         notifications = notifications.stream()
                 .sorted(Comparator
@@ -53,8 +57,7 @@ public class NotificationController {
 
     @PostMapping("/clearNotifications")
     public void clearNotifications() {
-        Storage storage = new Storage();
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
         for (Notification notification:person.getNotifications()) {
             storage.delete(notification);
         }
@@ -62,7 +65,7 @@ public class NotificationController {
         storage.update(person);
     }
 
-    public static void sendNotification(Person person, String title, String description, String link, NotificationType notificationType) {
+    public void sendNotification(Person person, String title, String description, String link, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setTitle(title);
         notification.setDescription(description);
@@ -70,7 +73,6 @@ public class NotificationController {
         notification.setTime(LocalTime.now());
         notification.setLink(link);
 
-        Storage storage = new Storage();
         storage.update(notification);
 
         person.getNotifications().add(notification);

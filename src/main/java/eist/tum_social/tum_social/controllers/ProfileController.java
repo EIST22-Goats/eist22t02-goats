@@ -6,6 +6,7 @@ import eist.tum_social.tum_social.controllers.forms.UpdateProfileForm;
 import eist.tum_social.tum_social.model.DegreeProgram;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,10 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 @Controller
 public class ProfileController {
 
+    private final Storage storage;
+    public ProfileController(@Autowired Storage storage) {
+        this.storage = storage;
+    }
     public final static String PROFILE_PICTURE_LOCATION =
             new File("src/main/resources/static/profile_pictures/").getAbsolutePath();
 
@@ -38,7 +43,7 @@ public class ProfileController {
 
         addPersonToModel(model);
 
-        List<DegreeProgram> degreePrograms = new Storage().getDegreePrograms();
+        List<DegreeProgram> degreePrograms = storage.getDegreePrograms();
         model.addAttribute("degreePrograms", degreePrograms);
 
         return "profile";
@@ -50,8 +55,7 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        Storage storage = new Storage();
-        Person person = getCurrentPerson(storage);
+        Person person = getCurrentPerson();
         Person viewedPerson = storage.getPerson(tumId);
 
         if (person.equals(viewedPerson)) {
@@ -97,8 +101,7 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        Storage db = new Storage();
-        db.delete(getCurrentPerson(db));
+        storage.delete(getCurrentPerson());
         logout();
         try {
             Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
@@ -119,10 +122,9 @@ public class ProfileController {
     }
 
     private void updatePerson(Form<Person> form) {
-        Storage db = new Storage();
-        Person person = db.getPerson(getCurrentUsersTumId());
+        Person person = getCurrentPerson();
         form.apply(person);
-        db.update(person);
+        storage.update(person);
     }
 
 }
