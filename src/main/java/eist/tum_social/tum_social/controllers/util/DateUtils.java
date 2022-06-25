@@ -9,6 +9,8 @@ public class DateUtils {
     public static String formatTimestamp(LocalDate date, LocalTime time) {
         String dateString = "";
 
+        // TODO: fix midnight wrap around
+
         if (time.isAfter(LocalTime.now().minusHours(1))) {
             long minDelta = time.until(LocalTime.now(), ChronoUnit.MINUTES);
             if (minDelta <= 1) {

@@ -138,9 +138,21 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/NtoggleLikeComment/{commentId}/{courseId}")
-    public void toggleLikeComment(@PathVariable int commentId, @PathVariable("courseId") int courseId) {
+    @PostMapping("/NtoggleLikeComment/{commentId}")
+    public int toggleLikeComment(@PathVariable int commentId) {
+        Storage storage = new Storage();
 
+        Person person = getCurrentPerson(storage);
+
+        Comment comment = storage.getComment(commentId);
+        List<Person> likes = comment.getLikes();
+        if (likes.contains(person)) {
+            likes.remove(person);
+        } else {
+            likes.add(person);
+        }
+        storage.update(comment);
+        return likes.size();
     }
 
     private Comment createComment(String text) {
