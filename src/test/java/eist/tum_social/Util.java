@@ -3,7 +3,6 @@ package eist.tum_social;
 import eist.tum_social.tum_social.datastorage.Database;
 import eist.tum_social.tum_social.datastorage.SqliteDatabase;
 import eist.tum_social.tum_social.datastorage.Storage;
-import org.junit.jupiter.api.AfterEach;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

@@ -54,6 +54,11 @@ public class Storage implements StorageFacade {
         return firstOrNull(db.select(Appointment.class, "id=" + id));
     }
 
+    public List<Appointment> getAppointments() {
+        return db.select(Appointment.class, "1");
+    }
+
+
     public Comment getComment(int id) {
         return firstOrNull(db.select(Comment.class, "id=" + id));
     }

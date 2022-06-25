@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AuthenticationTest extends SessionBasedTest {
     private AuthenticationController authenticationController;
     @BeforeEach
-    void setupAuthenticationControllern() {
+    void setupAuthenticationController() {
         Storage storage = getStorage();
         authenticationController = new AuthenticationController(storage);
     }
