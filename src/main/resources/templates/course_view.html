@@ -252,7 +252,7 @@
                                 Antworten
                             </a>
                             &nbsp;&nbsp;
-                            <a data-bs-toggle="collapse" th:href="'#rootComments'+${a.getId()}" aria-expanded="false"
+                            <a data-bs-toggle="collapse" th:href="'#commentSection'+${a.getId()}" th:id="'showRootCommentSection'+${a.getId()}" aria-expanded="false"
                                th:if="${!a.getComments().isEmpty()}"
                                th:text="${a.getComments().size()}+' Kommentare anzeigen'"
                                class="text-decoration-none"></a>
@@ -270,11 +270,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div th:if="${!a.getComments().isEmpty()}" class="collapse" th:id="'rootComments'+${a.getId()}">
-                            <section th:include="fragments/commentSection :: commentSection"
-                                     th:with="comments=${a.getComments()}"></section>
-                        </div>
-                        <div th:id="'commentSection'+${a.getId()}">
+                        <div class="collapse" th:id="'commentSection'+${a.getId()}">
 
                         </div>
                     </div>
@@ -318,19 +314,21 @@ function registerNewCommentHandler(commentId) {
         let textarea = $("#NCreateCommentTextarea"+commentId);
         let childCommentDiv = $("#Ncomments"+commentId);
 
-        $.ajax({
-            type: "POST",
-            url: "/NaddComment/"+commentId,
-            data:{
-                text: textarea.val(),
-            },
-            success: function () {
-                childCommentDiv.empty()
-                childCommentDiv.collapse("show");
+        if(textarea.val().trim() !== "") {
+            $.ajax({
+                type: "POST",
+                url: "/NaddComment/" + commentId,
+                data: {
+                    text: textarea.val(),
+                },
+                success: function () {
+                    childCommentDiv.empty()
+                    childCommentDiv.collapse("show");
 
-                loadChildComments(commentId);
-            }
-        });
+                    loadChildComments(commentId);
+                }
+            });
+        }
     })
 }
 
@@ -340,18 +338,20 @@ newRootCommentBtn.on('click', (event) => {
     let textEntry = commentEntry.find(".newRootCommentTextarea");
     let commentSection = $("#commentSection"+announcementId);
 
-    $.ajax({
-         type: "POST",
-         url: "/NaddRootComment/"+announcementId,
-         data:{
-             text: textEntry.val(),
-         },
-         success: function () {
-             commentSection.collapse("show");
+    if(textEntry.val().trim() !== "") {
+        $.ajax({
+            type: "POST",
+            url: "/NaddRootComment/" + announcementId,
+            data: {
+                text: textEntry.val(),
+            },
+            success: function () {
+                commentSection.collapse("show");
 
-             loadRootComments(announcementId);
-         }
-    });
+                loadRootComments(announcementId);
+            }
+        });
+    }
 })
 
 function registerDeleteCommentHandler(commentId, parentCommentId) {
@@ -533,7 +533,9 @@ function loadSingleComment(commentSection, commentData, parentCommentId) {
 
 function loadRootComments(announcementId) {
 
-    let commentSection = $("#commentSection"+announcementId);
+    const commentSection = $("#commentSection"+announcementId);
+    const showCommentsBtn = $("#showRootCommentSection"+announcementId)
+
     $.ajax({
         type: "POST",
         url: "/getRootComments/"+announcementId,
@@ -546,6 +548,12 @@ function loadRootComments(announcementId) {
                 loadChildComments(n["commentId"])
             }
 
+            if (data.length === 0) {
+                showCommentsBtn.addClass("d-none");
+            } else {
+                showCommentsBtn.removeClass("d-none");
+                showCommentsBtn.text(data.length+" Kommentare anzeigen")
+            }
         }
     });
 }
@@ -581,8 +589,15 @@ function loadChildComments(commentId) {
 </script>
 <!-- TODO: dynamic announcement loading-->
 <script>
-$(".announcement").each((_, announcement) => {
-    loadRootComments(announcement.getAttribute("data-announcement-id"))
+$( document ).ready(() => {
+    $(".announcement").each((_, announcement) => {
+    const announcementId = announcement.getAttribute("data-announcement-id")
+    const commentSection = $("#commentSection"+announcementId);
+    commentSection.collapse("hide");
+    loadRootComments(announcementId);
+    console.log("hiding: ", commentSection[0])
+    commentSection.collapse("hide")
+    })
 })
 </script>
 
