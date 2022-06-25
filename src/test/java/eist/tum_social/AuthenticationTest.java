@@ -1,37 +1,19 @@
 package eist.tum_social;
 
 import eist.tum_social.tum_social.controllers.AuthenticationController;
-import eist.tum_social.tum_social.controllers.util.Status;
-import eist.tum_social.tum_social.datastorage.Database;
-import eist.tum_social.tum_social.datastorage.SqliteDatabase;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static eist.tum_social.Util.getDatabase;
 import static eist.tum_social.Util.getStorage;
-import static eist.tum_social.tum_social.controllers.AuthenticationController.getCurrentUsersTumId;
-import static eist.tum_social.tum_social.controllers.AuthenticationController.isTumIDInvalid;
+import static eist.tum_social.tum_social.controllers.AuthenticationController.*;
 import static eist.tum_social.tum_social.controllers.ProfileController.PROFILE_PICTURE_LOCATION;
-import static eist.tum_social.tum_social.controllers.util.Status.ERROR;
-import static eist.tum_social.tum_social.controllers.util.Status.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthenticationTest {
@@ -119,14 +101,52 @@ public class AuthenticationTest {
         assertEquals(tumId2, getCurrentUsersTumId());
     }
     @Test
-    void registerPersonTest() {
+    void registerPersonValidTest() {
+        String tumId = "go42tum";
+        Person person = new Person();
+        person.setTumId(tumId);
+        String password = "password";
+        person.setPassword(password);
+        TestDatabase database = new TestDatabase("jdbc:sqlite:test_copy.db");
+        TestStorage storage = new TestStorage(database);
+        authenticationController = new AuthenticationController(storage);
+        authenticationController.registerPerson(person);
+        assertTrue(authenticationController.isLoginValid(tumId, password));
+        assertTrue(database.updateCalled);
+        assertEquals(database.calledOn, person);
+        assertTrue(storage.fileCopied);
+        assertEquals( PROFILE_PICTURE_LOCATION+"default.png", storage.copySrc);
+        assertEquals( PROFILE_PICTURE_LOCATION+tumId+".png", storage.copyDst);
+    }
 
+    @Test
+    void registerPersonInvalidTest() {
+        Person person = new Person();
+        person.setTumId("hallo welt");
+        String password = "password";
+        person.setPassword(password);
+        TestDatabase database = new TestDatabase("jdbc:sqlite:test_copy.db");
+        Storage storage = new TestStorage(database);
+        authenticationController = new AuthenticationController(storage);
+        authenticationController.registerPerson(person);
+        assertFalse(database.updateCalled);
+    }
+
+    @Test
+    void registerPersonDuplicateTest() {
+        Person person = new Person();
+        person.setTumId("ge47son");
+        TestDatabase database = new TestDatabase("jdbc:sqlite:test_copy.db");
+        Storage storage = new TestStorage(database);
+        authenticationController = new AuthenticationController(storage);
+        authenticationController.registerPerson(person);
+        assertFalse(database.updateCalled);
     }
     @Test
     void createDefaultProfilePictureTest() {
         String tumId = "te31tes";
 
-        StorageMock storage = new StorageMock(getDatabase());
+        TestStorage storage = new TestStorage(getDatabase());
 
         authenticationController = new AuthenticationController(storage);
         authenticationController.createDefaultProfilePicture(tumId);
