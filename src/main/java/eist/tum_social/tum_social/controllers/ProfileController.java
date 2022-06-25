@@ -54,8 +54,6 @@ public class ProfileController {
         Person person = getCurrentPerson(storage);
         Person viewedPerson = storage.getPerson(tumId);
 
-        System.out.println(">>> person "+viewedPerson.getFirstname());
-
         if (person.equals(viewedPerson)) {
             return "redirect:/profile";
         }

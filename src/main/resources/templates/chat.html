@@ -19,18 +19,23 @@
 <div class="vh-100">
     <header th:replace="fragments/header :: header"></header>
 
-    <div class="container mb-3" style="height: 70%">
-        <div class="row">
-            <div class="col-md-3 vh-100">
-                <div class="card" style="height: 70%">
+    <div class="container mb-3" style="height: 70vh;">
+        <div class="row h-100">
+            <div class="col-md-3 h-100">
+                <div class="card h-100">
                     <div class="card-header">
                         Chats
                     </div>
 
-                    <div class="list-group overflow-scroll">
+                    <div class="list-group overflow-scroll" id="chats" th:tumid="${currentTumId}">
 
-                        <a th:each="c: ${currentChats}"
-                           href="#" class="list-group-item list-group-item-action rounded-0 border-0 border-bottom"
+                        <span class="list-group-item list-group-item-action rounded-0 border-0 border-bottom">
+                            <input class="form-control" type="text" placeholder="Suche..." id="chatSearchInput">
+                        </span>
+
+                        <a th:each="c: ${currentChats}" th:href="'/chat/'+${c.tumId}" th:data-tumid="${c.tumId}"
+                           th:data-name="${c.name}"
+                           class="list-group-item list-group-item-action rounded-0 border-0 border-bottom"
                            aria-current="true">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">
@@ -40,7 +45,6 @@
                                                  alt="" class="rounded-circle"
                                                  width="32" height="32" style="object-fit: cover">
                                         </div>
-
                                         <div class="align-self-center p-1" th:text="${c.name}"></div>
                                     </div>
                                 </h5>
@@ -52,64 +56,28 @@
                 </div>
             </div>
 
-            <div class="col-md-9 ps-1 vh-100">
-                <div class="card" style="height: 70%">
+            <div class="col-md-9 ps-1 h-100">
+                <div class="card h-100">
                     <div class="card-header">
-                        <div class="d-flex">
-
+                        <div class="d-flex position-relative">
                             <div class="align-self-center">
-                                <img th:src="'/profile_pictures/'+${person.getTumId()}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
+                                <img th:src="'/profile_pictures/'+${currentTumId}+'.png?'+${#dates.format(#dates.createNow(), 'ss')}"
                                      alt="" class="rounded-circle"
                                      width="48" height="48" style="object-fit: cover">
                             </div>
 
-                            <div class="align-self-center p-3">
-                                Kilian Northoff
-                            </div>
+                            <div class="align-self-center p-3" th:text="${currentName}"></div>
+                            <a th:href="'/profile/'+${currentTumId}" class="stretched-link"></a>
                         </div>
                     </div>
 
-                    <div class="card-body overflow-auto">
-                        <div class="d-flex align-items-baseline text-end justify-content-end mb-4">
-                            <div class="pe-2">
-                                <div>
-                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
-                                         style="border: 2px solid #0065bd">Chuck Norris checks under his
-                                        bed for Fedor Emelianenko because he takes Fedor to the vet regularly.
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
-                                         style="border: 2px solid #0065bd">"The Big Chuck Norris
-                                        Roundhouse-Kick Theory"
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small">01:13PM</div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="d-flex align-items-baseline mb-1">
-                            <div class="pe-2">
-                                <div>
-                                    <div class="card card-text d-inline-block p-2 px-3 m-1"
-                                         style="border: 2px solid #d3d3d3"> LMAO!
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small">01:15PM</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="card-body overflow-auto h-100" id="chatMessages"></div>
 
                     <div class="card-footer">
                         <div class="input-group">
-                            <input type="text" class="form-control"
+                            <input type="text" class="form-control" id="messageInput"
                                    placeholder="Bereichere jemanden mit deinen Worten!">
-                            <button class="btn btn-primary" type="button">Senden</button>
+                            <button class="btn btn-primary" type="button" id="messageSendBtn">Senden</button>
                         </div>
                     </div>
                 </div>
@@ -121,6 +89,8 @@
 </div>
 
 <div th:replace="fragments/jsImports :: jsImports"></div>
+
+<script src="/js/chat.js"></script>
 
 </body>
 </html>

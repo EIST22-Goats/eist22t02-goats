@@ -1,4 +1,4 @@
-# Sprint review meeting: Week 1
+# Sprint review meeting 1
 
 Attendees: Kilian Northoff, Linus Weigand, Florian Adam, Daniel Safyan, Luis Traffa
 

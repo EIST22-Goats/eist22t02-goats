@@ -38,8 +38,8 @@
                 <h5 class="fs-6 fw-bold">Biographie</h5>
                 <p th:text="${viewedPerson.getBiography()}"></p>
 
-                <h5 class="fs-6 fw-bold">Studiengang</h5>
-                <p th:text="${viewedPerson.getDegreeProgram().getName()}"></p>
+                <h5 th:if="${viewedPerson.getDegreeProgram() != null}" class="fs-6 fw-bold">Studiengang</h5>
+                <p th:if="${viewedPerson.getDegreeProgram() != null}" th:text="${viewedPerson.getDegreeProgram().getName()}"></p>
 
                 <h5 class="fs-6 fw-bold">Semester</h5>
                 <p th:text="${viewedPerson.getSemesterNr()}"></p>
@@ -66,7 +66,7 @@
             <div class="card mb-3">
                 <div class="card-header">Kurse von <span th:text="${viewedPerson.getFirstname()}"></span></div>
                 <p class="p-3" th:if="${viewedPerson.getCourses().isEmpty()}">
-                    <span th:text="${viewedPerson.getCourses()()}"></span> hat keine Kurse.
+                    <span th:text="${viewedPerson.getFirstname()}"></span> hat keine Kurse.
                 </p>
                 <ul class="card-body list-group list-group-flush p-0 overflow-auto" style="max-height: 20em;">
                     <li th:each="c: ${viewedPerson.getCourses()}" class="list-group-item position-relative">
