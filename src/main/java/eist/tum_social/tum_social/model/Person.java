@@ -14,7 +14,6 @@ public class Person extends UniquelyIdentifiable {
     private int id = -1;
     private String firstname;
     private String lastname;
-
     private String biography;
     private LocalDate birthdate;
     private String tumId;

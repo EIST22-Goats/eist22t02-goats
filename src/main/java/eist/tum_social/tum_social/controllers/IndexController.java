@@ -24,9 +24,11 @@ import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 public class IndexController {
 
     private final Storage storage;
+
     public IndexController(@Autowired Storage storage) {
         this.storage = storage;
     }
+
     @GetMapping("/")
     public String index(Model model) {
         if (!isLoggedIn()) {

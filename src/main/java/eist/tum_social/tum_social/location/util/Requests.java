@@ -14,12 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A helper class for http requests that return JSON strings.
+ */
 public class Requests {
 
     public static String escapeQueryValue(String query) {
         return URLEncoder.encode(query, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Sends get request with parameters.
+     * @param url the http url.
+     * @param params the map that contains the get data.
+     * @return the JsonElement with the result.
+     */
     public static JsonElement getRequest(String url, Map<String, String> params) {
 
         List<String> parameters = new ArrayList<>();

@@ -25,6 +25,9 @@ import static eist.tum_social.tum_social.datastorage.util.BeanUtil.getValueOfFie
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.setValueOfField;
 import static eist.tum_social.tum_social.datastorage.util.BeanUtil.hasAnnotation;
 
+/**
+ * The SQL implementation for the database interface. For more details look into the interface documentation.
+ */
 @Component
 public class SqliteDatabase implements Database {
 
@@ -37,6 +40,7 @@ public class SqliteDatabase implements Database {
     public SqliteDatabase() {
         this(URL);
     }
+
     public SqliteDatabase(String url) {
         dataSource = new SQLiteDataSource();
         dataSource.setUrl(url);

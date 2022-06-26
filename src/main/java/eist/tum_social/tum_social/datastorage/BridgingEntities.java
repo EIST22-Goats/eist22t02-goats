@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The lazy loading proxy for the list with all related objects of type T.
+ * @param <T> the type of the bridging object.
+ */
 public class BridgingEntities<T> extends Entity {
 
     private List<T> values;
@@ -21,6 +25,10 @@ public class BridgingEntities<T> extends Entity {
         return values != null;
     }
 
+    /**
+     * Lazy loads the actual content.
+     * @return the list with the bridging objects.
+     */
     public List<T> get() {
         if (values == null) {
             values = database.loadBridgingTableObjects(field, row);

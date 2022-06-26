@@ -5,6 +5,9 @@ import eist.tum_social.tum_social.model.*;
 
 import java.util.List;
 
+/**
+ * The interface for the data management.
+ */
 public interface StorageFacade {
 
     Person getPerson(String tumId);

@@ -1,21 +1,25 @@
 package eist.tum_social.tum_social.location;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eist.tum_social.tum_social.datastorage.util.Pair;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static eist.tum_social.tum_social.location.util.Requests.escapeQueryValue;
 import static eist.tum_social.tum_social.location.util.Requests.getRequest;
 
+/**
+ * The Interface to the Navigatum API.
+ */
 public class Navigatum {
 
+    /**
+     * Searches Navigatum for rooms.
+     * @param query the search string.
+     * @return a list of rooms that fit to the search string.
+     */
     public static List<Room> findRooms(String query) {
         String sURL = "https://nav.tum.sexy/api/search?q=" + escapeQueryValue(query);
 
@@ -30,6 +34,11 @@ public class Navigatum {
         return jsonToRooms(roomEntries);
     }
 
+    /**
+     * Gets the coordinate of a room by its room id.
+     * @param roomId the id of the room.
+     * @return the coordinate of the room.
+     */
     public static Coordinate getRoomCoords(String roomId) {
         String sURL = "https://nav.tum.sexy/api/get/" + roomId;
 
@@ -41,6 +50,11 @@ public class Navigatum {
         return coords;
     }
 
+    /**
+     * Gets the position of the room in its image.
+     * @param roomId the id of the room.
+     * @return the position of its room in percentage.
+     */
     public static Pair<String, Marker> getRoomImageData(String roomId) {
         String sURL = "https://nav.tum.sexy/api/get/" + roomId;
 
@@ -72,7 +86,7 @@ public class Navigatum {
     }
 
     private static JsonObject getJsonFacet(JsonArray array, String name) {
-        for (var section:array) {
+        for (var section : array) {
             var sectionObject = section.getAsJsonObject();
             if (sectionObject.get("facet").getAsString().equals(name)) {
                 return sectionObject;
@@ -83,7 +97,7 @@ public class Navigatum {
 
     private static List<Room> jsonToRooms(JsonArray json) {
         List<Room> rooms = new ArrayList<>();
-        for (var entry:json) {
+        for (var entry : json) {
             rooms.add(jsonToRoom(entry.getAsJsonObject()));
         }
         return rooms;

@@ -9,8 +9,16 @@ import java.util.List;
 import static eist.tum_social.tum_social.location.util.Requests.escapeQueryValue;
 import static eist.tum_social.tum_social.location.util.Requests.getRequest;
 
+/**
+ * The Interface to the OpenStreetMap API.
+ */
 public class OpenStreetMap {
 
+    /**
+     * Gets a list with locations that fit to the query string.
+     * @param query the search string
+     * @return the list with locations
+     */
     public static List<OpenStreetmapLocation> findLocation(String query) {
         String sURL = "https://nominatim.openstreetmap.org/search.php?format=json&q=" + escapeQueryValue(query);
 

@@ -22,6 +22,6 @@ public class Coordinate {
 
     @Override
     public String toString() {
-        return "(lat:"+latitude+", lon:"+longitude+")";
+        return "(lat:" + latitude + ", lon:" + longitude + ")";
     }
 }

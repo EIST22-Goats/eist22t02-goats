@@ -3,6 +3,9 @@ package eist.tum_social.TestClasses;
 import eist.tum_social.tum_social.datastorage.Database;
 import eist.tum_social.tum_social.datastorage.Storage;
 
+/**
+ * A storage used for testing.
+ */
 public class TestStorage extends Storage {
     public boolean fileCopied = false;
     public String copySrc;

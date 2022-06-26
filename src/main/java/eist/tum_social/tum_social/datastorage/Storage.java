@@ -11,12 +11,20 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+/**
+ * The SQL implementation for the storage interface.
+ */
 @Component
 public class Storage implements StorageFacade {
 
     private final Database db;
+
     public Storage(@Autowired Database db) {
         this.db = db;
+    }
+
+    public static String getResourcePath() {
+        return new File("src/main/resources/static/").getAbsolutePath();
     }
 
     @Override
@@ -58,7 +66,6 @@ public class Storage implements StorageFacade {
         return db.select(Appointment.class, "1");
     }
 
-
     public Comment getComment(int id) {
         return firstOrNull(db.select(Comment.class, "id=" + id));
     }
@@ -95,9 +102,6 @@ public class Storage implements StorageFacade {
         }
     }
 
-    public static String getResourcePath() {
-        return new File("src/main/resources/static/").getAbsolutePath();
-    }
     public void copyFile(String src, String dst) {
         try {
             Files.copy(Paths.get(src), Paths.get(dst), StandardCopyOption.REPLACE_EXISTING);

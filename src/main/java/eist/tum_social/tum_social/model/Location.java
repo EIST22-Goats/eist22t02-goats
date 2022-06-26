@@ -3,7 +3,7 @@ package eist.tum_social.tum_social.model;
 import eist.tum_social.tum_social.datastorage.util.DatabaseEntity;
 
 @DatabaseEntity(tableName = "Locations")
-public class Location {
+public class Location extends UniquelyIdentifiable {
 
     private int id = -1;
     private String description;
