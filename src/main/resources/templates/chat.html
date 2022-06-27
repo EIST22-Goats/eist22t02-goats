@@ -20,7 +20,9 @@
     <header th:replace="fragments/header :: header"></header>
 
     <div class="container mb-3" style="height: 70vh;">
-        <div class="row h-100">
+        <div class="position-absolute top-50 start-50 translate-middle display-5" th:if="${currentName == null}">Such dir Freunde!</div>
+
+        <div class="row h-100" th:if="${currentName != null}">
             <div class="col-md-3 h-100">
                 <div class="card h-100">
                     <div class="card-header">
@@ -28,7 +30,6 @@
                     </div>
 
                     <div class="list-group overflow-scroll" id="chats" th:tumid="${currentTumId}">
-
                         <span class="list-group-item list-group-item-action rounded-0 border-0 border-bottom">
                             <input class="form-control" type="text" placeholder="Suche..." id="chatSearchInput">
                         </span>

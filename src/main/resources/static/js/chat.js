@@ -111,10 +111,12 @@ messageInput.keypress((event) => {
 
 function updateMessages(first = false) {
     let tumId = chats.attr("tumid");
-    loadMessages(tumId);
-    if (first)
-        scrollDown();
-    setTimeout(updateMessages, 1000);
+    if (tumId != null) {
+        loadMessages(tumId);
+        if (first)
+            scrollDown();
+        setTimeout(updateMessages, 1000);
+    }
 }
 
 chatSearchInput.on('input', () => {

@@ -27,6 +27,7 @@ import static eist.tum_social.tum_social.controllers.util.Util.addPersonToModel;
 public class ChatController {
 
     private final Storage storage;
+
     public ChatController(@Autowired Storage storage) {
         this.storage = storage;
     }
@@ -50,7 +51,7 @@ public class ChatController {
             if (currentLastMessage == null ||
                     message.getDate().isAfter(currentLastMessage.getDate()) ||
                     (message.getDate().isEqual(currentLastMessage.getDate()) &&
-                    message.getTime().isAfter(currentLastMessage.getTime()))) {
+                            message.getTime().isAfter(currentLastMessage.getTime()))) {
                 latestMessages.put(otherPerson.getTumId(), message);
             }
         }
@@ -83,15 +84,20 @@ public class ChatController {
         String currentName;
 
         if (tumId == null) {
-            currentName = currentChats.get(0).get("name");
-            tumId = currentChats.get(0).get("tumId");
+            if (currentChats.size() > 0) {
+                currentName = currentChats.get(0).get("name");
+                tumId = currentChats.get(0).get("tumId");
+            } else {
+                currentName = null;
+                tumId = null;
+            }
         } else {
             Person otherPerson = storage.getPerson(tumId);
             if (otherPerson == null) {
                 return "redirect:/chat";
             }
 
-            currentName = otherPerson.getFirstname()+" "+otherPerson.getLastname();
+            currentName = otherPerson.getFirstname() + " " + otherPerson.getLastname();
         }
 
         model.addAttribute("person", person);
