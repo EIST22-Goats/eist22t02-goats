@@ -7,14 +7,9 @@ import eist.tum_social.tum_social.controllers.AuthenticationController;
 import eist.tum_social.tum_social.controllers.forms.RegistrationForm;
 import eist.tum_social.tum_social.datastorage.Storage;
 import eist.tum_social.tum_social.model.Person;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.ui.Model;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static eist.tum_social.Util.getDatabase;
 import static eist.tum_social.Util.getStorage;
@@ -151,11 +146,32 @@ public class AuthenticationTest extends SessionBasedTest {
         assertEquals("redirect:/", authenticationController.registrationPage());
     }
 
-    @Disabled
     @Test
-    void registrationPagePostTest() {
-        // TODO
+    void registrationPagePostSuccessTest() {
+        RegistrationForm registrationForm = new RegistrationForm();
+        registrationForm.setTumId("ge74nos");
+        TestModel model = new TestModel();
+        Person person = new Person();
+        registrationForm.apply(person);
+        assertEquals("redirect:/", authenticationController.registrationPage(model, registrationForm));
+        assertTrue(isLoggedIn());
+        assertEquals("ge74nos", getCurrentUsersTumId());
+        assertNull(model.getAttribute("registrationFailed"));
+        assertNull(model.getAttribute("errorMessage"));
     }
+    @Test
+    void registrationPagePostFailureTest() {
+        RegistrationForm registrationForm = new RegistrationForm();
+        registrationForm.setTumId("ge47son");
+        TestModel model = new TestModel();
+        Person person = new Person();
+        registrationForm.apply(person);
+        assertEquals("register", authenticationController.registrationPage(model, registrationForm));
+        assertFalse(isLoggedIn());
+        assertEquals(true, model.getAttribute("registrationFailed"));
+        assertNotNull(model.getAttribute("errorMessage"));
+    }
+
     @Test
     void registrationPagePostLoggedInTest() {
         Model model = new TestModel();

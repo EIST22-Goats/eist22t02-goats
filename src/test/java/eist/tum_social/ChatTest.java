@@ -1,7 +1,10 @@
 package eist.tum_social;
 
+import eist.tum_social.TestClasses.TestModel;
+import eist.tum_social.tum_social.controllers.ChatController;
 import eist.tum_social.tum_social.controllers.ChatRestController;
 import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -11,15 +14,34 @@ import java.util.Map;
 
 import static eist.tum_social.Util.getStorage;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ChatTest extends SessionBasedTest {
 
-    @Disabled
+    @SuppressWarnings("unckecked")
     @Test
     void chatPageTest() {
-        // TODO
+        login("ge47son");
+        ChatController chatController = new ChatController(getStorage());
+        TestModel model = new TestModel();
+        Person person = getCurrentPerson();
+        assertEquals("chat", chatController.chatPage(model, "ge95bit"));
+
+        assertEquals(person, model.getAttribute("person"));
+        List<Map<String, String>> currentChats = (List<Map<String, String>>) model.getAttribute("currentChats");
+        assertNotNull(currentChats);
+        assertEquals(1, currentChats.size());
+        currentChats = currentChats.stream().sorted(Comparator.comparing(e -> e.get("tumId"))).collect(java.util.stream.Collectors.toList());
+        assertEquals(Map.of(
+                "tumId", "ge95bit",
+                "name", "Kilian Northoff",
+                "time", currentChats.get(0).get("time")
+                ),
+            currentChats.get(0));
+
+        assertEquals("ge95bit", model.getAttribute("currentTumId"));
+        assertEquals("Kilian Northoff", model.getAttribute("currentName"));
     }
 
     @Test

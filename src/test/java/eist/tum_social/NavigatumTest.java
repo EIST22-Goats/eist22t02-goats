@@ -37,7 +37,6 @@ public class NavigatumTest {
     @Test
     void getRoomImageDataTest() {
         Pair<String, Marker> roomImageData = Navigatum.getRoomImageData("5611.EG.038");
-        System.out.println(roomImageData.first());
         assertEquals("https://nav.tum.sexy/cdn/maps/roomfinder/rf91.webp", roomImageData.first());
         assertEquals(49.152542372881356, roomImageData.second().getX(), 0.000000001);
         assertEquals(61.65289256198348, roomImageData.second().getY(), 0.000000001);

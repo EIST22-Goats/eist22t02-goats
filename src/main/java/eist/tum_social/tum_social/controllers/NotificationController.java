@@ -43,9 +43,6 @@ public class NotificationController {
                         .thenComparing(Notification::getTime))
                 .toList();
 
-        System.out.println("getNotifications: "+getCurrentPerson().getFirstname()+"" +
-                " "+getCurrentPerson().getLastname()+" "+notifications.size());
-
         List<Map<String, String>> result = new ArrayList<>();
 
         for (Notification notification : notifications) {

@@ -52,8 +52,8 @@ public class FriendController {
         Person receiver = storage.getPerson(tumId);
 
         if (!receiver.getTumId().equals(person.getTumId()) &&
-                !person.getFriends().contains(person) &&
-                !person.getOutgoingFriendRequests().contains(person)
+                !person.getFriends().contains(receiver) &&
+                !person.getOutgoingFriendRequests().contains(receiver)
         ) {
             person.getOutgoingFriendRequests().add(receiver);
             storage.update(person);

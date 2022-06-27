@@ -1,29 +1,16 @@
 package eist.tum_social;
 
 import eist.tum_social.tum_social.controllers.CommentController;
-import eist.tum_social.tum_social.datastorage.Storage;
-import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Comment;
-import eist.tum_social.tum_social.model.Course;
-import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import static eist.tum_social.Util.getStorage;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
-import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
-import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
-import static eist.tum_social.tum_social.controllers.util.Util.storage;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommentTest extends SessionBasedTest {

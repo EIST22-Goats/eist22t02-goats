@@ -33,6 +33,7 @@ public class TimetableTest extends SessionBasedTest {
         // TODO
     }
 
+    @Disabled
     @Test
     void createAppointment() {
         AppointmentForm appointmentForm = new AppointmentForm();

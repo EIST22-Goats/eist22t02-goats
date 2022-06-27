@@ -1,5 +1,7 @@
 package eist.tum_social;
 
+import eist.tum_social.tum_social.controllers.ChatController;
+import eist.tum_social.tum_social.controllers.FriendController;
 import eist.tum_social.tum_social.controllers.LocationController;
 import eist.tum_social.tum_social.controllers.PersonSearchController;
 import eist.tum_social.tum_social.controllers.util.Util;
@@ -118,10 +120,11 @@ public class MiscTest extends SessionBasedTest {
         assertTrue(data.isEmpty());
     }
 
-    @Disabled
     @Test
-    void testRedirection() {
-        // TODO
+    void testLoginRedirection() {
+        assertEquals("redirect:/login", new FriendController(null, null).friendsPage(null));
+        assertEquals("redirect:/login", new FriendController(null, null).createFriendRequest(null));
+        assertEquals("redirect:/login", new ChatController(null).chatPage(null, null));
     }
 
     @Disabled
