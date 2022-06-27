@@ -34,6 +34,7 @@ public class NotificationController {
             return new ArrayList<>();
         }
 
+
         Person currentPerson = getCurrentPerson();
         List<Notification> notifications = currentPerson.getNotifications();
         notifications = notifications.stream()
@@ -41,6 +42,9 @@ public class NotificationController {
                         .comparing(Notification::getDate)
                         .thenComparing(Notification::getTime))
                 .toList();
+
+        System.out.println("getNotifications: "+getCurrentPerson().getFirstname()+"" +
+                " "+getCurrentPerson().getLastname()+" "+notifications.size());
 
         List<Map<String, String>> result = new ArrayList<>();
 

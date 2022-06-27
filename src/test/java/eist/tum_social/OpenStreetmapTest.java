@@ -1,7 +1,6 @@
 package eist.tum_social;
 
 import eist.tum_social.tum_social.location.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

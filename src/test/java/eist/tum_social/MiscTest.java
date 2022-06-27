@@ -123,4 +123,10 @@ public class MiscTest extends SessionBasedTest {
     void testRedirection() {
         // TODO
     }
+
+    @Disabled
+    @Test
+    void testTimestampFormatting() {
+        // TODO
+    }
 }
