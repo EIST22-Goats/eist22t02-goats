@@ -2,7 +2,6 @@ package eist.tum_social.tum_social.controllers;
 
 import eist.tum_social.tum_social.controllers.forms.CourseForm;
 import eist.tum_social.tum_social.datastorage.Storage;
-import eist.tum_social.tum_social.datastorage.StorageFacade;
 import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Comment;
 import eist.tum_social.tum_social.model.Course;

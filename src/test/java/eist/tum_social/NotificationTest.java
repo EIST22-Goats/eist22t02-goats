@@ -88,4 +88,6 @@ public class NotificationTest extends SessionBasedTest  {
                 "date", data.get(0).get("date")
         ), data.get(0));
     }
+
+    // TODO: dynamically test dates
 }
