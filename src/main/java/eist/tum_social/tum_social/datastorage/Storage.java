@@ -3,6 +3,7 @@ package eist.tum_social.tum_social.datastorage;
 import eist.tum_social.tum_social.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,6 +106,21 @@ public class Storage implements StorageFacade {
     public void copyFile(String src, String dst) {
         try {
             Files.copy(Paths.get(src), Paths.get(dst), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void saveMultipartFile(MultipartFile file, String path) {
+        try {
+            file.transferTo(new File(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void deleteFile(String file) {
+        try {
+            Files.delete(Paths.get(file));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

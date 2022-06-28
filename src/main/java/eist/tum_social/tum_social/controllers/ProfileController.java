@@ -85,13 +85,7 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        try {
-            profilePicture.transferTo(
-                    new File(PROFILE_PICTURE_LOCATION + "/" + getCurrentUsersTumId() + ".png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        storage.saveMultipartFile(profilePicture, PROFILE_PICTURE_LOCATION + getCurrentUsersTumId() + ".png");
         return "redirect:/profile";
     }
 
@@ -103,11 +97,7 @@ public class ProfileController {
 
         storage.delete(getCurrentPerson());
         logout();
-        try {
-            Files.delete(Path.of(PROFILE_PICTURE_LOCATION + "/" + tumId + ".png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        storage.deleteFile(PROFILE_PICTURE_LOCATION + tumId + ".png");
 
         return "redirect:/login";
     }
