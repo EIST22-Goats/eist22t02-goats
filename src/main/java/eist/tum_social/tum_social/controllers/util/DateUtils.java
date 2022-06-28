@@ -11,14 +11,14 @@ public class DateUtils {
 
         // TODO: fix midnight wrap around
 
-        if (time.isAfter(LocalTime.now().minusHours(1))) {
+        if (LocalDate.now().equals(date) && time.isAfter(LocalTime.now().minusHours(1))) {
             long minDelta = time.until(LocalTime.now(), ChronoUnit.MINUTES);
             if (minDelta <= 1) {
                 dateString += "Gerade eben";
             } else {
                 dateString += "Vor " + minDelta + " Minuten";
             }
-        } else if (time.isAfter(LocalTime.now().minusHours(12))) {
+        } else if (LocalDate.now().equals(date) && time.isAfter(LocalTime.now().minusHours(12))) {
             dateString += "Vor " + time.until(LocalTime.now(), ChronoUnit.HOURS) + " Stunden";
         } else {
             dateString += time.format(DateTimeFormatter.ofPattern("HH:mm"));

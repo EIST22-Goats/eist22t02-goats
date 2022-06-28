@@ -11,12 +11,16 @@ import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static eist.tum_social.Util.getStorage;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
+import static eist.tum_social.tum_social.controllers.util.DateUtils.formatTimestamp;
 import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -144,10 +148,20 @@ public class MiscTest extends SessionBasedTest {
         assertEquals("redirect:/login", new FriendController(null, null).createFriendRequest(null));
         assertEquals("redirect:/login", new ChatController(null).chatPage(null, null));
     }
-
-    @Disabled
     @Test
     void testTimestampFormatting() {
-        // TODO
+        LocalTime now = LocalTime.now();
+        LocalDate today = LocalDate.now();
+        if (LocalTime.now().minusHours(1).isBefore(LocalTime.now())) {
+            assertEquals("Gerade eben", formatTimestamp(today, now));
+            assertEquals("Vor 4 Minuten", formatTimestamp(today, now.minusMinutes(4)));
+            assertEquals("Vor 4 Stunden", formatTimestamp(today, now.minusHours(4)));
+        }
+        assertEquals(now.format(DateTimeFormatter.ofPattern("HH:mm"))+", "+
+                        today.minusDays(2).format(DateTimeFormatter.ofPattern("dd.MM.")),
+                formatTimestamp(today.minusDays(2), now));
+        assertEquals(now.format(DateTimeFormatter.ofPattern("HH:mm"))+", "+
+                        today.minusYears(2).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                formatTimestamp(today.minusYears(2), now));
     }
 }

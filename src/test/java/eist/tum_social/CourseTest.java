@@ -1,16 +1,20 @@
 package eist.tum_social;
 
+import eist.tum_social.TestClasses.TestModel;
 import eist.tum_social.tum_social.controllers.CourseController;
 import eist.tum_social.tum_social.controllers.forms.CourseForm;
+import eist.tum_social.tum_social.model.Announcement;
 import eist.tum_social.tum_social.model.Course;
+import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static eist.tum_social.Util.getStorage;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
-import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
-import static eist.tum_social.tum_social.controllers.util.Util.storage;
+import static eist.tum_social.tum_social.controllers.util.Util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CourseTest extends SessionBasedTest {
@@ -22,15 +26,29 @@ public class CourseTest extends SessionBasedTest {
         courseController = new CourseController(getStorage());
     }
 
-    @Disabled
     @Test
     void coursesPageTest() {
-        // TODO
+        login("ge47son");
+        TestModel testModel = new TestModel();
+        courseController.coursesPage(testModel, "");
+        Person person = getCurrentPerson();
+        assertTrue(testModel.asMap().containsValue(person));
+        List<Course> myCourses = person.getCourses();
+        List<Course> courses = storage.getCourses();
+        courses.removeAll(myCourses);
+        assertEquals(myCourses, testModel.getAttribute("myCoursesList"));
+        assertEquals(courses, testModel.getAttribute("coursesList"));
     }
-    @Disabled
+
     @Test
     void coursePageTest() {
-        // TODO
+        login("ge47son");
+        TestModel testModel = new TestModel();
+        courseController.coursePage(testModel, 20);
+        Person person = getCurrentPerson();
+        assertTrue(testModel.asMap().containsValue(person));
+        assertTrue(testModel.asMap().containsValue(storage.getCourse(20)));
+        assertEquals(storage.getCourse(20).getAnnouncements(), testModel.getAttribute("announcements"));
     }
 
     @Test
@@ -88,14 +106,24 @@ public class CourseTest extends SessionBasedTest {
         assertEquals("test course", course.getDescription());
         assertEquals("t", course.getAcronym());
     }
-    @Disabled
+
     @Test
     void addAnnouncementTest() {
-        // TODO
+        login("ge47son");
+        assertEquals("redirect:/courses/20", courseController.addAnnouncement(20, "Test", "test"));
+        for (Announcement announcement:getStorage ().getCourse(20).getAnnouncements()) {
+            if (announcement.getTitle().equals("Test") && announcement.getDescription().equals("test")) {
+                assertEquals(0, announcement.getComments().size());
+                return;
+            }
+        }
+        fail("announcement not added");
     }
-    @Disabled
+
     @Test
     void deleteAnnouncementTest() {
-        // TODO
+        login("ge47son");
+        assertEquals("redirect:/courses/20", courseController.deleteAnnouncement(14, 20));
+        assertNull(getStorage().getAnnouncement(14));
     }
 }

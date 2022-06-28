@@ -209,7 +209,6 @@ public class SqliteDatabaseTest {
         assertTrue(courses.isEmpty());
     }
 
-    @Disabled
     @Test
     void testSelectDeep() {
         SqliteDatabase db = (SqliteDatabase) getDatabase();
@@ -217,25 +216,14 @@ public class SqliteDatabaseTest {
         List<Person> persons = db.select(Person.class, "id=17");
         assertEquals(1, persons.size());
         Person person = persons.get(0);
+        List<Course> courses = person.getCourses();
+        assertEquals(2, courses.size());
+        courses = sortById(courses);
+        Course course = courses.get(0);
+        assertEquals(17, course.getAdmin().getId());
+        List<Appointment> appointments = course.getAppointments();
 
-        for (int i = 0; i < 5; i++) {
-            List<Course> courses = person.getCourses();
-            assertEquals(2, courses.size());
-            courses = sortById(courses);
-            Course course = courses.get(0);
-            assertEquals(3, course.getAdmin().getId());
-            List<Appointment> appointments = course.getAppointments();
-
-            assertEquals(2, appointments.size());
-            appointments = sortById(appointments);
-            Appointment appointment = appointments.get(0);
-            Course appointmentCourse = appointment.getCourses().get(0);
-            List<Person> participants = appointmentCourse.getParticipants();
-            assertEquals(2, participants.size());
-            participants = sortById(participants);
-            assertEquals(person.getId(), participants.get(1).getId());
-            person = participants.get(1);
-        }
+        assertEquals(0, appointments.size());
     }
 
 
