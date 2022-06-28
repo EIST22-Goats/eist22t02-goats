@@ -5,19 +5,11 @@ import eist.tum_social.tum_social.controllers.FriendController;
 import eist.tum_social.tum_social.controllers.NotificationController;
 import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
-import java.util.Optional;
 
 import static eist.tum_social.Util.getStorage;
-import static eist.tum_social.tum_social.controllers.AuthenticationController.isLoggedIn;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
-import static eist.tum_social.tum_social.controllers.util.NotificationType.*;
+import static eist.tum_social.tum_social.controllers.AuthenticationController.logout;
 import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,9 +41,6 @@ public class FriendTest extends SessionBasedTest {
         Person person = getCurrentPerson();
         assertEquals("redirect:/friends", friendController.createFriendRequest("go47tum"));
         assertTrue(person.getOutgoingFriendRequests().contains(getStorage().getPerson("go47tum")));
-
-        // TODO: check Notification
-        // TODO: check Friend request to Friend or self
     }
 
     @Test
@@ -66,24 +55,29 @@ public class FriendTest extends SessionBasedTest {
     void createFriendRequestToFriendTest() {
         login("ge47son");
         Person person = getCurrentPerson();
-        System.out.println(person.getFriends());
         assertEquals("redirect:/friends", friendController.createFriendRequest("ge95bit"));
         assertFalse(person.getOutgoingFriendRequests().contains(getStorage().getPerson("ge95bit")));
     }
 
-    @Disabled
     @Test
     void deleteFriendRequestTest() {
-        // TODO
+        login("ge47son");
+        friendController.createFriendRequest("go47tum");
+        Person person = getCurrentPerson();
+        assertTrue(person.getOutgoingFriendRequests().contains(getStorage().getPerson("go47tum")));
+        assertEquals("redirect:/friends", friendController.deleteFriendRequest(14));
+        person.getOutgoingFriendRequestEntities().set(null);
+        assertFalse(person.getOutgoingFriendRequests().contains(getStorage().getPerson("go47tum")));
     }
-    @Disabled
+
     @Test
     void acceptFriendRequestTest() {
-        // TODO
-    }
-    @Disabled
-    @Test
-    void bringBalanceToYourLifeTest() {
-        // TODO
+        login("ge47son");
+        friendController.createFriendRequest("go47tum");
+        logout();
+        login("go47tum");
+        assertEquals("redirect:/friends", friendController.acceptFriendRequest(3));
+        Person person = getCurrentPerson();
+        assertTrue(person.getFriends().contains(getStorage().getPerson("ge47son")));
     }
 }

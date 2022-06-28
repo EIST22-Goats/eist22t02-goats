@@ -1,26 +1,44 @@
 package eist.tum_social;
 
-import eist.tum_social.tum_social.controllers.ChatController;
-import eist.tum_social.tum_social.controllers.FriendController;
-import eist.tum_social.tum_social.controllers.LocationController;
-import eist.tum_social.tum_social.controllers.PersonSearchController;
+import eist.tum_social.TestClasses.TestModel;
+import eist.tum_social.tum_social.controllers.*;
 import eist.tum_social.tum_social.controllers.util.Util;
 import eist.tum_social.tum_social.datastorage.Storage;
+import eist.tum_social.tum_social.datastorage.util.Pair;
+import eist.tum_social.tum_social.model.Announcement;
+import eist.tum_social.tum_social.model.Course;
+import eist.tum_social.tum_social.model.Person;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static eist.tum_social.Util.getStorage;
 import static eist.tum_social.tum_social.controllers.AuthenticationController.login;
+import static eist.tum_social.tum_social.controllers.util.Util.getCurrentPerson;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MiscTest extends SessionBasedTest {
-    @Disabled
+
     @Test
     void indexTest() {
-
+        login("ge47son");
+        Person person = getCurrentPerson();
+        TestModel model = new TestModel();
+        IndexController indexController = new IndexController(getStorage());
+        assertEquals("index",indexController.index(model));
+        assertTrue(model.asMap().containsValue(person));
+        assertEquals(person.getCourses(), model.getAttribute("myCoursesList"));
+        List<Pair<String, Announcement>> announcements = new ArrayList<>();
+        for (Course course : person.getCourses()) {
+            List<Announcement> courseAnnouncement = course.getAnnouncements();
+            if (!courseAnnouncement.isEmpty()) {
+                announcements.add(new Pair<>(course.getName(), courseAnnouncement.get(0)));
+            }
+        }
+        assertEquals(announcements, model.getAttribute("myAnnouncements"));
     }
 
     @Test
