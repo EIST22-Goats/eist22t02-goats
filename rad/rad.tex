@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{scrartcl}
+\documentclass[a4paper,12pt,halfparskip]{scrartcl}
 \usepackage{xcolor}
 \usepackage[UKenglish]{isodate}%http://ctan.org/pkg/isodate
 \usepackage[a4paper,left=2cm, right=2cm,top=2.7cm, bottom=3cm]{geometry}
@@ -40,13 +40,12 @@
 \cfoot{\thepage}
 \rfoot{\includegraphics[scale=0.4,valign=c]{TUM.png}}
 
+\newcommand{\ProjectName}{TUM Social}
 
-%%%%----TODO: Change your project name----%%%%
-\newcommand{\ProjectName}{Name of your project}
-%%%%----TODO: Change text from here-------%%%%
 \begin{document}
     \section*{Purpose}
-    The results of the requirements elicitation and the analysis activities are documented in the Requirements Analysis Document (RAD). This document completely describes the system in terms of functional and nonfunctional requirements and serves as a contractual basis between the client and the developers.
+    The results of the requirements elicitation and the analysis activities are documented in the Requirements Analysis Document (RAD).
+    This document completely describes the system in terms of functional and nonfunctional requirements and serves as a contractual basis between the client and the developers.
 
     \section*{Audience}
     The audience for the RAD includes the client, the end users, the project manager, and the developers.
@@ -54,6 +53,7 @@
 
     \renewcommand{\contentsname}{Table of Contents}
     \tableofcontents
+
     \section*{Document History}
 
     \begin{tabular}{
@@ -63,17 +63,9 @@
         |p{\dimexpr.56\linewidth-2\tabcolsep-1.3333\arrayrulewidth}|% column 3
     }
         \hline
-        Rev. & Author & Date            & Changes          \\
+        Rev. & Author          & Date          & Changes        \\
         \hline
-        1    & name   & 31st April 2022 & Sample changes 1 \\
-        \hline
-        2    & name   & 15th May 2022   & Sample changes 1 \\
-        \hline
-        3    & name   & 29th May 2022   & Sample changes 1 \\
-        \hline
-        4    & name   & 12th June 2022  & Sample changes 1 \\
-        \hline
-        5    & name   & 26th June 2022  & Sample changes 1 \\
+        1    & Kilian Northoff & 1st July 2022 & Wrote document \\
         \hline
     \end{tabular}
     \newpage
@@ -83,73 +75,106 @@
 
 
     \section{Introduction}
-    The purpose of the Introduction is to provide a brief overview of the function of the system and the reasons for its development, its scope, and references to the development context. The introduction also includes the objectives and success criteria of the project.
+    The purpose of the Introduction is to provide a brief overview of the function of the system and the reasons for its
+    development, its scope, and references to the development context.
+    The introduction also includes the objectives and success criteria of the project.
+
     \begin{subs}
         \subsection{Purpose of the System}
+        Students want to participate in lectures and see announcements.
+        They want to find fellow students with the same interests and share their opinion about lectures and course material.
+        They also want to discuss exam questions and find the place where the exam takes place.
 
         \subsection{Scope of the System}
-
-        \subsection{Objectives and Success Criteria of the Project}
-
-        \subsection{Definitions, acronyms, and abbreviations}
-
-        \subsection{References}
-
-        \subsection{Overview}
+        This system should be able to be used everywhere both from mobile devices and PC.
     \end{subs}
 
 
-    \section{Current System}
-    This section describes the current state of affairs. If the new system will replace an existing system, this section describes the functionality and the problems of the current system
-
-
     \section{Proposed System}
-    The third section documents the requirements elicitation and the analysis model of the new system.
+
     \nopagebreak
     \begin{subs}
-        \subsection{Overview}
-        The overview presents a functional overview of the system.
-
         \subsection{Functional Requirements}
-        Functional requirements describe the high-level functionality of the system. This section list all functional requirements and additionally presents the dependencies between them.
+        \begin{description}
+            \item[FR 1: Search for available lectures] \hfill \\ A student can see all lectures of the current semester
+            in his major and minor subject.
+            He is able to join the lecture which saves it into his lecture list.
+            He can also drop a lecture.
+
+            \item[FR 2: Check lecture details] \hfill \\ A student can see details about a lecture such as the lecture
+            times, the location of the lecture hall on a map and other lecture attendees including their
+            name and picture.
+
+            \item[FR 3: Update profile] \hfill \\ A student can update his profile settings and his profile picture. He
+            can also change the notification settings.
+
+            \item[FR 4: Add comments] \hfill \\ A student can add comments about a lecture and thus start a discussion.
+            Others can like the comment and write follow-up comments.
+
+            \item[FR 5: Request friendship] \hfill \\ A student can request friendship with another student who then
+            receives a notification about the request.
+            The second student can accept and reject friendship which both notify the first student.
+
+            \item[FR 6: Browse friend’s lectures] \hfill \\ A student can browse the lectures of his friends.
+
+            \item[FR 7: See announcements] \hfill \\ A student can see the lecture announcements and comment
+            or like them.
+
+            \item[FR 8: Post updates to timeline] \hfill \\ A student can post updates to his timeline. Friends are
+            notified about updates and can comment and like them. Certain updates are posted
+            automatically such as saving a lecture into the lecture list or commenting in a lecture.
+
+            \item[FR 9: See lectures calendar] \hfill \\ A student can see all lectures in a calendar and save the
+            events to the local calendar.
+        \end{description}
 
         \subsection{Non-Functional Requirements}
-        Nonfunctional requirements describe user-level requirements that are not directly related to functionality. This includes usability, reliability, performance, supportability, implementation, interface, operational, packaging, and legal requirements. The section list all these non-functional requirements and additionally presents the dependencies between them.
+        Following NFR have to be taken into account.
+
         \begin{subsubs}
             \subsubsection{Usability}
+            The system should be intuitive to use, and the user interface should be easy to understand.
+            All interactions should be completed in less than three clicks.
 
-            \subsubsection{Reliability}
-
-            \subsubsection{Performance}
-
-            \subsubsection{Supportable}
+            The design of the system should conform to the typical usability guidelines such as Nielsen’s usability heuristics.
 
             \subsubsection{Implementation Requirements}
-
-            \subsubsection{Interface Requirements}
-
-            \subsubsection{Packaging Requirements}
-
-            \subsubsection{Legal Requirements}
+            A server subsystem with a couple of services must be used in the system.
         \end{subsubs}
 
         \subsection{System Models}
         The System models include scenarios, use cases, object model, and dynamic models for the system. This section should contain the complete functional specification, including mock-ups, paper-based prototypes or storyboards illustrating the user interface of the system and navigational paths representing the sequence of screens.
         \begin{subsubs}
             \subsubsection{Scenarios}
+            Arjun, a student from India, is studying computer science at TUM. He has business
+            administration as minor subject.
+            He is already used to visit the lectures in the FMI building
+            in Garching from his first two semesters.
+            The business administration lectures however,
+            located in a lecture hall in the TUM city campus in Arcistrasse.
+            He never visited the city
+            campus before, so he does not know how to find the lecture halls for his minor subject.
+            He browses through the lectures in the lecture catalog and finds the lecture “Foundations of
+            Business Administration” with lecture times and the location of the lecture hall on a map.
+            While he is attending the lecture, he makes contact with fellow students who also attend the
+            lecture and checks their comments.
+            He likes one comment “Great exercises” by Jenny, who
+            is also studying informatics.
+            From Jenny’s picture, he remembers that they met a week ago
+            at the coffee machine in Garching.
+            He requests friendship with Jenny (she might help him
+            to pass the final) and adds a new comment about exam questions from earlier exams.
+            While
+            he is browsing, Jenny is notified about the friend request and accepts it.
+            Arjun, in turn, is
+            notified that Jenny has accepted his request and now browses through all the lectures that
+            Jenny is visiting.
+            This way he finds another interesting lecture “Cost Accounting” that he
+            visits and saves it into his lecture list.
 
-            \subsubsection{Use Case Model}
-
-            \subsubsection{Object Model}
-
-            \subsubsection{Dynamic Model}
-
-            \subsubsection{User Interface}
+            \subsubsection{Use Case Model, Object Model and Dynamic Model}
+            These can be found in the project in \texttt{planning/diagram}
         \end{subsubs}
     \end{subs}
-
-
-    \section{Glossary}
-    A glossary of important terms used in the project and in the system model ensures consistency in the specification and a common understanding of terms used by the client.
 
 \end{document}
