@@ -148,20 +148,4 @@ public class MiscTest extends SessionBasedTest {
         assertEquals("redirect:/login", new FriendController(null, null).createFriendRequest(null));
         assertEquals("redirect:/login", new ChatController(null).chatPage(null, null));
     }
-    @Test
-    void testTimestampFormatting() {
-        LocalTime now = LocalTime.now();
-        LocalDate today = LocalDate.now();
-        if (LocalTime.now().minusHours(1).isBefore(LocalTime.now())) {
-            assertEquals("Gerade eben", formatTimestamp(today, now));
-            assertEquals("Vor 4 Minuten", formatTimestamp(today, now.minusMinutes(4)));
-            assertEquals("Vor 4 Stunden", formatTimestamp(today, now.minusHours(4)));
-        }
-        assertEquals(now.format(DateTimeFormatter.ofPattern("HH:mm"))+", "+
-                        today.minusDays(2).format(DateTimeFormatter.ofPattern("dd.MM.")),
-                formatTimestamp(today.minusDays(2), now));
-        assertEquals(now.format(DateTimeFormatter.ofPattern("HH:mm"))+", "+
-                        today.minusYears(2).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                formatTimestamp(today.minusYears(2), now));
-    }
 }
