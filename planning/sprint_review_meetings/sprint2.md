@@ -12,4 +12,5 @@ Date: 10.06.2022
 3. Profile settings
 
 ### Impediments
-- \-
+- JavaFX isn't needed
+- "Einstellungen" is also not needed
