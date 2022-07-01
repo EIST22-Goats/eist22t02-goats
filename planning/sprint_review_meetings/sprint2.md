@@ -10,3 +10,6 @@ Date: 10.06.2022
 1. Database system
 2. Login system
 3. Profile settings
+
+### Impediments
+- \-

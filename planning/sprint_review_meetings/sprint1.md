@@ -11,3 +11,5 @@ Date: 27.05.2022
 2. Object model: attributes should be private
 3. Dynamic model: export as PNG instead of PDF, 2.3 is missing a "y"
 
+### Impediments
+- \-

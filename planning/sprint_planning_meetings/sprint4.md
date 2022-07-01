@@ -11,3 +11,5 @@ Date: 27.06.2022
 3. Notification system
 4. Notification settings
 
+### Impediments
+- \-

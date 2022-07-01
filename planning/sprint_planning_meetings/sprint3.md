@@ -10,3 +10,6 @@ Date: 13.06.2022
 2. Extend Database system with lazy loading
 3. Appointment system and Timetable
 4. Locations for appointments
+
+### Impediments
+- \-
