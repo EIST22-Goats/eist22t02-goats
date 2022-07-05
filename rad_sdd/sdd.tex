@@ -79,6 +79,7 @@
     The purpose of the Introduction is to provide a brief overview of the software architecture. It also provides references to other documents.
     \begin{subs}
         \subsection{Overview}
+        They system is made up of controllers that 
 
         \subsection{Definitions, acronyms, and abbreviations}
 
@@ -88,10 +89,16 @@
 
     \section{Design Goals}
     This section describes the design goals and their prioritization (e.g. usability over extensibility). These are additional nonfunctional requirements that are of interest to the developers. Any trade-offs between design goals (e.g., usability vs. functionality, build vs. buy, memory space vs. response time), and the rationale behind the specific solution should be described in this section. Also the rationale of all other decisions must be consistent with described design goals.
+    
+    When designing the system we had certain non-functional requirements in mind. We determined the most important of these to be scalability, usability and maintainablility. These fundamental priciples shaped the development of our system and are easily noticed by users. Our registration process is very simple and new users can sign up with just a couple clicks and have full access to all the features right away. Furthermore, the database is highly capable and enables the network to expand and support a growing number of users. The code is also easy to read as the system uses the MVC pattern with various different controllers for different features.
 
 
     \section{Subsystem Decomposition}
-    This section describes the decomposition of the system into subsystems and the services provided by each subsystem. The services are the seed for the APIs detailed in the Object Design Document.
+    This section describes the decomposition of the system into subsystems and the services provided by each subsystem. The services are the seed for the APIs detailed in the Object Design Document. The system can generally be seperated into 3 distinct components. The database, server and client. The database stores all data and offers a facade interface to let the server request data. The server is a standard spring boot application, which handles all of the clients requests. The client provides the end user with a GUI, that makes use of various controllers for different functions, to make requests from the server. The following diagram is a rough representation of the system seperated into its basic components/subsystems.
+    	
+    	
+        \includegraphics[scale=0.15]{ComponentDiagram.png}
+  
 
 
     \section{Hardware/Software Mapping}
@@ -112,7 +119,6 @@
 
 
     \section{Boundary Conditions}
-    This section describes the use cases how to start up the separate components of the system, how to shut them down, and what to do if a component or the system fails.
-
+    This section describes the use cases how to start up the separate components of the system, how to shut them down, and what to do if a component or the system fails. \\First of all the serer needs to be started, as it handles all of the communication within the network. When the server is running clients can start up and try to connect to it. If a connection cannot be successfully made, clients will simply have to retry until the server responds. Ideally the server is running continously, but it is possible that the server as somepoint stops answering requests. This may be because of a "distributed denia-of-service" attack or technical problems. When this happens the clients will not be able to communicate with each other. All connected clients will experience a lack of response from the server. The clients will have to wait until the server is operational again. If at some point the system is supposed to shut sown indefinitly, the clients should end the connection with the server before it will shutdown. 
 
 \end{document}
