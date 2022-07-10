@@ -59,15 +59,8 @@
         \hline
         Rev. & Author & Date            & Changes          \\
         \hline
-        1    & name   & 31st April 2022 & Sample changes 1 \\
-        \hline
-        2    & name   & 15th May 2022   & Sample changes 1 \\
-        \hline
-        3    & name   & 29th May 2022   & Sample changes 1 \\
-        \hline
-        4    & name   & 12th June 2022  & Sample changes 1 \\
-        \hline
-        5    & name   & 26th June 2022  & Sample changes 1 \\
+        1    & Luis Traffa  & 9th July 2022 & Everything \\
+       
         \hline
     \end{tabular}
     \newpage
@@ -76,25 +69,22 @@
 
 
     \section{Introduction}
-    The purpose of the Introduction is to provide a brief overview of the software architecture. It also provides references to other documents.
-    \begin{subs}
-        \subsection{Overview}
-        They system is made up of controllers that 
+    
+    \subsection{Overview}
+        
+    The system is essentially a standard client server application. The client is a webbrowser like Firefox or Chrome, which connects to the TUM SOCIAL server and makes requests from it.
+    The server handles these rquests and sends the responses back to the server. 
 
-        \subsection{Definitions, acronyms, and abbreviations}
-
-        \subsection{References}
-    \end{subs}
+     
 
 
     \section{Design Goals}
-    This section describes the design goals and their prioritization (e.g. usability over extensibility). These are additional nonfunctional requirements that are of interest to the developers. Any trade-offs between design goals (e.g., usability vs. functionality, build vs. buy, memory space vs. response time), and the rationale behind the specific solution should be described in this section. Also the rationale of all other decisions must be consistent with described design goals.
     
     When designing the system we had certain non-functional requirements in mind. We determined the most important of these to be scalability, usability and maintainablility. These fundamental priciples shaped the development of our system and are easily noticed by users. Our registration process is very simple and new users can sign up with just a couple clicks and have full access to all the features right away. Furthermore, the database is highly capable and enables the network to expand and support a growing number of users. The code is also easy to read as the system uses the MVC pattern with various different controllers for different features.
 
 
     \section{Subsystem Decomposition}
-    This section describes the decomposition of the system into subsystems and the services provided by each subsystem. The services are the seed for the APIs detailed in the Object Design Document. The system can generally be seperated into 3 distinct components. The database, server and client. The database stores all data and offers a facade interface to let the server request data. The server is a standard spring boot application, which handles all of the clients requests. The client provides the end user with a GUI, that makes use of various controllers for different functions, to make requests from the server. The following diagram is a rough representation of the system seperated into its basic components/subsystems.
+    This section describes the decomposition of the system into subsystems and the services provided by each subsystem. The services are the seed for the APIs detailed in the Object Design Document. The system can generally be seperated into 3 distinct components. The database, server and client. The database stores all data and offers a facade interface to let the server request data. The server is a standard spring boot application, which handles all of the clients requests. The client provides the end user with a GUI, that makes use of various controllers for different functions, to make requests from the server. The following diagram is a rough representation of the system seperated into its basic components/subsystems.\\
     	
     	
         \includegraphics[scale=0.15]{ComponentDiagram.png}
@@ -102,7 +92,13 @@
 
 
     \section{Hardware/Software Mapping}
-    This section describes how the subsystems are mapped onto existing hardware and software components. A UML deployment diagram accompanies the description. The existing components are often off-the-shelf components. If the components are distributed on different nodes, the network infrastructure and the protocols are also described.
+In physical space the subsystems are distrubuted on 2 seperate hardware nodes. The client machine and the server machine. The client machine only contains the view, which is displays the current state of the model and is updated by controllers when the user sends requests to the server. There exist several different kinds of controllers. One for each core aspect of the system like the profile or chat. The controllers provide services that the models need to get the data and display it. The database is also located on the server node. The protocol employed is the standard https, which comes with Spring boot.\\
+    
+    
+    
+    \includegraphics[scale=0.15]{HardwareSoftware.png}
+    
+    
 
 
     \section{Persistent Data Management}
@@ -111,14 +107,18 @@
 
 
     \section{Access Control and Security}
-    This section describes the access control and security issues based on the nonfunctional requirements in the requirements analysis document. It also describes the implementation of the access matrix based on capabilities or access control lists, the selection of authentication mechanisms and the use of encryption algorithms.
+    This section describes the access control and security issues based on the nonfunctional requirements in the requirements analysis document. It also describes the implementation of the access matrix based on capabilities or access control lists, the selection of authentication mechanisms and the use of encryption algorithms.\\
+    
+    All sensitive user data, namely the password, is stored in the database only in a hashed state. Therefore 
 
 
     \section{Global Software Control}
-    This section describes the control flow of the system, in particular, whether a monolithic, event-driven control flow or concurrent processes have been selected, how requests are initiated and specific synchronisation issues.
+    
+    The design of TUM Social is highly centralized. All data is stored on the server and if someone were to seize control of the server, that person would have full control over the network.
+    Furthermore, the system is a polling based design, which means that the server is continuously polling for new requests and doesnt shut-off when it does not need to do anything, like an event-			based system would. Requests are initaited when an end-user makes a request through a running client. 
 
 
     \section{Boundary Conditions}
-    This section describes the use cases how to start up the separate components of the system, how to shut them down, and what to do if a component or the system fails. \\First of all the serer needs to be started, as it handles all of the communication within the network. When the server is running clients can start up and try to connect to it. If a connection cannot be successfully made, clients will simply have to retry until the server responds. Ideally the server is running continously, but it is possible that the server as somepoint stops answering requests. This may be because of a "distributed denia-of-service" attack or technical problems. When this happens the clients will not be able to communicate with each other. All connected clients will experience a lack of response from the server. The clients will have to wait until the server is operational again. If at some point the system is supposed to shut sown indefinitly, the clients should end the connection with the server before it will shutdown. 
+   First of all the server needs to be started, as it handles all of the communication within the network. When the server is running clients can start up and try to connect to it. If a connection cannot be successfully made, clients will simply have to retry until the server responds. Ideally the server is running continously, but it is possible that at somepoint the server stops answering requests. This may be because of a "distributed denial-of-service" attack or technical problems. When this happens the clients will not be able to communicate with each other. All connected clients will experience a lack of response from the server. The clients will have to wait until the server is operational again. If at some point the system is supposed to shut sown indefinitly, the clients should end the connection with the server before it will shutdown.\\
 
 \end{document}
