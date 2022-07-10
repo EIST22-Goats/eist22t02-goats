@@ -5,6 +5,6 @@
 \contentsline {section}{\numberline {4}Hardware/Software Mapping}{3}{section.4}%
 \contentsline {section}{\numberline {5}Persistent Data Management}{3}{section.5}%
 \contentsline {section}{\numberline {6}Access Control and Security}{3}{section.6}%
-\contentsline {section}{\numberline {7}Global Software Control}{3}{section.7}%
+\contentsline {section}{\numberline {7}Global Software Control}{4}{section.7}%
 \contentsline {section}{\numberline {8}Boundary Conditions}{4}{section.8}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

@@ -107,9 +107,24 @@ In physical space the subsystems are distrubuted on 2 seperate hardware nodes. T
 
 
     \section{Access Control and Security}
-    This section describes the access control and security issues based on the nonfunctional requirements in the requirements analysis document. It also describes the implementation of the access matrix based on capabilities or access control lists, the selection of authentication mechanisms and the use of encryption algorithms.\\
     
-    All sensitive user data, namely the password, is stored in the database only in a hashed state. Therefore 
+    The biggest potential security problem is a user being able to log in as another user and be able to read all the sensitive data. Therefore we implemented a hashing algorithm, that hashes the passwords, so that even if the server were to be hacked, the attackers would not be able to assume control of the profiles. Another susceptible feature is the friend system. Only friends should have more communication features activated between them. \\ \\
+    
+    \begin{tabular}{    
+	    |p{\dimexpr.25\linewidth-2\tabcolsep-1.3333\arrayrulewidth}% column 1
+        |p{\dimexpr.25\linewidth-2\tabcolsep-1.3333\arrayrulewidth}% column 2
+        |p{\dimexpr.25\linewidth-2\tabcolsep-1.3333\arrayrulewidth}
+        |p{\dimexpr.25\linewidth-2\tabcolsep-1.3333\arrayrulewidth}|% column 3
+    }
+        \hline
+         & Friend & Stranger         \\
+        \hline
+        Friend   & extended communication  & not possible \\
+        \hline
+        Stranger & not possible & limited communication         \\
+       
+        \hline
+    \end{tabular}
 
 
     \section{Global Software Control}
