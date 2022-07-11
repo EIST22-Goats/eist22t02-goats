@@ -110,6 +110,7 @@ function loadChangeAppointmentModal(modal) {
         changeAppointmentModalDeleteBtn.attr("data-bs-appointment-id", appointmentId)
 
         let course_id = event.relatedTarget.getAttribute('data-bs-course')
+        changeAppointmentModalDeleteBtn.attr("data-bs-course", course_id)
         if (course_id === "-1") {
             changeDateModalForm.attr('action', "/updateAppointment/" + appointmentId);
         } else {
@@ -279,7 +280,9 @@ function showRoom(modal, roomName) {
     })
 }
 
-loadDeleteAppointmentModal(deleteAppointmentModal);
-loadChangeAppointmentModal(changeAppointmentModal);
-loadCreateAppointmentModal(createAppointmentModal);
-loadAppointmentModal(appointmentModal);
+window.onload(() => {
+    loadDeleteAppointmentModal(deleteAppointmentModal);
+    loadChangeAppointmentModal(changeAppointmentModal);
+    loadCreateAppointmentModal(createAppointmentModal);
+    loadAppointmentModal(appointmentModal);
+})
