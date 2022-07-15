@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.29)  11 JUL 2022 00:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.29)  15 JUL 2022 16:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -654,23 +654,7 @@ Class scrartcl Warning: Incompatible usage of \@ssect detected.
 (scrartcl)              from within a non compatible caller, that does not
 (scrartcl)              \scr@s@ct@@nn@m@ locally.
 (scrartcl)              This could result in several error messages on input li
-ne 42.
-
-
-Class scrartcl Warning: Incompatible usage of \@ssect detected.
-(scrartcl)              You've used the KOMA-Script implementation of \@ssect
-(scrartcl)              from within a non compatible caller, that does not
-(scrartcl)              \scr@s@ct@@nn@m@ locally.
-(scrartcl)              This could result in several error messages on input li
-ne 45.
-
-
-Class scrartcl Warning: Incompatible usage of \@ssect detected.
-(scrartcl)              You've used the KOMA-Script implementation of \@ssect
-(scrartcl)              from within a non compatible caller, that does not
-(scrartcl)              \scr@s@ct@@nn@m@ locally.
-(scrartcl)              This could result in several error messages on input li
-ne 50.
+ne 44.
 
 (./sdd.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -690,108 +674,108 @@ Class scrartcl Warning: Incompatible usage of \@ssect detected.
 (scrartcl)              from within a non compatible caller, that does not
 (scrartcl)              \scr@s@ct@@nn@m@ locally.
 (scrartcl)              This could result in several error messages on input li
-ne 51.
+ne 45.
 
 
-Overfull \hbox (2.70103pt too wide) in paragraph at lines 53--66
+Overfull \hbox (2.70103pt too wide) in paragraph at lines 47--60
 [] 
  []
 
 <EIST.png, id=13, 426.59375pt x 165.61874pt>
 File: EIST.png Graphic file (type png)
 <use EIST.png>
-Package pdftex.def Info: EIST.png  used on input line 66.
+Package pdftex.def Info: EIST.png  used on input line 60.
 (pdftex.def)             Requested size: 62.71048pt x 24.34642pt.
 <TUM.png, id=15, 112.92188pt x 67.75313pt>
 File: TUM.png Graphic file (type png)
 <use TUM.png>
-Package pdftex.def Info: TUM.png  used on input line 66.
+Package pdftex.def Info: TUM.png  used on input line 60.
 (pdftex.def)             Requested size: 45.16794pt x 27.10075pt.
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
  <./EIST.png> <./TUM.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 87--88
+Underfull \hbox (badness 10000) in paragraph at lines 81--82
 
  []
 
-<ComponentDiagram.png, id=37, 2303.60625pt x 1249.66875pt>
+<ComponentDiagram.png, id=35, 2303.60625pt x 1249.66875pt>
 File: ComponentDiagram.png Graphic file (type png)
 <use ComponentDiagram.png>
-Package pdftex.def Info: ComponentDiagram.png  used on input line 90.
+Package pdftex.def Info: ComponentDiagram.png  used on input line 84.
 (pdftex.def)             Requested size: 345.52603pt x 187.44221pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 95--96
+Underfull \hbox (badness 10000) in paragraph at lines 89--90
 
  []
 
 File: EIST.png Graphic file (type png)
 <use EIST.png>
-Package pdftex.def Info: EIST.png  used on input line 96.
+Package pdftex.def Info: EIST.png  used on input line 90.
 (pdftex.def)             Requested size: 62.71048pt x 24.34642pt.
 File: TUM.png Graphic file (type png)
 <use TUM.png>
-Package pdftex.def Info: TUM.png  used on input line 96.
+Package pdftex.def Info: TUM.png  used on input line 90.
 (pdftex.def)             Requested size: 45.16794pt x 27.10075pt.
 [2 <./ComponentDiagram.png>]
-<HardwareSoftware.png, id=43, 3011.25pt x 1008.76875pt>
+<HardwareSoftware.png, id=41, 3011.25pt x 1008.76875pt>
 File: HardwareSoftware.png Graphic file (type png)
 <use HardwareSoftware.png>
-Package pdftex.def Info: HardwareSoftware.png  used on input line 99.
+Package pdftex.def Info: HardwareSoftware.png  used on input line 93.
 (pdftex.def)             Requested size: 451.66801pt x 151.30878pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 111--112
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 111--112
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 124--125
+Underfull \hbox (badness 10000) in paragraph at lines 118--119
 []\OT1/cmss/m/n/12 limited com-mu-ni-ca-
  []
 
 File: EIST.png Graphic file (type png)
 <use EIST.png>
-Package pdftex.def Info: EIST.png  used on input line 134.
+Package pdftex.def Info: EIST.png  used on input line 128.
 (pdftex.def)             Requested size: 62.71048pt x 24.34642pt.
 File: TUM.png Graphic file (type png)
 <use TUM.png>
-Package pdftex.def Info: TUM.png  used on input line 134.
+Package pdftex.def Info: TUM.png  used on input line 128.
 (pdftex.def)             Requested size: 45.16794pt x 27.10075pt.
 [3 <./HardwareSoftware.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 137--138
+Underfull \hbox (badness 10000) in paragraph at lines 131--132
 
  []
 
 File: EIST.png Graphic file (type png)
 <use EIST.png>
-Package pdftex.def Info: EIST.png  used on input line 139.
+Package pdftex.def Info: EIST.png  used on input line 133.
 (pdftex.def)             Requested size: 62.71048pt x 24.34642pt.
 File: TUM.png Graphic file (type png)
 <use TUM.png>
-Package pdftex.def Info: TUM.png  used on input line 139.
+Package pdftex.def Info: TUM.png  used on input line 133.
 (pdftex.def)             Requested size: 45.16794pt x 27.10075pt.
 [4] (./sdd.aux)
 Package rerunfilecheck Info: File `sdd.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 14262 strings out of 480204
- 251187 string characters out of 5895010
- 683595 words of memory out of 5000000
+ 14260 strings out of 480204
+ 251167 string characters out of 5895010
+ 680595 words of memory out of 5000000
  32009 multiletter control sequences out of 15000+600000
  473797 words of font info for 43 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  108i,20n,106p,10617b,419s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on sdd.pdf (4 pages, 224097 bytes).
+Output written on sdd.pdf (4 pages, 223336 bytes).
 PDF statistics:
- 96 PDF objects out of 1000 (max. 8388607)
- 78 compressed objects within 1 object stream
- 18 named destinations out of 1000 (max. 500000)
+ 94 PDF objects out of 1000 (max. 8388607)
+ 76 compressed objects within 1 object stream
+ 16 named destinations out of 1000 (max. 500000)
  93 words of extra memory for PDF output out of 10000 (max. 10000000)
 
