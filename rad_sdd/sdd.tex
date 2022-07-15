@@ -96,8 +96,10 @@ In physical space the subsystems are distrubuted on 2 seperate hardware nodes. T
 
 
     \section{Persistent Data Management}
-    This section describes how the entity objects are mapped to persistent storage.
-    It contains a rationale of the selected storage scheme, file system or database, a description of the selected database and database administration issues.
+    
+    Every class of the model has its own table in the database, that stores the values and references to other related objects. We use standard relational database model. For simplicity we use SQLite, but the system is designed in a way, that a change to a more performant database system, can be achieved easily. 
+    
+    
 
 
     \section{Access Control and Security}
